@@ -306,16 +306,16 @@
   </nav>
 
   <!-- JS Dependencies with Cache Busting -->
-  <script src="js/topics-data.js?v=10"></script>
-  <script src="js/anki-engine.js?v=10"></script>
-  <script src="js/photo-uploader.js?v=10"></script>
-  <script src="js/quiz-engine.js?v=10"></script>
-  <script src="js/cocomo-calculator.js?v=10"></script>
-  <script src="js/app.js?v=10"></script>
+  <script src="js/topics-data.js?v=11"></script>
+  <script src="js/anki-engine.js?v=11"></script>
+  <script src="js/photo-uploader.js?v=11"></script>
+  <script src="js/quiz-engine.js?v=11"></script>
+  <script src="js/cocomo-calculator.js?v=11"></script>
+  <script src="js/app.js?v=11"></script>
 
   <!-- Service Worker Registration & Cache Auto-Buster -->
   <script>
-    const PWA_VERSION = 'v10';
+    const PWA_VERSION = 'v11';
     if (localStorage.getItem('ceneval_sw_ver') !== PWA_VERSION) {
       localStorage.setItem('ceneval_sw_ver', PWA_VERSION);
       if ('serviceWorker' in navigator) {
@@ -332,9 +332,9 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=10')
+        navigator.serviceWorker.register('./sw.js?v=11')
           .then(reg => {
-            console.log('Service Worker v10 registrado:', reg.scope);
+            console.log('Service Worker v11 registrado:', reg.scope);
             reg.update();
           })
           .catch(err => console.log('Error de Service Worker:', err));

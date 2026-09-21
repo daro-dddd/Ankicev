@@ -49,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
   loadUserCardsIntoAnki();
 
   // 3. Manejo de Tema Claro / Oscuro
+  let obsidianGraph = null;
+
   const themeToggleBtn = document.getElementById('theme-toggle-btn');
   const themeText = document.getElementById('theme-text');
   const navItems = document.querySelectorAll('.nav-item');
@@ -72,10 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       themeText.textContent = 'Modo Claro';
     }
+    if (typeof obsidianGraph !== 'undefined' && obsidianGraph) {
+      obsidianGraph.updateThemeBackground();
+    }
   }
 
   // 4. Navegación por Pestañas
-  let obsidianGraph = null;
 
   navItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -92,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
           obsidianGraph = new ObsidianGraphRenderer(TOPICS_DATA, ankiEngine.allCards);
         } else {
           obsidianGraph.resizeCanvas();
+          obsidianGraph.updateThemeBackground();
         }
       }
       if (targetTab === 'tab-quiz') renderQuizQuestion();
@@ -177,57 +182,59 @@ document.addEventListener('DOMContentLoaded', () => {
     const cardNumEl = document.getElementById('current-card-num');
     const totalNumEl = document.getElementById('total-cards-num');
     const stats = ankiEngine.getStats();
-    document.getElementById('anki-mastered-count').textContent = `${stats.mastered} Dominadas`;
 
     if (currentCardList.length === 0) {
       cardNumEl.textContent = '0';
       totalNumEl.textContent = '0';
-      document.getElementById('card-question-text').textContent = 'No hay fichas para este tema.';
+      document.getElementById('card-question-text').textContent = 'No hay tarjetas disponibles para este filtro.';
       document.getElementById('card-answer-text').textContent = '';
+      document.getElementById('card-topic-badge').textContent = 'Vacio';
+      document.getElementById('card-front-connectors').innerHTML = '';
+      document.getElementById('card-back-connectors').innerHTML = '';
+      document.getElementById('card-citation-box').textContent = '';
       return;
     }
 
-    cardNumEl.textContent = currentCardIndex + 1;
-    totalNumEl.textContent = currentCardList.length;
+    if (currentCardIndex >= currentCardList.length) {
+      currentCardIndex = 0;
+    }
 
     const card = currentCardList[currentCardIndex];
+    cardNumEl.textContent = (currentCardIndex + 1).toString();
+    totalNumEl.textContent = currentCardList.length.toString();
+    document.getElementById('anki-mastered-count').textContent = `${stats.mastered} Dominadas`;
 
-    // CONECTORES ARRIBA (Palabras Clave)
-    const frontConnContainer = document.getElementById('card-front-connectors');
-    const backConnContainer = document.getElementById('card-back-connectors');
-    frontConnContainer.innerHTML = '';
-    backConnContainer.innerHTML = '';
+    // Frente
+    document.getElementById('card-topic-badge').textContent = card.badge || card.topicName || 'General';
+    document.getElementById('card-question-text').textContent = card.question;
 
+    const frontConnEl = document.getElementById('card-front-connectors');
+    frontConnEl.innerHTML = '';
     if (card.connectors && card.connectors.length > 0) {
       card.connectors.forEach(conn => {
-        const shortKeyword = conn.split('-')[0].trim();
-        
-        const pillFront = document.createElement('span');
-        pillFront.className = 'connector-pill';
-        pillFront.textContent = shortKeyword;
-        frontConnContainer.appendChild(pillFront);
-
-        const pillBack = document.createElement('span');
-        pillBack.className = 'connector-pill';
-        pillBack.textContent = conn;
-        backConnContainer.appendChild(pillBack);
+        const tag = document.createElement('span');
+        tag.className = 'connector-tag';
+        tag.textContent = conn;
+        frontConnEl.appendChild(tag);
       });
     }
 
-    document.getElementById('card-topic-badge').textContent = card.topicName;
-    document.getElementById('card-back-badge').textContent = `${card.topicName} - Respuesta`;
-    document.getElementById('card-question-text').textContent = card.question;
+    // Reverso
+    document.getElementById('card-back-badge').textContent = card.badge || 'Respuesta';
     document.getElementById('card-answer-text').textContent = card.answer;
 
-    const cardImageView = document.getElementById('card-image-view');
-    if (card.image) {
-      cardImageView.src = card.image;
-      cardImageView.style.display = 'block';
-    } else {
-      cardImageView.style.display = 'none';
-      cardImageView.src = '';
+    const backConnEl = document.getElementById('card-back-connectors');
+    backConnEl.innerHTML = '';
+    if (card.connectors && card.connectors.length > 0) {
+      card.connectors.forEach(conn => {
+        const tag = document.createElement('span');
+        tag.className = 'connector-tag';
+        tag.textContent = conn;
+        backConnEl.appendChild(tag);
+      });
     }
 
+    // Código
     const codeContainer = document.getElementById('card-code-container');
     const codeText = document.getElementById('card-code-text');
     if (card.codeSnippet) {
@@ -237,66 +244,68 @@ document.addEventListener('DOMContentLoaded', () => {
       codeContainer.style.display = 'none';
     }
 
-    // REFERENCIA BIBLIOGRÁFICA ABAJO EN LETRAS PEQUEÑAS
-    const citationBox = document.getElementById('card-citation-box');
-    if (card.citation) {
-      citationBox.textContent = `Ref. CENEVAL: ${card.citation}`;
-      citationBox.style.display = 'block';
+    // Imagen
+    const imgView = document.getElementById('card-image-view');
+    if (card.image) {
+      imgView.src = card.image;
+      imgView.style.display = 'block';
     } else {
-      citationBox.style.display = 'none';
+      imgView.style.display = 'none';
     }
+
+    // Cita Bibliográfica CENEVAL ABAJO
+    document.getElementById('card-citation-box').textContent = card.citation ? `Ref. CENEVAL: ${card.citation}` : '';
   }
 
-  // Calificación SM-2
-  document.getElementById('btn-rate-hard').addEventListener('click', (e) => handleRating('hard', e));
-  document.getElementById('btn-rate-good').addEventListener('click', (e) => handleRating('good', e));
-  document.getElementById('btn-rate-easy').addEventListener('click', (e) => handleRating('easy', e));
+  // 7. Botones de Calificación Anki
+  document.querySelectorAll('.rate-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (currentCardList.length === 0) return;
 
-  function handleRating(grade, e) {
-    e.stopPropagation();
-    if (currentCardList.length === 0) return;
-    const currentCard = currentCardList[currentCardIndex];
-    ankiEngine.rateCard(currentCard.id, grade);
+      const grade = btn.getAttribute('data-grade');
+      const card = currentCardList[currentCardIndex];
+      ankiEngine.rateCard(card.id, grade);
 
-    currentCardIndex = (currentCardIndex + 1) % currentCardList.length;
-    renderCurrentCard();
-  }
+      currentCardIndex = (currentCardIndex + 1) % currentCardList.length;
+      renderCurrentCard();
+    });
+  });
 
   renderCurrentCard();
 
-  // 7. Lógica del Quiz Simulator
-  const quizTopicBadge = document.getElementById('quiz-topic-badge');
-  const quizScoreBadge = document.getElementById('quiz-score-badge');
+  // 8. Quiz Engine Simulator (3 Opciones con Explicación Completa)
   const quizQuestionText = document.getElementById('quiz-question-text');
+  const quizTopicBadge = document.getElementById('quiz-topic-badge');
   const quizOptionsContainer = document.getElementById('quiz-options-container');
   const quizExplanationBox = document.getElementById('quiz-explanation-box');
   const quizExplanationText = document.getElementById('quiz-explanation-text');
   const quizNextBtn = document.getElementById('quiz-next-btn');
-
-  let currentQuestionData = null;
+  const quizScoreBadge = document.getElementById('quiz-score-badge');
 
   function renderQuizQuestion() {
-    currentQuestionData = quizEngine.getCurrentQuestion();
     quizExplanationBox.classList.remove('visible');
     quizNextBtn.style.display = 'none';
     quizOptionsContainer.innerHTML = '';
 
+    const currentQuestionData = quizEngine.getCurrentQuestion();
     if (!currentQuestionData) {
       quizQuestionText.textContent = 'No hay preguntas disponibles.';
       return;
     }
 
+    quizTopicBadge.textContent = currentQuestionData.topicName || currentQuestionData.topic;
+    quizQuestionText.textContent = currentQuestionData.question;
+
     const stats = quizEngine.getScoreStats();
     quizScoreBadge.textContent = `Puntaje: ${stats.score} / ${stats.totalAnswered} (${stats.percentage}%)`;
-    quizTopicBadge.textContent = currentQuestionData.topicName;
-    quizQuestionText.textContent = currentQuestionData.question;
 
     const letters = ['A', 'B', 'C'];
     currentQuestionData.options.forEach((opt, idx) => {
       const btn = document.createElement('button');
       btn.className = 'quiz-option-btn';
       btn.innerHTML = `
-        <div class="quiz-option-prefix">${letters[idx]}</div>
+        <span class="quiz-option-letter">${letters[idx]}</span>
         <span>${opt.text}</span>
       `;
 
@@ -332,14 +341,16 @@ document.addEventListener('DOMContentLoaded', () => {
     renderQuizQuestion();
   });
 
-  // 8. Subida de Fotos
+  // 9. Subida de Fotos
   const photoTopicSelect = document.getElementById('photo-topic-select');
-  TOPICS_DATA.forEach(topic => {
-    const opt = document.createElement('option');
-    opt.value = topic.name;
-    opt.textContent = topic.name;
-    photoTopicSelect.appendChild(opt);
-  });
+  if (photoTopicSelect) {
+    TOPICS_DATA.forEach(topic => {
+      const opt = document.createElement('option');
+      opt.value = topic.name;
+      opt.textContent = topic.name;
+      photoTopicSelect.appendChild(opt);
+    });
+  }
 
   window.photoUploader = new PhotoUploader((newPhotoCard) => {
     loadUserCardsIntoAnki();
@@ -347,12 +358,14 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCurrentCard();
   });
 
-  // 9. Calculadora COCOMO
+  // 10. Calculadora COCOMO
   const cocomoCalcBtn = document.getElementById('cocomo-calc-btn');
   const cocomoKlocInput = document.getElementById('cocomo-kloc');
   const cocomoModeSelect = document.getElementById('cocomo-mode');
 
-  cocomoCalcBtn.addEventListener('click', runCocomoCalc);
+  if (cocomoCalcBtn) {
+    cocomoCalcBtn.addEventListener('click', runCocomoCalc);
+  }
 
   function runCocomoCalc() {
     const kloc = parseFloat(cocomoKlocInput.value) || 10;
@@ -371,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * VISUALIZADOR DE GRAFO NEURONAL 2D CANVAS CON COLORES PASTEL Y NODO ARRASTRABLE (DRAGGABLE)
+ * VISUALIZADOR DE GRAFO NEURONAL 2D CANVAS CON COLORES PASTEL, NODO ARRASTRABLE, FONDO DINÁMICO DE TEMA Y TEXTO HIPER NÍTIDO (NO BORROSO)
  */
 class ObsidianGraphRenderer {
   constructor(topicsData, allCards) {
@@ -384,15 +397,41 @@ class ObsidianGraphRenderer {
 
     this.pastelColors = ['#c084fc', '#6ee7b7', '#7dd3fc', '#fda4af', '#fcd34d'];
     this.selectedTopicId = null;
+    this.activeThemeColor = '#6366f1';
     this.nodes = [];
     this.edges = [];
     this.hoveredNode = null;
     this.draggedNode = null;
     this.isDragging = false;
+    this.dpr = window.devicePixelRatio || 1;
 
     this.initControls();
     this.bindEvents();
     this.animate();
+  }
+
+  hexToRgba(hex, alpha = 1) {
+    if (!hex) return `rgba(99, 102, 241, ${alpha})`;
+    if (hex.startsWith('#')) hex = hex.slice(1);
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    const num = parseInt(hex, 16);
+    if (isNaN(num)) return `rgba(99, 102, 241, ${alpha})`;
+    const r = (num >> 16) & 255;
+    const g = (num >> 8) & 255;
+    const b = num & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  updateThemeBackground() {
+    if (!this.container) return;
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const topicColor = this.activeThemeColor || '#6366f1';
+    const bgStart = this.hexToRgba(topicColor, isLight ? 0.22 : 0.35);
+    const bgMid = isLight ? '#f1f5f9' : '#0f172a';
+    const bgEnd = isLight ? '#e2e8f0' : '#060911';
+    
+    this.container.style.background = `radial-gradient(circle at 50% 45%, ${bgStart} 0%, ${bgMid} 70%, ${bgEnd} 100%)`;
+    this.container.style.borderColor = this.hexToRgba(topicColor, 0.4);
   }
 
   initControls() {
@@ -405,12 +444,19 @@ class ObsidianGraphRenderer {
       const btn = document.createElement('button');
       btn.className = 'pastel-topic-btn';
       btn.textContent = t.name;
-      btn.style.borderColor = this.pastelColors[idx % this.pastelColors.length];
+      const tColor = t.color || this.pastelColors[idx % this.pastelColors.length];
+      btn.style.borderColor = tColor;
       
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.pastel-topic-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.pastel-topic-btn').forEach(b => {
+          b.classList.remove('active');
+          b.style.backgroundColor = '';
+          b.style.color = '';
+        });
         btn.classList.add('active');
-        this.loadTopicGraph(t.id, this.pastelColors[idx % this.pastelColors.length]);
+        btn.style.backgroundColor = tColor;
+        btn.style.color = '#ffffff';
+        this.loadTopicGraph(t.id, tColor);
       });
       gridContainer.appendChild(btn);
     });
@@ -422,10 +468,11 @@ class ObsidianGraphRenderer {
 
   loadTopicGraph(topicId, themeColor) {
     this.selectedTopicId = topicId;
+    this.activeThemeColor = themeColor || '#6366f1';
     
-    // MUESTRA EL CONTENEDOR CANVAS SOLO TRAS HACER CLIC EN UN BOTÓN DE TEMA
     if (this.container) {
       this.container.classList.add('active');
+      this.updateThemeBackground();
     }
     
     this.popover.classList.remove('visible');
@@ -437,17 +484,17 @@ class ObsidianGraphRenderer {
     this.nodes = [];
     this.edges = [];
 
-    const width = this.canvas.width;
-    const height = this.canvas.height;
+    const width = this.cssWidth || 340;
+    const height = this.cssHeight || 480;
     const centerX = width / 2;
     const centerY = height / 2;
 
     const centerNode = {
       id: 'center_' + topicData.id,
       label: topicData.name,
-      shortLabel: topicData.name.substring(0, 18),
+      shortLabel: topicData.name,
       color: themeColor,
-      radius: 18,
+      radius: 20,
       x: centerX,
       y: centerY,
       isCenter: true
@@ -457,7 +504,7 @@ class ObsidianGraphRenderer {
     const cards = topicData.cards || [];
     cards.forEach((c, idx) => {
       const angle = (idx / cards.length) * Math.PI * 2;
-      const radiusDist = 120 + (idx % 2 === 0 ? 30 : -20);
+      const radiusDist = 130 + (idx % 2 === 0 ? 35 : -25);
       
       const words = c.question.split(' ');
       const shortLabel = words.slice(0, 3).join(' ');
@@ -470,7 +517,7 @@ class ObsidianGraphRenderer {
         citation: c.citation,
         connectors: c.connectors,
         color: this.pastelColors[(idx + 1) % this.pastelColors.length],
-        radius: 11,
+        radius: 12,
         x: centerX + Math.cos(angle) * radiusDist,
         y: centerY + Math.sin(angle) * radiusDist,
         isCenter: false
@@ -486,8 +533,17 @@ class ObsidianGraphRenderer {
   }
 
   resizeCanvas() {
-    this.canvas.width = this.container.clientWidth || 340;
-    this.canvas.height = this.container.clientHeight || 480;
+    if (!this.container) return;
+    const rect = this.container.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    this.dpr = dpr;
+    this.cssWidth = rect.width || 340;
+    this.cssHeight = rect.height || 480;
+
+    this.canvas.width = Math.round(this.cssWidth * dpr);
+    this.canvas.height = Math.round(this.cssHeight * dpr);
+    this.canvas.style.width = this.cssWidth + 'px';
+    this.canvas.style.height = this.cssHeight + 'px';
   }
 
   bindEvents() {
@@ -505,7 +561,7 @@ class ObsidianGraphRenderer {
       const pos = getPos(e);
       let found = null;
       this.nodes.forEach(n => {
-        if (Math.hypot(n.x - pos.x, n.y - pos.y) <= n.radius + 8) {
+        if (Math.hypot(n.x - pos.x, n.y - pos.y) <= n.radius + 10) {
           found = n;
         }
       });
@@ -527,7 +583,7 @@ class ObsidianGraphRenderer {
 
       let found = null;
       this.nodes.forEach(n => {
-        if (Math.hypot(n.x - pos.x, n.y - pos.y) <= n.radius + 8) {
+        if (Math.hypot(n.x - pos.x, n.y - pos.y) <= n.radius + 10) {
           found = n;
         }
       });
@@ -585,42 +641,81 @@ class ObsidianGraphRenderer {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     if (this.nodes.length > 0) {
+      this.ctx.save();
+      // ESCALADO DISPOSITIVO ALTA DEFINICIÓN (RETINA / HIDPI) - ELIMINA LO BORROSO
+      this.ctx.scale(this.dpr, this.dpr);
+
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      // Dibujar aristas / conectores
       this.edges.forEach(e => {
         this.ctx.beginPath();
         this.ctx.moveTo(e.source.x, e.source.y);
         this.ctx.lineTo(e.target.x, e.target.y);
-        this.ctx.strokeStyle = (this.hoveredNode === e.source || this.hoveredNode === e.target) ? '#c084fc' : 'rgba(192, 132, 252, 0.2)';
-        this.ctx.lineWidth = 1.5;
+        const isHovered = (this.hoveredNode === e.source || this.hoveredNode === e.target);
+        this.ctx.strokeStyle = isHovered 
+          ? (e.color || '#c084fc') 
+          : this.hexToRgba(e.color || '#c084fc', isLight ? 0.35 : 0.25);
+        this.ctx.lineWidth = isHovered ? 2.5 : 1.5;
         this.ctx.stroke();
       });
 
       const time = Date.now() * 0.0015;
       this.nodes.forEach((n, idx) => {
         if (!this.isDragging || this.draggedNode !== n) {
-          n.x += Math.sin(time + idx) * 0.25;
-          n.y += Math.cos(time + idx) * 0.25;
+          n.x += Math.sin(time + idx) * 0.22;
+          n.y += Math.cos(time + idx) * 0.22;
         }
 
+        // Halo de selección al pasar el cursor o dedo
         if (this.hoveredNode === n) {
           this.ctx.beginPath();
-          this.ctx.arc(n.x, n.y, n.radius + 6, 0, Math.PI * 2);
-          this.ctx.fillStyle = 'rgba(192, 132, 252, 0.25)';
+          this.ctx.arc(n.x, n.y, n.radius + 7, 0, Math.PI * 2);
+          this.ctx.fillStyle = this.hexToRgba(n.color, 0.35);
           this.ctx.fill();
         }
 
+        // Dibujo del nodo neuronal
         this.ctx.beginPath();
         this.ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         this.ctx.fillStyle = n.color;
         this.ctx.fill();
-        this.ctx.strokeStyle = '#090d16';
-        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = isLight ? '#ffffff' : '#090d16';
+        this.ctx.lineWidth = 2.5;
         this.ctx.stroke();
 
-        this.ctx.fillStyle = (this.hoveredNode === n) ? '#c084fc' : '#f8fafc';
-        this.ctx.font = n.isCenter ? 'bold 11px Inter' : '9px Inter';
+        // RENDERIZADO ULTRA NÍTIDO DE TEXTO (Pill de fondo + contraste vector)
+        const fontStr = n.isCenter ? 'bold 12px Inter, system-ui, sans-serif' : '600 10.5px Inter, system-ui, sans-serif';
+        this.ctx.font = fontStr;
+        const textWidth = this.ctx.measureText(n.shortLabel).width;
+        const textY = n.y + n.radius + 14;
+
+        // Fondo semi-transparente para legibilidad perfecta
+        this.ctx.fillStyle = isLight ? 'rgba(255, 255, 255, 0.88)' : 'rgba(9, 13, 22, 0.82)';
+        this.ctx.beginPath();
+        const pX = n.x - textWidth / 2 - 6;
+        const pY = textY - 9;
+        const pW = textWidth + 12;
+        const pH = 16;
+        
+        if (this.ctx.roundRect) {
+          this.ctx.roundRect(pX, pY, pW, pH, 4);
+        } else {
+          this.ctx.rect(pX, pY, pW, pH);
+        }
+        this.ctx.fill();
+        this.ctx.strokeStyle = this.hexToRgba(n.color, isLight ? 0.3 : 0.4);
+        this.ctx.lineWidth = 1;
+        this.ctx.stroke();
+
+        // Texto hiper nítido vectorizado
+        this.ctx.fillStyle = (this.hoveredNode === n) ? (isLight ? '#4f46e5' : '#c084fc') : (isLight ? '#0f172a' : '#ffffff');
         this.ctx.textAlign = 'center';
-        this.ctx.fillText(n.shortLabel, n.x, n.y + n.radius + 12);
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(n.shortLabel, n.x, textY - 1);
       });
+
+      this.ctx.restore();
     }
 
     requestAnimationFrame(() => this.animate());

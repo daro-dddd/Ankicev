@@ -453,21 +453,22 @@ main {
   box-shadow: 0 4px 12px rgba(192, 132, 252, 0.3);
 }
 
-/* EL CONTENEDOR CANVAS SOLO APARECE TRAS PULSAR UN BOTÓN */
 .canvas-graph-container {
-  display: none; /* Oculto inicialmente sin cuadro negro */
+  display: none;
   position: relative;
   width: 100%;
   height: 480px;
-  background: #060911;
+  background: radial-gradient(circle at 50% 45%, rgba(99, 102, 241, 0.3) 0%, #0f172a 70%, #060911 100%);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  transition: background 0.4s ease, border-color 0.4s ease;
   animation: fadeIn 0.3s ease;
 }
 
 .canvas-graph-container.active {
-  display: block; /* Visible al pulsar botón */
+  display: block;
 }
 
 #obsidian-graph-canvas {
