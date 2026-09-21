@@ -1,7 +1,7 @@
 /**
  * Controlador Principal de la Aplicación CENEVAL Master PWA
  * Pestaña Red Neuronal con Arrastre (Drag) y Colores Pastel.
- * Fichas Anki con Conectores Palabras Clave ARRIBA y Referencia ABAJO.
+ * Oculta el contenedor canvas hasta presionar un botón de tema.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -171,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (card.connectors && card.connectors.length > 0) {
       card.connectors.forEach(conn => {
-        // Formatear a palabras clave cortas
         const shortKeyword = conn.split('-')[0].trim();
         
         const pillFront = document.createElement('span');
@@ -353,7 +352,6 @@ class ObsidianGraphRenderer {
     this.ctx = this.canvas.getContext('2d');
     this.container = document.getElementById('canvas-graph-container');
     this.popover = document.getElementById('node-detail-popover');
-    this.emptyPrompt = document.getElementById('graph-empty-prompt');
 
     this.pastelColors = ['#c084fc', '#6ee7b7', '#7dd3fc', '#fda4af', '#fcd34d'];
     this.selectedTopicId = null;
@@ -364,7 +362,6 @@ class ObsidianGraphRenderer {
     this.isDragging = false;
 
     this.initControls();
-    this.resizeCanvas();
     this.bindEvents();
     this.animate();
   }
@@ -396,8 +393,14 @@ class ObsidianGraphRenderer {
 
   loadTopicGraph(topicId, themeColor) {
     this.selectedTopicId = topicId;
-    if (this.emptyPrompt) this.emptyPrompt.style.display = 'none';
+    
+    // MUESTRA EL CONTENEDOR CANVAS SOLO TRAS HACER CLIC EN UN BOTÓN DE TEMA
+    if (this.container) {
+      this.container.classList.add('active');
+    }
+    
     this.popover.classList.remove('visible');
+    this.resizeCanvas();
 
     const topicData = this.topicsData.find(t => t.id === topicId);
     if (!topicData) return;
@@ -410,7 +413,6 @@ class ObsidianGraphRenderer {
     const centerX = width / 2;
     const centerY = height / 2;
 
-    // Nodo central del Tema
     const centerNode = {
       id: 'center_' + topicData.id,
       label: topicData.name,
@@ -423,13 +425,11 @@ class ObsidianGraphRenderer {
     };
     this.nodes.push(centerNode);
 
-    // Nodos hijos de Fichas
     const cards = topicData.cards || [];
     cards.forEach((c, idx) => {
       const angle = (idx / cards.length) * Math.PI * 2;
       const radiusDist = 120 + (idx % 2 === 0 ? 30 : -20);
       
-      // Extraer etiqueta muy corta (2-3 palabras clave)
       const words = c.question.split(' ');
       const shortLabel = words.slice(0, 3).join(' ');
 
@@ -457,12 +457,8 @@ class ObsidianGraphRenderer {
   }
 
   resizeCanvas() {
-    this.canvas.width = this.container.clientWidth;
-    this.canvas.height = this.container.clientHeight;
-    if (this.selectedTopicId) {
-      const topic = this.topicsData.find(t => t.id === this.selectedTopicId);
-      if (topic) this.loadTopicGraph(topic.id, '#c084fc');
-    }
+    this.canvas.width = this.container.clientWidth || 340;
+    this.canvas.height = this.container.clientHeight || 480;
   }
 
   bindEvents() {
@@ -560,7 +556,6 @@ class ObsidianGraphRenderer {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     if (this.nodes.length > 0) {
-      // Dibujar conexiones sinápticas
       this.edges.forEach(e => {
         this.ctx.beginPath();
         this.ctx.moveTo(e.source.x, e.source.y);
@@ -570,7 +565,6 @@ class ObsidianGraphRenderer {
         this.ctx.stroke();
       });
 
-      // Movimiento flotante sutil
       const time = Date.now() * 0.0015;
       this.nodes.forEach((n, idx) => {
         if (!this.isDragging || this.draggedNode !== n) {
@@ -578,7 +572,6 @@ class ObsidianGraphRenderer {
           n.y += Math.cos(time + idx) * 0.25;
         }
 
-        // Resplandor si está en hover
         if (this.hoveredNode === n) {
           this.ctx.beginPath();
           this.ctx.arc(n.x, n.y, n.radius + 6, 0, Math.PI * 2);
@@ -586,7 +579,6 @@ class ObsidianGraphRenderer {
           this.ctx.fill();
         }
 
-        // Dibujar punto/neurona
         this.ctx.beginPath();
         this.ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         this.ctx.fillStyle = n.color;
@@ -595,7 +587,6 @@ class ObsidianGraphRenderer {
         this.ctx.lineWidth = 2;
         this.ctx.stroke();
 
-        // Etiqueta de texto CORTA (2-3 palabras clave)
         this.ctx.fillStyle = (this.hoveredNode === n) ? '#c084fc' : '#f8fafc';
         this.ctx.font = n.isCenter ? 'bold 11px Inter' : '9px Inter';
         this.ctx.textAlign = 'center';

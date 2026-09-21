@@ -21,7 +21,7 @@
   --pastel-rose: #fda4af;
   --pastel-peach: #fcd34d;
 
-  --shadow-lg: 0 12px 30px -5px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 12px 30px -5px rgba(0, 0, 0, 0.5);
   --radius-lg: 16px;
   --radius-md: 12px;
   --radius-sm: 8px;
@@ -32,8 +32,8 @@
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-card: #ffffff;
-  --bg-glass: rgba(255, 255, 255, 0.92);
-  --border-color: #cbd5e1;
+  --bg-glass: rgba(255, 255, 255, 0.95);
+  --border-color: #e2e8f0;
   --text-main: #0f172a;
   --text-muted: #64748b;
   --accent-primary: #4f46e5;
@@ -42,7 +42,7 @@
   --success: #059669;
   --warning: #d97706;
   --danger: #dc2626;
-  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* Resets */
@@ -87,8 +87,8 @@ header {
 }
 
 .brand-logo-img {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   object-fit: contain;
   background: transparent;
   border: none;
@@ -245,14 +245,14 @@ main {
 
 .card-back {
   transform: rotateY(180deg);
-  background: linear-gradient(180deg, var(--bg-card), var(--bg-secondary));
+  background: var(--bg-card);
   border-color: var(--accent-primary);
 }
 
 /* ESTRUCTURA LIMPIAS DE TARJETA:
    1. TOP: Conectores Palabras Clave
    2. MIDDLE: Pregunta y Respuesta
-   3. BOTTOM: Referencia Bibliográfica en letra pequeña desaturada
+   3. BOTTOM: Referencia Bibliográfica desaturada abajo
 */
 .card-top-box {
   margin-bottom: 14px;
@@ -277,6 +277,12 @@ main {
   transition: var(--transition);
 }
 
+[data-theme="light"] .connector-pill {
+  background: rgba(147, 51, 234, 0.08);
+  color: #7e22ce;
+  border-color: rgba(147, 51, 234, 0.25);
+}
+
 .connector-pill:hover {
   background: var(--pastel-lavender);
   color: #090d16;
@@ -284,7 +290,7 @@ main {
 
 .card-badge {
   display: inline-block;
-  background: rgba(79, 70, 229, 0.15);
+  background: rgba(79, 70, 229, 0.12);
   color: var(--accent-cyan);
   border: 1px solid rgba(56, 189, 248, 0.3);
   padding: 4px 10px;
@@ -293,6 +299,12 @@ main {
   font-weight: 700;
   text-transform: uppercase;
   margin-bottom: 10px;
+}
+
+[data-theme="light"] .card-badge {
+  background: rgba(3, 105, 161, 0.08);
+  color: #0369a1;
+  border-color: rgba(3, 105, 161, 0.25);
 }
 
 .card-question {
@@ -340,7 +352,7 @@ main {
   border: 1px solid var(--border-color);
 }
 
-/* REFERENCIA AL FINAL EN LETRAS PEQUEÑAS */
+/* REFERENCIA ABAJO EN LETRAS PEQUEÑAS */
 .card-bottom-citation {
   margin-top: auto;
   padding-top: 12px;
@@ -390,7 +402,7 @@ main {
 .rate-easy { background: var(--success); }
 .rate-easy:hover { filter: brightness(1.15); }
 
-/* PESTAÑA RED: VISUALIZADOR INTERACTIVO CON BOTONES Y NODOS DRAGGABLE */
+/* PESTAÑA RED: OCULTAR CONTENEDOR NEGRO HASTA PULSAR UN BOTÓN DE TEMA */
 .connectors-view {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -415,7 +427,6 @@ main {
   line-height: 1.4;
 }
 
-/* Botones pastel de temas en la pestaña RED */
 .pastel-topic-grid {
   display: flex;
   flex-wrap: wrap;
@@ -442,7 +453,9 @@ main {
   box-shadow: 0 4px 12px rgba(192, 132, 252, 0.3);
 }
 
+/* EL CONTENEDOR CANVAS SOLO APARECE TRAS PULSAR UN BOTÓN */
 .canvas-graph-container {
+  display: none; /* Oculto inicialmente sin cuadro negro */
   position: relative;
   width: 100%;
   height: 480px;
@@ -450,6 +463,11 @@ main {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   overflow: hidden;
+  animation: fadeIn 0.3s ease;
+}
+
+.canvas-graph-container.active {
+  display: block; /* Visible al pulsar botón */
 }
 
 #obsidian-graph-canvas {
@@ -463,18 +481,6 @@ main {
   cursor: grabbing;
 }
 
-.graph-empty-prompt {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  pointer-events: none;
-}
-
-/* Popover Informativo al tocar neurona */
 .node-detail-popover {
   position: absolute;
   bottom: 14px;
@@ -583,7 +589,7 @@ main {
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .quiz-option-btn:hover {
