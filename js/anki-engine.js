@@ -49,9 +49,26 @@ class AnkiEngine {
     }
   }
 
-  // Filtra tarjetas por tema ('all' o ID del tema)
+  // Filtra tarjetas por tema ('all', ID de Área o ID de Tema)
   getCardsForTopic(topicId = 'all') {
     if (topicId === 'all') return this.allCards;
+    
+    if (topicId === 'area_1') {
+      const area1Topics = ['requerimientos', 'user_story', 'documentacion'];
+      return this.allCards.filter(c => area1Topics.includes(c.topicId));
+    }
+    if (topicId === 'area_2') {
+      const area2Topics = ['arquitectura', 'interfaces_ux', 'movil', 'bd_relacional', 'bd_nosql'];
+      return this.allCards.filter(c => area2Topics.includes(c.topicId));
+    }
+    if (topicId === 'area_3') {
+      const area3Topics = ['logica', 'python', 'c', 'cpp', 'java', 'javascript', 'paradigmas', 'metodologias', 'calidad_cocomo'];
+      return this.allCards.filter(c => area3Topics.includes(c.topicId));
+    }
+    if (topicId === 'area_4') {
+      return this.allCards.filter(c => c.topicId === 'comprension_lectora');
+    }
+
     return this.allCards.filter(c => c.topicId === topicId);
   }
 

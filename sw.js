@@ -1,20 +1,20 @@
-const CACHE_NAME = 'ceneval-anki-v5';
+const CACHE_NAME = 'ceneval-anki-v10';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './manifest.json',
   './assets/logo.png',
-  './js/topics-data.js',
-  './js/anki-engine.js',
-  './js/photo-uploader.js',
-  './js/quiz-engine.js',
-  './js/cocomo-calculator.js',
-  './js/app.js'
+  './js/topics-data.js?v=10',
+  './js/anki-engine.js?v=10',
+  './js/photo-uploader.js?v=10',
+  './js/quiz-engine.js?v=10',
+  './js/cocomo-calculator.js?v=10',
+  './js/app.js?v=10'
 ];
 
 self.addEventListener('install', (event) => {
-  console.log('[PWA SW] Installing new cache version v2');
+  console.log('[PWA SW] Installing cache version v10');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
@@ -23,7 +23,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('[PWA SW] Activating new SW v2');
+  console.log('[PWA SW] Activating SW v10');
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
@@ -38,21 +38,24 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Network First strategy to guarantee instant updates on GitHub Pages
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Fetch fresh copy in background
-        fetch(event.request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, networkResponse);
-            });
-          }
-        }).catch(() => {});
-        return cachedResponse;
-      }
-      return fetch(event.request);
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
 });
+

@@ -98,12 +98,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 5. Renderizado de Filtros de Tema
+  // 5. Renderizado de Filtros por Área y Tema Individual
+  const allChip = document.querySelector('.topic-chip[data-topic="all"]');
+  if (allChip) {
+    allChip.textContent = 'Todos los Temas (100 Fichas)';
+    allChip.addEventListener('click', (e) => {
+      document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
+      allChip.classList.add('active');
+      activeTopicId = 'all';
+      currentCardList = ankiEngine.getCardsForTopic('all');
+      currentCardIndex = 0;
+      renderCurrentCard();
+    });
+  }
+
+  // Chips para las 4 Áreas Principales de CENEVAL EGEL Plus ISOFT
+  const cenevalAreas = [
+    { id: 'area_1', name: 'Área 1: Requerimientos & Documentación' },
+    { id: 'area_2', name: 'Área 2: Arquitectura, UX & Bases de Datos' },
+    { id: 'area_3', name: 'Área 3: Programación, Paradigmas & Calidad' },
+    { id: 'area_4', name: 'Área 4: Transversal Comprensión Lectora' }
+  ];
+
+  cenevalAreas.forEach(area => {
+    const areaChip = document.createElement('button');
+    areaChip.className = 'topic-chip area-chip';
+    areaChip.setAttribute('data-topic', area.id);
+    areaChip.textContent = area.name;
+    areaChip.addEventListener('click', () => {
+      document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
+      areaChip.classList.add('active');
+      activeTopicId = area.id;
+      currentCardList = ankiEngine.getCardsForTopic(activeTopicId);
+      currentCardIndex = 0;
+      renderCurrentCard();
+    });
+    topicFilterBar.appendChild(areaChip);
+  });
+
+  // Chips para cada uno de los 18 temas individuales
   TOPICS_DATA.forEach(topic => {
     const chip = document.createElement('button');
     chip.className = 'topic-chip';
     chip.setAttribute('data-topic', topic.id);
-    chip.textContent = topic.name;
+    chip.textContent = `${topic.name} (${topic.cards ? topic.cards.length : 0})`;
     chip.addEventListener('click', () => {
       document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
@@ -113,15 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
       renderCurrentCard();
     });
     topicFilterBar.appendChild(chip);
-  });
-
-  document.querySelector('.topic-chip[data-topic="all"]').addEventListener('click', (e) => {
-    document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
-    e.target.classList.add('active');
-    activeTopicId = 'all';
-    currentCardList = ankiEngine.getCardsForTopic('all');
-    currentCardIndex = 0;
-    renderCurrentCard();
   });
 
   // 6. Renderizado Limpio de Fichas Anki (Conectores ARRIBA, Referencia ABAJO)
