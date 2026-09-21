@@ -89,15 +89,16 @@ header {
 .brand-logo-img {
   width: 40px;
   height: 40px;
-  border-radius: var(--radius-md);
-  object-fit: cover;
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
+  object-fit: contain;
+  background: transparent;
+  border: none;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.4));
   transition: var(--transition);
 }
 
 .brand-logo-img:hover {
-  transform: scale(1.05);
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.7));
 }
 
 .brand-title h1 {
