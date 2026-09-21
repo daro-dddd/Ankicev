@@ -1,7 +1,7 @@
 /**
  * Controlador Principal de la Aplicación CENEVAL Master PWA
- * Maneja navegación por pestañas, cambio de tema formal, renderizado de tarjetas,
- * integración de apuntes subidos (archivo/link) y conectores conceptuales.
+ * Incluye Grafo Neuronal 2D Canvas Estilo Obsidian ("Vista Gráfica"),
+ * Repetición Espaciada Anki, Quiz Simulator y Calculadora COCOMO.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,12 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentCardIndex = 0;
   let isCardFlipped = false;
 
-  // 2. Cargar tarjetas personalizadas del usuario e integrarlas en el mazo Anki
+  // 2. Cargar tarjetas personalizadas del usuario en Anki
   function loadUserCardsIntoAnki() {
     try {
       const userCards = JSON.parse(localStorage.getItem('ceneval_user_photo_cards')) || [];
       userCards.forEach(uc => {
-        // Verificar si ya existe en el mazo
         if (!ankiEngine.allCards.find(c => c.id === uc.id)) {
           const customAnkiCard = {
             id: uc.id,
@@ -30,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             question: uc.title,
             answer: uc.notes,
             image: uc.image,
-            connectors: ['Apunte Guardado', uc.topic],
+            connectors: ['Apunte Guardado - Concepto Personal'],
             progress: {
               interval: 1,
               repetition: 0,
@@ -48,14 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadUserCardsIntoAnki();
 
-  // 3. Elementos DOM de Navegación y Tema
+  // 3. Manejo de Tema Claro / Oscuro
   const themeToggleBtn = document.getElementById('theme-toggle-btn');
   const themeText = document.getElementById('theme-text');
   const navItems = document.querySelectorAll('.nav-item');
   const tabPanels = document.querySelectorAll('.tab-panel');
   const topicFilterBar = document.getElementById('topic-filter-bar');
 
-  // 4. Manejo de Tema Claro / Oscuro
   const savedTheme = localStorage.getItem('ceneval_theme') || 'dark';
   setTheme(savedTheme);
 
@@ -75,7 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 5. Navegación por Pestañas
+  // 4. Navegación por Pestañas
+  let obsidianGraph = null;
+
   navItems.forEach(item => {
     item.addEventListener('click', () => {
       const targetTab = item.getAttribute('data-tab');
@@ -86,12 +86,18 @@ document.addEventListener('DOMContentLoaded', () => {
       item.classList.add('active');
       document.getElementById(targetTab).classList.add('active');
 
-      if (targetTab === 'tab-connectors') renderBrainMap();
+      if (targetTab === 'tab-connectors') {
+        if (!obsidianGraph) {
+          obsidianGraph = new ObsidianGraphRenderer(TOPICS_DATA, ankiEngine.allCards);
+        } else {
+          obsidianGraph.resizeCanvas();
+        }
+      }
       if (targetTab === 'tab-quiz') renderQuizQuestion();
     });
   });
 
-  // 6. Renderizado de Filtros de Tema (Sin Emojis)
+  // 5. Renderizado de Filtros de Tema
   TOPICS_DATA.forEach(topic => {
     const chip = document.createElement('button');
     chip.className = 'topic-chip';
@@ -117,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCurrentCard();
   });
 
-  // 7. Lógica de Volteo de Fichas Anki
+  // 6. Lógica de Volteo de Fichas Anki
   const flashcardWrapper = document.getElementById('flashcard-wrapper');
   const flashcard = document.getElementById('flashcard');
   const ankiControls = document.getElementById('anki-controls');
@@ -160,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('card-question-text').textContent = card.question;
     document.getElementById('card-answer-text').textContent = card.answer;
 
-    // Imagen si la tarjeta la incluye (para apuntes subidos por Link o Archivo)
     const cardImageView = document.getElementById('card-image-view');
     if (card.image) {
       cardImageView.src = card.image;
@@ -170,7 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
       cardImageView.src = '';
     }
 
-    // Snippet de Código
     const codeContainer = document.getElementById('card-code-container');
     const codeText = document.getElementById('card-code-text');
     if (card.codeSnippet) {
@@ -180,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
       codeContainer.style.display = 'none';
     }
 
-    // Conectores Mentales
     const connectorsList = document.getElementById('card-connectors-list');
     connectorsList.innerHTML = '';
     if (card.connectors && card.connectors.length > 0) {
@@ -190,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pill.textContent = conn;
         pill.addEventListener('click', (e) => {
           e.stopPropagation();
-          alert(`Conector Mental: Concepto asociado -> "${conn}".`);
+          alert(`Conector Mental: "${conn}".`);
         });
         connectorsList.appendChild(pill);
       });
@@ -216,36 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderCurrentCard();
 
-  // 8. Renderizado de Conectores Mentales
-  function renderBrainMap() {
-    const grid = document.getElementById('connector-map-grid');
-    grid.innerHTML = '';
-
-    TOPICS_DATA.forEach(t => {
-      const cardEl = document.createElement('div');
-      cardEl.className = 'map-card';
-      
-      let linksHTML = '';
-      t.cards.forEach(c => {
-        if (c.connectors) {
-          c.connectors.forEach(conn => {
-            linksHTML += `<div class="map-link-item"><span>${c.question.substring(0, 40)}...</span> <span>Conecta con: ${conn}</span></div>`;
-          });
-        }
-      });
-
-      cardEl.innerHTML = `
-        <div class="map-card-title">${t.name}</div>
-        <div class="map-card-desc">${t.description}</div>
-        <div class="map-links">
-          ${linksHTML || '<div class="map-link-item"><span>Fundamentos del tema</span></div>'}
-        </div>
-      `;
-      grid.appendChild(cardEl);
-    });
-  }
-
-  // 9. Lógica del Quiz Simulator (3 Opciones Separadas)
+  // 7. Lógica del Quiz Simulator
   const quizTopicBadge = document.getElementById('quiz-topic-badge');
   const quizScoreBadge = document.getElementById('quiz-score-badge');
   const quizQuestionText = document.getElementById('quiz-question-text');
@@ -313,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderQuizQuestion();
   });
 
-  // 10. Subida de Fotos y Creación de Ficha Anki
+  // 8. Subida de Fotos
   const photoTopicSelect = document.getElementById('photo-topic-select');
   TOPICS_DATA.forEach(topic => {
     const opt = document.createElement('option');
@@ -323,13 +297,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   window.photoUploader = new PhotoUploader((newPhotoCard) => {
-    // Cuando el usuario crea un apunte con foto o link, se integra inmediatamente en Anki
     loadUserCardsIntoAnki();
     currentCardList = ankiEngine.getCardsForTopic(activeTopicId);
     renderCurrentCard();
   });
 
-  // 11. Calculadora COCOMO
+  // 9. Calculadora COCOMO
   const cocomoCalcBtn = document.getElementById('cocomo-calc-btn');
   const cocomoKlocInput = document.getElementById('cocomo-kloc');
   const cocomoModeSelect = document.getElementById('cocomo-mode');
@@ -351,3 +324,254 @@ document.addEventListener('DOMContentLoaded', () => {
 
   runCocomoCalc();
 });
+
+/**
+ * VISUALIZADOR DE GRAFO NEURONAL 2D CANVAS (ESTILO OBSIDIAN GRAPH VIEW)
+ */
+class ObsidianGraphRenderer {
+  constructor(topicsData, allCards) {
+    this.topicsData = topicsData;
+    this.allCards = allCards;
+    this.canvas = document.getElementById('obsidian-graph-canvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.container = document.getElementById('canvas-graph-container');
+    this.popover = document.getElementById('node-detail-popover');
+    
+    this.activeTopicFilter = 'all';
+    this.nodes = [];
+    this.edges = [];
+    this.hoveredNode = null;
+    this.animId = null;
+
+    this.initGraphData();
+    this.initControls();
+    this.resizeCanvas();
+    this.bindEvents();
+    this.animate();
+  }
+
+  initGraphData() {
+    this.nodes = [];
+    this.edges = [];
+
+    // Nodos padre (Temas principales)
+    this.topicsData.forEach((t, i) => {
+      const angle = (i / this.topicsData.length) * Math.PI * 2;
+      const topicNode = {
+        id: 'topic_' + t.id,
+        type: 'topic',
+        topicId: t.id,
+        label: t.name,
+        color: t.color || '#06b6d4',
+        radius: 16,
+        x: 0,
+        y: 0,
+        baseAngle: angle,
+        vx: 0,
+        vy: 0,
+        cards: t.cards
+      };
+      this.nodes.push(topicNode);
+
+      // Nodos hijo (Fichas / Neuronas del tema)
+      t.cards.forEach((c, j) => {
+        const subAngle = angle + ((j - t.cards.length / 2) * 0.25);
+        const cardNode = {
+          id: c.id,
+          type: 'card',
+          topicId: t.id,
+          label: c.question,
+          answer: c.answer,
+          connectors: c.connectors,
+          color: '#6366f1',
+          radius: 9,
+          x: 0,
+          y: 0,
+          baseAngle: subAngle,
+          vx: 0,
+          vy: 0
+        };
+        this.nodes.push(cardNode);
+
+        // Conexión sináptica (Edge) entre tema y tarjeta
+        this.edges.push({
+          source: topicNode,
+          target: cardNode,
+          color: 'rgba(99, 102, 241, 0.25)'
+        });
+      });
+    });
+  }
+
+  initControls() {
+    const controlsContainer = document.getElementById('graph-topic-buttons');
+    if (!controlsContainer) return;
+
+    controlsContainer.innerHTML = '';
+    const allBtn = document.createElement('button');
+    allBtn.className = 'graph-btn active';
+    allBtn.textContent = 'Ver Toda la Red Neuronal';
+    allBtn.addEventListener('click', () => {
+      document.querySelectorAll('.graph-btn').forEach(b => b.classList.remove('active'));
+      allBtn.classList.add('active');
+      this.filterGraph('all');
+    });
+    controlsContainer.appendChild(allBtn);
+
+    this.topicsData.forEach(t => {
+      const btn = document.createElement('button');
+      btn.className = 'graph-btn';
+      btn.textContent = t.name;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.graph-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.filterGraph(t.id);
+      });
+      controlsContainer.appendChild(btn);
+    });
+
+    document.getElementById('popover-close-btn').addEventListener('click', () => {
+      this.popover.classList.remove('visible');
+    });
+  }
+
+  filterGraph(topicId) {
+    this.activeTopicFilter = topicId;
+    this.popover.classList.remove('visible');
+    this.resizeCanvas();
+  }
+
+  resizeCanvas() {
+    const width = this.container.clientWidth;
+    const height = this.container.clientHeight;
+
+    this.canvas.width = width;
+    this.canvas.height = height;
+
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const mainRadius = Math.min(width, height) * 0.32;
+
+    this.nodes.forEach(n => {
+      if (n.type === 'topic') {
+        n.x = centerX + Math.cos(n.baseAngle) * mainRadius;
+        n.y = centerY + Math.sin(n.baseAngle) * mainRadius;
+      } else {
+        const dist = mainRadius + 75;
+        n.x = centerX + Math.cos(n.baseAngle) * dist;
+        n.y = centerY + Math.sin(n.baseAngle) * dist;
+      }
+    });
+  }
+
+  bindEvents() {
+    this.canvas.addEventListener('mousemove', (e) => {
+      const rect = this.canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      let found = null;
+      this.getVisibleNodes().forEach(n => {
+        const dist = Math.hypot(n.x - mouseX, n.y - mouseY);
+        if (dist <= n.radius + 6) {
+          found = n;
+        }
+      });
+
+      this.hoveredNode = found;
+      this.canvas.style.cursor = found ? 'pointer' : 'crosshair';
+    });
+
+    this.canvas.addEventListener('click', (e) => {
+      if (this.hoveredNode) {
+        this.showNodePopover(this.hoveredNode);
+      }
+    });
+
+    window.addEventListener('resize', () => this.resizeCanvas());
+  }
+
+  showNodePopover(node) {
+    document.getElementById('popover-badge').textContent = node.type === 'topic' ? 'Tema Central' : 'Neurona / Ficha';
+    document.getElementById('popover-title').textContent = node.label;
+    document.getElementById('popover-desc').textContent = node.answer || `Presiona este tema central para enfocar sus neuronas de estudio asociadas.`;
+
+    const connContainer = document.getElementById('popover-connectors');
+    connContainer.innerHTML = '';
+    if (node.connectors) {
+      node.connectors.forEach(c => {
+        const pill = document.createElement('span');
+        pill.className = 'connector-pill';
+        pill.textContent = c;
+        connContainer.appendChild(pill);
+      });
+    }
+
+    this.popover.classList.add('visible');
+  }
+
+  getVisibleNodes() {
+    if (this.activeTopicFilter === 'all') return this.nodes;
+    return this.nodes.filter(n => n.topicId === this.activeTopicFilter);
+  }
+
+  getVisibleEdges() {
+    const visibleNodes = this.getVisibleNodes();
+    return this.edges.filter(e => visibleNodes.includes(e.source) && visibleNodes.includes(e.target));
+  }
+
+  animate() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    const visibleNodes = this.getVisibleNodes();
+    const visibleEdges = this.getVisibleEdges();
+
+    // Dibujar conexiones / sinapsis
+    visibleEdges.forEach(e => {
+      this.ctx.beginPath();
+      this.ctx.moveTo(e.source.x, e.source.y);
+      this.ctx.lineTo(e.target.x, e.target.y);
+      this.ctx.strokeStyle = (this.hoveredNode === e.source || this.hoveredNode === e.target) ? '#06b6d4' : e.color;
+      this.ctx.lineWidth = (this.hoveredNode === e.source || this.hoveredNode === e.target) ? 2 : 1;
+      this.ctx.stroke();
+    });
+
+    // Movimiento sutil flotante
+    const time = Date.now() * 0.0015;
+    visibleNodes.forEach((n, idx) => {
+      const offsetX = Math.sin(time + idx) * 0.4;
+      const offsetY = Math.cos(time + idx) * 0.4;
+
+      const drawX = n.x + offsetX;
+      const drawY = n.y + offsetY;
+
+      // Dibujar resplandor si hover
+      if (this.hoveredNode === n) {
+        this.ctx.beginPath();
+        this.ctx.arc(drawX, drawY, n.radius + 8, 0, Math.PI * 2);
+        this.ctx.fillStyle = 'rgba(6, 182, 212, 0.3)';
+        this.ctx.fill();
+      }
+
+      // Dibujar nodo
+      this.ctx.beginPath();
+      this.ctx.arc(drawX, drawY, n.radius, 0, Math.PI * 2);
+      this.ctx.fillStyle = n.color;
+      this.ctx.fill();
+      this.ctx.strokeStyle = '#ffffff';
+      this.ctx.lineWidth = 1.5;
+      this.ctx.stroke();
+
+      // Dibujar etiquetas de texto
+      this.ctx.fillStyle = (this.hoveredNode === n) ? '#06b6d4' : '#f8fafc';
+      this.ctx.font = n.type === 'topic' ? 'bold 12px Inter' : '10px Inter';
+      this.ctx.textAlign = 'center';
+
+      let shortLabel = n.label;
+      if (shortLabel.length > 25) shortLabel = shortLabel.substring(0, 22) + '...';
+      this.ctx.fillText(shortLabel, drawX, drawY + n.radius + 14);
+    });
+
+    this.animId = requestAnimationFrame(() => this.animate());
+  }
+}

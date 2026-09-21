@@ -44,7 +44,7 @@
     <!-- Barra de Filtros por Tema -->
     <div class="topic-filter-bar" id="topic-filter-bar">
       <button class="topic-chip active" data-topic="all">Todos los Temas</button>
-      <!-- Chips cargados por JS sin emojis -->
+      <!-- Chips cargados por JS -->
     </div>
 
     <!-- Pestaña 1: Fichas Anki -->
@@ -83,7 +83,7 @@
               <div class="connectors-box">
                 <div class="connectors-title">Conectores Conceptuales Asociados:</div>
                 <div class="connector-tags" id="card-connectors-list">
-                  <!-- Pills sin emojis -->
+                  <!-- Pills cargadas dinámicamente -->
                 </div>
               </div>
             </div>
@@ -108,15 +108,31 @@
       </div>
     </section>
 
-    <!-- Pestaña 2: Conectores Mentales -->
+    <!-- Pestaña 2: Red Neuronal de Conectores (Estilo Obsidian Graph View) -->
     <section id="tab-connectors" class="tab-panel">
       <div class="connectors-view">
         <div class="connectors-header">
-          <h2>Red de Conectores Conceptuales</h2>
-          <p>Relaciones cruzadas entre temas de la guía de examen CENEVAL para mejorar la retención de largo plazo.</p>
+          <h2>Red Neuronal de Conectores (Vista Gráfica Obsidian)</h2>
+          <p>Toca o presiona cualquier nodo/neurona central para desplegar sus ramas de conceptos conectados en el espacio 2D.</p>
         </div>
-        <div class="connector-map-grid" id="connector-map-grid">
-          <!-- Carga dinámica -->
+        
+        <!-- Filtro de botones de temas en el mapa -->
+        <div class="graph-controls" id="graph-topic-buttons">
+          <!-- Botones de filtro de temas -->
+        </div>
+
+        <!-- Contenedor del Grafo Interactivo Canvas -->
+        <div class="canvas-graph-container" id="canvas-graph-container">
+          <canvas id="obsidian-graph-canvas"></canvas>
+
+          <!-- Popover Informativo al tocar una neurona -->
+          <div class="node-detail-popover" id="node-detail-popover">
+            <button class="popover-close-btn" id="popover-close-btn">&times;</button>
+            <span class="card-badge" id="popover-badge">Tema</span>
+            <h3 id="popover-title">Título del Concepto</h3>
+            <p id="popover-desc">Descripción detallada...</p>
+            <div id="popover-connectors" class="connector-tags"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -131,9 +147,9 @@
 
         <h3 class="quiz-question-title" id="quiz-question-text">Cargando reactivo de examen...</h3>
 
-        <!-- Opciones con separación visual clara -->
+        <!-- Opciones separadas -->
         <div class="quiz-options" id="quiz-options-container">
-          <!-- 3 Opciones A, B, C -->
+          <!-- Opciones A, B, C -->
         </div>
 
         <!-- Retroalimentación -->
@@ -152,7 +168,6 @@
         <h2 style="font-size: 1.25rem; margin-bottom: 6px;">Apuntes y Fotos de Estudio</h2>
         <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px;">Suba una imagen local o pegue un enlace / URL directo (Imgur, ImgBB, etc.) para crear automáticamente una nueva tarjeta en su mazo Anki.</p>
 
-        <!-- Selección por archivo o URL -->
         <div class="form-group">
           <label for="photo-url-input">Opción A: Pegar Enlace / URL Público de Imagen (ImgBB, Imgur, etc.)</label>
           <input type="url" id="photo-url-input" class="form-input" placeholder="https://i.ibb.co/ejemplo/imagen.jpg">
@@ -191,10 +206,10 @@
       </div>
     </section>
 
-    <!-- Pestaña 5: COCOMO -->
+    <!-- Pestaña 5: Tutor COCOMO 1 & 2 -->
     <section id="tab-cocomo" class="tab-panel">
       <div class="cocomo-card">
-        <h2 style="font-size: 1.25rem; margin-bottom: 6px;">Calculadora & Tutor COCOMO I y II</h2>
+        <h2 style="font-size: 1.25rem; margin-bottom: 6px;">Calculadora & Tutor Didáctico COCOMO I y II</h2>
         <p style="font-size: 0.88rem; color: var(--text-muted);">Estimación formal de esfuerzo (Personas-Mes), tiempo de desarrollo y personal necesario.</p>
 
         <div class="cocomo-grid">
@@ -235,9 +250,21 @@
           </div>
         </div>
 
+        <!-- Explicación Sencilla de COCOMO I y II -->
+        <div class="cocomo-explanation-box">
+          <h4>💡 ¿Cómo funciona COCOMO I y COCOMO II en el CENEVAL?</h4>
+          <p><strong>COCOMO I (1981):</strong> Es un modelo matemático desarrollado por Barry Boehm para estimar costo, tiempo y personal. Utiliza la variable <code>KLOC</code> (Miles de Líneas de Código). Posee 3 modos:</p>
+          <ul style="padding-left: 20px; font-size: 0.88rem; color: var(--text-main); margin-bottom: 12px; line-height: 1.6;">
+            <li><strong>Orgánico:</strong> Proyectos pequeños, equipos experimentados y requerimientos flexibles. ($PM = 2.4 \cdot KLOC^{1.05}$).</li>
+            <li><strong>Semiacoplado:</strong> Proyectos medianos con mezcla de requerimientos rígidos y flexibles. ($PM = 3.0 \cdot KLOC^{1.12}$).</li>
+            <li><strong>Empotrado (Embedded):</strong> Proyectos complejos con restricciones de hardware estrictas. ($PM = 3.6 \cdot KLOC^{1.20}$).</li>
+          </ul>
+          <p><strong>COCOMO II (Evolución Moderna):</strong> En lugar de basarse únicamente en líneas de código (que cambian según si usas Python o C++), COCOMO II permite estimar mediante <strong>Puntos de Objeto</strong> (pantallas, reportes) y <strong>Puntos de Función</strong>, adaptándose a POO, componentes reutilizables y metodologías ágiles.</p>
+        </div>
+
         <!-- Desglose Matemático -->
-        <div style="margin-top: 24px; padding: 18px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-          <h4 style="color: var(--accent-cyan); margin-bottom: 10px; font-size: 0.95rem;">Desglose Matemático CENEVAL:</h4>
+        <div style="margin-top: 16px; padding: 18px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <h4 style="color: var(--accent-cyan); margin-bottom: 10px; font-size: 0.95rem;">Desglose Matemático CENEVAL Paso a Paso:</h4>
           <div id="cocomo-steps-list" style="font-size: 0.88rem; color: var(--text-main); line-height: 1.6;">
             <!-- Pasos -->
           </div>
@@ -247,7 +274,7 @@
 
   </main>
 
-  <!-- Barra Nav Inferior con Vector SVGs -->
+  <!-- Barra Nav Inferior -->
   <nav class="bottom-nav">
     <button class="nav-item active" data-tab="tab-anki">
       <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
@@ -255,7 +282,7 @@
     </button>
     <button class="nav-item" data-tab="tab-connectors">
       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-      <span>Conectores</span>
+      <span>Red Obsidian</span>
     </button>
     <button class="nav-item" data-tab="tab-quiz">
       <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>

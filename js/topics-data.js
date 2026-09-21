@@ -1,7 +1,6 @@
 /**
- * Base de Datos Oficial de Estudio CENEVAL de Ingeniería de Software (56 Fichas Completas)
- * Incluye conectores explicitados en formato "Concepto A - Concepto B - Categoría"
- * (ejemplo: "NoSQL - Documentos JSON", "Tablas con relación entre sí - Base de datos estructurada").
+ * Base de Datos Oficial de Estudio CENEVAL de Ingeniería de Software (66 Fichas Completas: Básico a Avanzado)
+ * Conectores explicitados formato "Concepto A - Concepto B - Categoría"
  */
 
 const TOPICS_DATA = [
@@ -17,7 +16,7 @@ const TOPICS_DATA = [
         topic: "Lógica de Programación",
         badge: "Propiedades Algorítmicas",
         question: "¿Qué es un algoritmo y cuáles son sus tres propiedades fundamentales obligatorias?",
-        answer: "Un algoritmo es un conjunto finito, ordenado y no ambiguo de instrucciones paso a paso para resolver un problema. Sus 3 propiedades obligatorias son: 1) Precisión (pasos definidos sin ambigüedad), 2) Definición (mismas entradas producen mismas salidas) y 3) Finitud (debe terminar en un número finito de pasos).",
+        answer: "Un algoritmo es una secuencia finita, ordenada y no ambigua de pasos. Sus 3 propiedades son: 1) Precisión, 2) Definición y 3) Finitud.",
         codeSnippet: "// Pseudocódigo CENEVAL:\nALGORITMO EsPar\n  ENTRADA: entero n\n  SI (n MOD 2 == 0) ENTONCES\n    IMPRIMIR 'Par'\n  SINO\n    IMPRIMIR 'Impar'\n  FIN_SI\nFIN_ALGORITMO",
         connectors: ["Algoritmo - Entrada/Salida definida - Diagrama de Actividades", "Precisión y Finitud - Pensamiento Algorítmico - Estructuras de Control"]
       },
@@ -26,26 +25,26 @@ const TOPICS_DATA = [
         topic: "Lógica de Programación",
         badge: "Estructuras Repetitivas",
         question: "¿Cuál es la diferencia crítica entre un ciclo Mientras (While) y un ciclo Hacer-Mientras (Do-While)?",
-        answer: "El ciclo Mientras evalúa la condición al INICIO, por lo que puede ejecutarse 0 veces si la condición es falsa desde el comienzo. El ciclo Hacer-Mientras evalúa la condición al FINAL de la instrucción, garantizando que el bloque de código se ejecute AL MENOS 1 VEZ obligatoriamente.",
-        codeSnippet: "// C / Java / C++\ndo {\n    solicitarDato();\n} while (datoValido == false);",
+        answer: "El ciclo Mientras evalúa la condición al INICIO (puede ejecutarse 0 veces). El ciclo Hacer-Mientras evalúa al FINAL, garantizando al menos 1 ejecución obligatoria.",
+        codeSnippet: "do {\n    solicitarDato();\n} while (datoValido == false);",
         connectors: ["Ciclo While - Evaluación al inicio - 0 ejecuciones posibles", "Ciclo Do-While - Evaluación al final - Al menos 1 ejecución"]
       },
       {
         id: "log_3",
         topic: "Lógica de Programación",
         badge: "Tablas de Verdad",
-        question: "¿Cómo se evalúa la jerarquía de operadores lógicos y relacionales en una expresión?",
-        answer: "La precedencia estricta es: 1) Paréntesis `()`, 2) Operadores aritméticos (`*`, `/`, `MOD`, `+`, `-`), 3) Relacionales (`>`, `<`, `>=`, `<=`, `==`, `!=`), 4) NOT (`!`), 5) AND (`&&`), 6) OR (`||`). En AND ambas condiciones deben ser verdaderas; en OR basta con que una lo sea.",
-        codeSnippet: "Expresión: (8 > 5) AND NOT(3 == 4) OR (10 < 2)\nEvaluación: Verdadero AND Verdadero OR Falso --> VERDADERO",
+        question: "¿Cómo se evalúa la jerarquía de operadores lógicos y relacionales?",
+        answer: "Precedencia: 1) Paréntesis, 2) Aritméticos, 3) Relacionales, 4) NOT, 5) AND, 6) OR. En AND ambos deben ser verdaderos; en OR basta uno.",
+        codeSnippet: "(8 > 5) AND NOT(3 == 4) OR (10 < 2) --> VERDADERO",
         connectors: ["Operadores Lógicos - Precedencia AND/OR/NOT - Tablas de Verdad", "Evaluación de Expresiones - Condicionales - Filtros SQL WHERE"]
       },
       {
         id: "log_4",
         topic: "Lógica de Programación",
         badge: "Estructuras de Datos Estáticas",
-        question: "¿Qué es un Arreglo (Array) y cómo se realiza el acceso a sus elementos en memoria?",
-        answer: "Un arreglo es una colección contigua de elementos del mismo tipo de dato almacenados en posiciones secuenciales de memoria. El acceso a cualquier elemento se realiza en tiempo constante O(1) mediante su índice numérico (basado en cero).",
-        codeSnippet: "int numeros[5] = {10, 20, 30, 40, 50};\nint primerElemento = numeros[0]; // Acceso directo O(1)",
+        question: "¿Qué es un Arreglo (Array) y cómo se realiza el acceso a sus elementos?",
+        answer: "Colección contigua de elementos del mismo tipo. El acceso es directo en tiempo constante O(1) por su índice numérico basado en cero.",
+        codeSnippet: "int numeros[5] = {10, 20, 30, 40, 50};\nint val = numeros[0];",
         connectors: ["Arreglo Unidimensional - Acceso por índice O(1) - Estructura de Datos Estática", "Memoria Contigua - Indexación Cero - Vectores"]
       },
       {
@@ -53,9 +52,27 @@ const TOPICS_DATA = [
         topic: "Lógica de Programación",
         badge: "Modularidad y Parámetros",
         question: "¿Cuál es la diferencia entre el paso de parámetros por Valor y por Referencia?",
-        answer: "En el paso por Valor, la función recibe una COPIA del dato original; los cambios dentro de la función no afectan la variable externa. En el paso por Referencia, la función recibe la DIRECCIÓN DE MEMORIA de la variable original, por lo que cualquier modificación altera directamente el dato externo.",
-        codeSnippet: "void modificar(int *x) { *x = 99; } // Paso por referencia en C",
+        answer: "Por Valor pasa una COPIA (no altera el dato original). Por Referencia pasa la DIRECCIÓN DE MEMORIA (modifica directamente el dato original).",
+        codeSnippet: "void modificar(int *x) { *x = 99; }",
         connectors: ["Funciones - Paso por Valor vs Referencia - Pila de Llamadas Call Stack", "Modificación de Memoria - Punteros - Parámetros de Salida"]
+      },
+      {
+        id: "log_6",
+        topic: "Lógica de Programación",
+        badge: "Tipos de Datos Primitivos",
+        question: "¿Cuáles son los 4 tipos de datos primitivos universales en programación?",
+        answer: "1) Entero (sin decimales), 2) Real/Flotante (con decimales), 3) Caracter (un solo símbolo ASCII/Unicode), 4) Booleano (valores de verdad: verdadero o falso).",
+        codeSnippet: "entero x = 10;\nreal pi = 3.1416;\nbooleano activo = verdadero;",
+        connectors: ["Tipos Primitivos - Entero Flotante Caracter Booleano - Memoria de Datos", "Declaración de Variables - Asignación - Tipado Estático y Dinámico"]
+      },
+      {
+        id: "log_7",
+        topic: "Lógica de Programación",
+        badge: "Matrices Bidimensionales",
+        question: "¿Qué es una Matriz Bidimensional y cómo se recorre mediante bucles anidados?",
+        answer: "Es una estructura de tabla con filas (i) y columnas (j). Se recorre con un ciclo externo para las filas y un ciclo interno anidado para las columnas.",
+        codeSnippet: "for (int i=0; i<filas; i++) {\n  for (int j=0; j<cols; j++) {\n    matriz[i][j] = 0;\n  }\n}",
+        connectors: ["Matriz Bidimensional - Filas y Columnas - Arreglos Anidados", "Ciclos Anidados - Recorrido de Matrices - Algoritmos de Tablas"]
       }
     ],
     quizzes: [
@@ -81,7 +98,7 @@ const TOPICS_DATA = [
         topic: "Python",
         badge: "Mutabilidad de Estructuras",
         question: "¿Cuál es la diferencia técnica entre Listas, Tuplas y Diccionarios en Python?",
-        answer: "Las Listas `[ ]` son secuencias ordenadas y MUTABLES. Las Tuplas `( )` son secuencias ordenadas e INMUTABLES (no pueden alterarse tras crearse, optimizando memoria). Los Diccionarios `{ }` son colecciones MUTABLES de pares Clave-Valor no ordenados.",
+        answer: "Listas `[ ]`: mutables ordenadas. Tuplas `( )`: inmutables ordenadas (ahorran memoria). Diccionarios `{ }`: mutables clave-valor.",
         codeSnippet: "lista = [10, 20]\ntupla = (10, 20)\ndiccionario = {'clave': 'valor'}",
         connectors: ["Python Listas - Mutabilidad - Operaciones Append/Pop", "Python Tuplas - Inmutabilidad - Optimización de Memoria"]
       },
@@ -90,25 +107,25 @@ const TOPICS_DATA = [
         topic: "Python",
         badge: "POO - Libro Eric Matthes",
         question: "¿Cómo funciona la inicialización de clases con __init__ y para qué sirve self?",
-        answer: "El método `__init__(self, ...)` es el constructor de la clase. Se ejecuta automáticamente al instanciar un objeto. El argumento `self` es una referencia explícita a la instancia actual del objeto para acceder a sus atributos y métodos.",
+        answer: "`__init__(self, ...)` es el constructor. `self` es la referencia a la instancia actual del objeto para acceder a sus atributos.",
         codeSnippet: "class Auto:\n    def __init__(self, marca):\n        self.marca = marca",
         connectors: ["Python __init__ - Método Constructor - Atributos de Instancia", "Self - Instancia Actual del Objeto - POO en Python"]
       },
       {
         id: "py_3",
         topic: "Python",
-        badge: "Manejo de Archivos y Contexto",
+        badge: "Manejo de Archivos",
         question: "¿Por qué se recomienda utilizar 'with open()' al manipular archivos en Python?",
-        answer: "El bloque `with` es un Context Manager que garantiza el cierre automático del archivo al finalizar el bloque de código, previniendo fuga de recursos del sistema operacional o corrupción de datos.",
+        answer: "El bloque `with` es un Context Manager que garantiza el cierre automático del archivo al finalizar el bloque, previniendo fuga de recursos.",
         codeSnippet: "with open('datos.txt', 'r') as f:\n    contenido = f.read()",
         connectors: ["Context Manager - Administrador de Recursos - Cierre automático de archivos", "Manejo de Archivos - Lectura/Escritura Segura - Excepciones en Python"]
       },
       {
         id: "py_4",
         topic: "Python",
-        badge: "Sintaxis Avanzada",
-        question: "¿Qué es una Comprensión de Listas (List Comprehension) en Python y cuál es su sintaxis?",
-        answer: "Es una forma concisa y elegante de crear listas a partir de iterables existentes en una sola línea de código, aplicando transformaciones o filtros condicionales.",
+        badge: "Comprensión de Listas",
+        question: "¿Qué es una Comprensión de Listas (List Comprehension) en Python?",
+        answer: "Sintaxis concisa para crear y filtrar listas a partir de iterables en una sola línea de código.",
         codeSnippet: "cuadrados = [x**2 for x in range(10) if x % 2 == 0]",
         connectors: ["List Comprehension - Sintaxis Concisa - Filtrado y Mapeo en Python", "Iterables - Programación Funcional - Listas Dinámicas"]
       },
@@ -117,9 +134,18 @@ const TOPICS_DATA = [
         topic: "Python",
         badge: "Manejo de Excepciones",
         question: "¿Cómo funciona el bloque try / except / else / finally en Python?",
-        answer: "`try` contiene el código propenso a errores. `except` captura y maneja la excepción. `else` se ejecuta si NO hubo ningún error. `finally` se ejecuta SIEMPRE obligatoriamente para limpiar recursos.",
-        codeSnippet: "try:\n    r = 10 / 0\nexcept ZeroDivisionError:\n    print('Error de división')\nfinally:\n    print('Bloque final ejecutado')",
+        answer: "`try` prueba código, `except` captura errores, `else` corre si no hubo error, `finally` se ejecuta SIEMPRE obligatoriamente.",
+        codeSnippet: "try:\n    r = 10 / 0\nexcept ZeroDivisionError:\n    print('Error')\nfinally:\n    print('Fin')",
         connectors: ["Manejo de Excepciones - Captura de Errores - Bloque Finally Garantizado", "ZeroDivisionError - Control de Fluxo de Errores - Robustece de Software"]
+      },
+      {
+        id: "py_6",
+        topic: "Python",
+        badge: "Slicing Avanzado",
+        question: "¿Cómo funciona el rebanado de secuencias lista[inicio:fin:paso] en Python?",
+        answer: "Permite extraer sub-secuencias. `paso` negativo como `[::-1]` invierte completamente la cadena o lista.",
+        codeSnippet: "texto = 'CENEVAL'\nprint(texto[::-1]) # Imprime 'LAVENEC'",
+        connectors: ["Slicing Python - Rebanado de Cadenas - Inversión de Secuencia", "Parámetro Paso - Rebanado Avanzado - Indexación Negativa"]
       }
     ],
     quizzes: [
@@ -145,8 +171,8 @@ const TOPICS_DATA = [
         topic: "Lenguaje C",
         badge: "Punteros y Memoria",
         question: "¿Cuál es la función del operador & y del operador * en C?",
-        answer: "El operador `&` (referencia) obtiene la dirección en memoria RAM de una variable. El operador `*` (desreferencia) accede o modifica el valor almacenado en la dirección apuntada por un puntero.",
-        codeSnippet: "int num = 50;\nint *ptr = &num;\n*ptr = 100; // Modifica num directamente",
+        answer: "`&` (referencia) obtiene la dirección de memoria. `*` (desreferencia) accede o modifica el valor en la dirección apuntada.",
+        codeSnippet: "int num = 50;\nint *ptr = &num;\n*ptr = 100;",
         connectors: ["Operador & - Dirección de Memoria RAM - Referencia en C", "Operador * - Desreferencia - Acceso al Valor Puntero"]
       },
       {
@@ -154,7 +180,7 @@ const TOPICS_DATA = [
         topic: "Lenguaje C",
         badge: "Gestión Dinámica de Memoria",
         question: "¿Qué realizan las funciones malloc(), calloc() y free() en C?",
-        answer: "`malloc(bytes)` asigna memoria dinámica en el Heap sin inicializar. `calloc(n, size)` asigna memoria e inicializa los bytes en cero. `free(ptr)` libera el bloque asignado para evitar Memory Leaks.",
+        answer: "`malloc` asigna memoria en el Heap sin limpiar. `calloc` asigna e inicializa en cero. `free` libera memoria para evitar Memory Leaks.",
         codeSnippet: "int *arr = (int*) malloc(5 * sizeof(int));\nfree(arr);",
         connectors: ["Heap - malloc y calloc - Reserva Dinámica en C", "Memory Leak - Función free() - Liberación de Memoria"]
       },
@@ -163,8 +189,8 @@ const TOPICS_DATA = [
         topic: "Lenguaje C",
         badge: "Estructuras compuestas",
         question: "¿Qué es una struct en C y cómo se accede a sus miembros con un puntero?",
-        answer: "Una `struct` agrupa variables de diferentes tipos de datos bajo un mismo nombre. Cuando se usa un puntero a una estructura, se utiliza el operador flecha `->` para acceder a sus campos.",
-        codeSnippet: "struct Persona { char nombre[30]; int edad; };\nstruct Persona *p = &persona1;\np->edad = 25; // Acceso con operador flecha",
+        answer: "Agrupa variables de diferentes tipos bajo un nombre. Con punteros a `struct` se usa el operador flecha `->` para acceder a campos.",
+        codeSnippet: "struct Persona { char nombre[30]; int edad; };\nstruct Persona *p = &p1;\np->edad = 25;",
         connectors: ["Struct en C - Agrupación de Variables - Operador Flecha ->", "Punteros a Estructuras - Registros de Datos - Memoria en C"]
       },
       {
@@ -172,9 +198,18 @@ const TOPICS_DATA = [
         topic: "Lenguaje C",
         badge: "Cadenas de Caracteres",
         question: "¿Cómo se representan las cadenas de texto en C y qué es el caracter nulo \\0?",
-        answer: "En C las cadenas son arreglos de caracteres `char[]` terminados obligatoriamente por el caracter nulo `\\0` (ASCII 0), el cual indica el final de la cadena a funciones como `printf` o `strlen`.",
-        codeSnippet: "char saludo[] = \"Hola\"; // Internamente: {'H','o','l','a','\\0'}",
+        answer: "Son arreglos `char[]` terminados obligatoriamente por el caracter nulo `\\0` (ASCII 0) que indica el final a las funciones.",
+        codeSnippet: "char saludo[] = \"Hola\";",
         connectors: ["Cadenas en C - Arreglo de Caracteres - Caracter Nulo \\0", "strlen y strcpy - Terminación Nula - Buffers de Memoria"]
+      },
+      {
+        id: "c_5",
+        topic: "Lenguaje C",
+        badge: "Manejo de Archivos en C",
+        question: "¿Qué funciones se emplean para abrir y cerrar archivos en C?",
+        answer: "`fopen(\"archivo.txt\", \"r\")` abre un archivo devolviendo un puntero `FILE*`. `fclose(fp)` cierra el archivo liberando el buffer del SO.",
+        codeSnippet: "FILE *fp = fopen(\"apuntes.txt\", \"r\");\nif (fp != NULL) fclose(fp);",
+        connectors: ["Archivos en C - FILE Puntero - fopen y fclose", "Modos de Apertura - Lectura y Escritura - Buffers en C"]
       }
     ],
     quizzes: [
@@ -200,7 +235,7 @@ const TOPICS_DATA = [
         topic: "Lenguaje C++",
         badge: "Destructores y RAII",
         question: "¿Qué es un Destructor en C++ y cuándo se ejecuta?",
-        answer: "Es un método especial de clase precedido por la virgulilla `~`. Se invoca automáticamente cuando un objeto sale de ámbito o se destruye con `delete`, liberando recursos asignados.",
+        answer: "Método especial precedido por `~`. Se invoca automáticamente al salir de ámbito o usar `delete`, liberando recursos bajo RAII.",
         codeSnippet: "class Archivo {\npublic:\n    ~Archivo() { cerrar(); }\n};",
         connectors: ["Destructor ~Clase - Liberación Automática - Gestión RAII en C++", "Gestión de Recursos - Salida de Ámbito - Sobrecarga de Clases"]
       },
@@ -209,7 +244,7 @@ const TOPICS_DATA = [
         topic: "Lenguaje C++",
         badge: "Sobrecarga de Métodos",
         question: "¿Qué es la Sobrecarga de Funciones y Operadores en C++?",
-        answer: "Permite definir múltiples funciones con el mismo nombre en la misma clase siempre que difieran en el número o tipo de parámetros (firma), resolviéndose en tiempo de compilación.",
+        answer: "Permite definir múltiples funciones con el mismo nombre en la clase mientras difieran en el número o tipo de parámetros (firma).",
         codeSnippet: "int sumar(int a, int b);\ndouble sumar(double a, double b);",
         connectors: ["Sobrecarga - Polimorfismo Estático - Firmas de Métodos Distintas", "Firma de Funciones - Compilación C++ - Reutilización de Nombres"]
       },
@@ -218,8 +253,8 @@ const TOPICS_DATA = [
         topic: "Lenguaje C++",
         badge: "Referencias vs Punteros",
         question: "¿Cuál es la diferencia entre una Referencia (type &ref) y un Puntero (type *ptr) en C++?",
-        answer: "Una referencia es un alias inmutable para una variable existente que no puede ser nula ni reasignada. Un puntero almacena una dirección de memoria, puede ser nulo (`nullptr`) y reasignable.",
-        codeSnippet: "int x = 10;\nint &ref = x; // Alias directo de x\nint *ptr = &x; // Puntero a x",
+        answer: "Referencia: alias inmutable para una variable (no puede ser nula). Puntero: almacena dirección de memoria, reasignable y puede ser nulo.",
+        codeSnippet: "int x = 10;\nint &ref = x;\nint *ptr = &x;",
         connectors: ["Referencias C++ - Alias de Memoria - Sin desreferencia explícita", "Punteros vs Referencias - Seguridad de Memoria - Parámetros C++"]
       },
       {
@@ -227,8 +262,8 @@ const TOPICS_DATA = [
         topic: "Lenguaje C++",
         badge: "Librería Estándar STL",
         question: "¿Qué es std::vector en la librería STL de C++?",
-        answer: "Es una plantilla de contenedor dinámico que administra un arreglo de tamaño variable en memoria contigua, ajustando automáticamente su capacidad según se inserten elementos.",
-        codeSnippet: "#include <vector>\nstd::vector<int> nums = {1, 2, 3};\nnums.push_back(4);",
+        answer: "Plantilla de contenedor dinámico que administra un arreglo de tamaño variable en memoria contigua.",
+        codeSnippet: "std::vector<int> nums = {1, 2, 3};\nnums.push_back(4);",
         connectors: ["STL C++ - std::vector - Plantillas Genéricas de Datos", "Contenedores Dinámicos - Push Back - Memoria Contigua STL"]
       }
     ],
@@ -255,7 +290,7 @@ const TOPICS_DATA = [
         topic: "Java",
         badge: "Arquitectura JVM",
         question: "¿Qué es la JVM y cómo funciona la portabilidad del Bytecode?",
-        answer: "El compilador `javac` traduce código `.java` a un lenguaje intermedio denominado **Bytecode** (`.class`). La **JVM** ejecuta este Bytecode interpretándolo o mediante JIT para el sistema operativo host.",
+        answer: "`javac` compila a Bytecode `.class`. La JVM ejecuta este Bytecode en cualquier sistema operativo host (portabilidad).",
         codeSnippet: "Código.java -> [javac] -> Código.class -> [JVM] -> Ejecución Nativa",
         connectors: ["JVM - Bytecode .class - Compilación JIT e Independencia de Plataforma", "Portabilidad Java - Runtime Environment - Ejecución en cualquier SO"]
       },
@@ -264,7 +299,7 @@ const TOPICS_DATA = [
         topic: "Java",
         badge: "Interfaces vs Clases Abstractas",
         question: "¿Diferencia fundamental entre Interface y Abstract Class en Java?",
-        answer: "Una `Interface` define un contrato puro de métodos que una clase implementa (`implements`), permitiendo herencia múltiple de interfaces. Una `Abstract Class` permite métodos implementados y abstractos, pero sólo admite herencia simple (`extends`).",
+        answer: "Interface: contrato puro (`implements`), herencia múltiple. Abstract Class: admite código y métodos abstractos (`extends`), herencia simple.",
         codeSnippet: "interface Volador { void volar(); }\nclass Ave implements Volador { public void volar() {} }",
         connectors: ["Interface Java - Contrato Puro de Métodos - Herencia Múltiple de Interfaces", "Clase Abstracta - Reutilización de Código - Herencia Simple"]
       },
@@ -272,18 +307,18 @@ const TOPICS_DATA = [
         id: "java_3",
         topic: "Java",
         badge: "Modificadores Clave",
-        question: "¿Para qué sirve la palabra clave 'final' en variables, métodos y clases en Java?",
-        answer: "En variables: las convierte en constantes inmodificables. En métodos: impide que sean sobrescritos por subclases. En clases: impide completamente que la clase sea heredada.",
-        codeSnippet: "public final class Constantes {\n    public static final double PI = 3.14159;\n}",
+        question: "¿Para qué sirve la palabra clave 'final' en Java?",
+        answer: "En variables: constantes. En métodos: prohíbe sobrescritura por subclases. En clases: prohíbe herencia completamente.",
+        codeSnippet: "public final class Constantes { public static final double PI = 3.14159; }",
         connectors: ["Palabra final - Clases Invariables - Constantes y Métodos Inmodificables", "Modificadores Java - Restricción de Herencia - Seguridad de Código"]
       },
       {
         id: "java_4",
         topic: "Java",
         badge: "Framework de Colecciones",
-        question: "¿Cuáles son las diferencias entre List, Set y Map en Java Collections?",
-        answer: "`List` es una colección ordenada que admite elementos duplicados. `Set` es una colección de elementos únicos (sin duplicados). `Map` almacena datos en pares clave-valor unívocos.",
-        codeSnippet: "List<String> lista = new ArrayList<>();\nSet<Integer> conjunto = new HashSet<>();\nMap<String, String> mapa = new HashMap<>();",
+        question: "¿Cuáles son las diferencias entre List, Set y Map en Java?",
+        answer: "`List`: ordenada con duplicados. `Set`: elementos únicos sin duplicados. `Map`: almacena pares clave-valor.",
+        codeSnippet: "List<String> l = new ArrayList<>();\nSet<Integer> s = new HashSet<>();",
         connectors: ["Java Collections - List vs Set vs Map - Estructuras de Datos en Java", "ArrayList y HashMap - Colecciones Estándar - Manejo de Datos Java"]
       }
     ],
@@ -310,7 +345,7 @@ const TOPICS_DATA = [
         topic: "JavaScript",
         badge: "Event Loop y Promesas",
         question: "¿Qué es el Event Loop y cuáles son los 3 estados de una Promesa en JS?",
-        answer: "El Event Loop coordina la pila de ejecución monofilar con la cola de tareas asíncronas. Una Promesa representa un valor futuro con 3 estados: 1) `Pending`, 2) `Fulfilled` (resuelta), 3) `Rejected` (rechazada).",
+        answer: "Event Loop coordina la pila monofilar con la cola de tareas. Promesa: 1) `Pending`, 2) `Fulfilled` (resuelta), 3) `Rejected` (error).",
         codeSnippet: "fetch(url).then(res => res.json()).catch(err => console.error(err));",
         connectors: ["Event Loop - Modelo Monofilar - Pila de Ejecución y Cola de Tareas", "Promesas - Estados Pending/Fulfilled/Rejected - Operaciones Asíncronas"]
       },
@@ -319,26 +354,26 @@ const TOPICS_DATA = [
         topic: "JavaScript",
         badge: "Sintaxis Async/Await",
         question: "¿Cómo simplifica async/await el manejo de promesas en JavaScript?",
-        answer: "Permite escribir código asíncrono con sintaxis aparentemente síncrona mediante `await`, pausando la ejecución de la función `async` hasta que la promesa se resuelva o rechace.",
-        codeSnippet: "async function cargar() {\n    const res = await fetch(url);\n    const data = await res.json();\n}",
+        answer: "Escribe código asíncrono con sintaxis clara pausando con `await` dentro de `async` hasta que la promesa resuelva.",
+        codeSnippet: "async function cargar() { const res = await fetch(url); }",
         connectors: ["Async/Await - Sintaxis Asíncrona Limpia - Manejo con Try/Catch", "Asincronía JS - Bloqueo No Concurrente - Promesas Simplificadas"]
       },
       {
         id: "js_3",
         topic: "JavaScript",
         badge: "Comparación y Tipos",
-        question: "¿Diferencia entre == (igualdad débil) y === (igualdad estricta) en JavaScript?",
-        answer: "`==` realiza coerción implícita de tipos antes de comparar. `===` compara tanto el valor como el tipo de dato exacto sin realizar coerción.",
-        codeSnippet: "'5' == 5;  // true (coerción de tipo)\n'5' === 5; // false (tipos distintos)",
+        question: "¿Diferencia entre == y === en JavaScript?",
+        answer: "`==` realiza coerción implícita de tipos. `===` compara valor y tipo exacto sin realizar coerción.",
+        codeSnippet: "'5' == 5;  // true\n'5' === 5; // false",
         connectors: ["Igualdad Estricta === - Comparación sin Coerción - Tipos Primitivos JS", "Coerción Implícita - Igualdad Débil == - Seguridad de Tipos"]
       },
       {
         id: "js_4",
         topic: "JavaScript",
         badge: "Ámbito y Closures",
-        question: "¿Qué es un Closure (Clausura) en JavaScript y para qué se utiliza?",
-        answer: "Un closure es la combinación de una función y el ámbito léxico en el que fue declarada, permitiendo a la función interna acceder a las variables de su función padre aun después de que ésta haya finalizado.",
-        codeSnippet: "function contador() {\n    let count = 0;\n    return function() { count++; return count; };\n}",
+        question: "¿Qué es un Closure (Clausura) en JavaScript?",
+        answer: "Función que recuerda su ámbito léxico externo donde fue creada, permitiendo acceder a sus variables.",
+        codeSnippet: "function contador() { let count = 0; return () => ++count; }",
         connectors: ["Closure - Retención de Ámbito Léxico - Variables Privadas en JS", "Scope Léxico - Funciones Anidadas - Encapsulamiento en JS"]
       }
     ],
@@ -365,8 +400,8 @@ const TOPICS_DATA = [
         topic: "Bases de Datos Relacionales",
         badge: "Normalización CENEVAL",
         question: "¿En qué consisten la 1FN, 2FN y 3FN en bases de datos relacionales?",
-        answer: "1FN: Atributos atómicos sin grupos repetitivos. 2FN: En 1FN y eliminación de dependencias parciales de claves compuestas. 3FN: En 2FN y eliminación de dependencias transitivas (atributos no clave dependen solo de la PK).",
-        codeSnippet: "-- 3FN: Separación de tablas\nCREATE TABLE Cliente (id_cliente INT PRIMARY KEY, id_ciudad INT);\nCREATE TABLE Ciudad (id_ciudad INT PRIMARY KEY, nombre VARCHAR(50));",
+        answer: "1FN: datos atómicos. 2FN: en 1FN sin dependencias parciales. 3FN: en 2FN sin dependencias transitivas (atributos no clave dependen solo de PK).",
+        codeSnippet: "CREATE TABLE Cliente (id_cliente INT PRIMARY KEY, id_ciudad INT);\nCREATE TABLE Ciudad (id_ciudad INT PRIMARY KEY, nombre VARCHAR(50));",
         connectors: ["Tablas con relación entre sí - Base de datos estructurada", "3FN - Eliminación de Dependencias Transitivas - Integridad de Datos"]
       },
       {
@@ -374,7 +409,7 @@ const TOPICS_DATA = [
         topic: "Bases de Datos Relacionales",
         badge: "Propiedades ACID",
         question: "¿Qué garantizan las propiedades ACID en transacciones relacionales?",
-        answer: "Atomisidad (todo o nada), Consistencia (estado válido garantizado), Aislamiento/Isolation (transacciones no interfieren), Durabilidad (los cambios persisten tras el Commit).",
+        answer: "Atomisidad (todo o nada), Consistencia (estado válido), Aislamiento (no interferencia), Durabilidad (persistencia tras commit).",
         codeSnippet: "BEGIN TRANSACTION;\n  UPDATE Cuenta SET saldo = saldo - 100 WHERE id = 1;\nCOMMIT;",
         connectors: ["Transacciones ACID - Commit y Rollback - Garantía de Integridad Relacional", "Control de Concurrencia - Bloqueos de Filas - Consistencia RDBMS"]
       },
@@ -382,8 +417,8 @@ const TOPICS_DATA = [
         id: "bd_rel_3",
         topic: "Bases de Datos Relacionales",
         badge: "Integridad Referencial",
-        question: "¿Qué es una Clave Primaria (PK) y una Clave Foránea (FK)?",
-        answer: "La Clave Primaria (PK) identifica de forma única e irrepetible cada registro de una tabla. La Clave Foránea (FK) es un campo que hace referencia a la PK de otra tabla para establecer relaciones e integridad referencial.",
+        question: "¿Qué es Clave Primaria (PK) y Clave Foránea (FK)?",
+        answer: "PK: identificador único de fila. FK: referencia a PK de otra tabla para mantener la integridad referencial.",
         codeSnippet: "ALTER TABLE Pedido ADD CONSTRAINT fk_cliente FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente);",
         connectors: ["Clave Primaria PK - Identificador Único de Fila - Clave Foránea FK Integrity", "Integridad Referencial - Relaciones 1:N - Restricciones de BD"]
       },
@@ -391,9 +426,9 @@ const TOPICS_DATA = [
         id: "bd_rel_4",
         topic: "Bases de Datos Relacionales",
         badge: "Consultas SQL y Joins",
-        question: "¿Cuál es la diferencia entre un INNER JOIN y un LEFT JOIN en SQL?",
-        answer: "`INNER JOIN` devuelve solo las filas que tienen coincidencias exactas en ambas tablas. `LEFT JOIN` devuelve todas las filas de la tabla izquierda y las coincidencias de la derecha (rellenando con NULL si no hay coincidencia).",
-        codeSnippet: "SELECT c.nombre, p.total \nFROM Cliente c \nLEFT JOIN Pedido p ON c.id_cliente = p.id_cliente;",
+        question: "¿Cuál es la diferencia entre INNER JOIN y LEFT JOIN en SQL?",
+        answer: "`INNER JOIN`: coincide en ambas tablas. `LEFT JOIN`: todas las de la izquierda y nulos en derecha si no hay coincidencia.",
+        codeSnippet: "SELECT c.nombre, p.total FROM Cliente c LEFT JOIN Pedido p ON c.id_cliente = p.id_cliente;",
         connectors: ["SQL DML - SELECT INSERT UPDATE DELETE - Consultas Relacionales", "INNER JOIN vs LEFT JOIN - Combinación de Tablas - Cruce de Claves"]
       }
     ],
@@ -421,7 +456,7 @@ const TOPICS_DATA = [
         badge: "Teorema CAP",
         question: "¿Qué postula el Teorema CAP para bases de datos distribuidas?",
         answer: "Postula que un sistema distribuido sólo puede garantizar simultáneamente 2 de las 3 propiedades: Consistencia (C), Disponibilidad (A) y Tolerancia a Particiones (P).",
-        codeSnippet: "Sistemas CP: MongoDB (Priorizan Consistencia)\nSistemas AP: Cassandra (Priorizan Disponibilidad)",
+        codeSnippet: "Sistemas CP: MongoDB | Sistemas AP: Cassandra",
         connectors: ["Teorema CAP - Consistencia vs Disponibilidad - Sistemas Distribuidos", "Tolerancia a Particiones - Teorema de Brewer - NoSQL vs ACID"]
       },
       {
@@ -429,25 +464,25 @@ const TOPICS_DATA = [
         topic: "Bases de Datos NoSQL",
         badge: "Modelo Orientado a Documentos",
         question: "¿Cómo almacena los datos MongoDB y qué ventajas ofrece?",
-        answer: "MongoDB almacena datos en documentos BSON (JSON binario) flexibles sin esquema fijo previo, permitiendo estructuras anidadas y escalabilidad horizontal simple.",
-        codeSnippet: "db.usuarios.insertOne({ nombre: 'Daniela', rol: 'Dev', habilidades: ['Python', 'SQL'] });",
+        answer: "Almacena datos en documentos BSON (JSON binario) flexibles sin esquema fijo previo, permitiendo escalabilidad horizontal.",
+        codeSnippet: "db.usuarios.insertOne({ nombre: 'Daniela', rol: 'Dev' });",
         connectors: ["NoSQL - Documentos JSON/BSON - Esquema Flexible Dinámico", "MongoDB - Colecciones y Documentos - Escalamiento Horizontal"]
       },
       {
         id: "bd_nosql_3",
         topic: "Bases de Datos NoSQL",
         badge: "Modelo Clave-Valor",
-        question: "¿Qué es una base de datos Clave-Valor como Redis y cuál es su caso de uso?",
-        answer: "Almacena pares de claves asociadas a valores arbitrarios directamente en memoria RAM, logrando operaciones de lectura/escritura ultra rápidas en tiempo O(1) para caché y sesiones.",
-        codeSnippet: "SET usuario:1001 \"{\\\"nombre\\\":\\\"Daniela\\\"}\"\nGET usuario:1001",
+        question: "¿Qué es una base de datos Clave-Valor como Redis?",
+        answer: "Guarda pares clave-valor directamente en memoria RAM con lecturas/escrituras en O(1) para caché y sesiones de alta velocidad.",
+        codeSnippet: "SET usuario:1001 \"{\\\"nombre\\\":\\\"Daniela\\\"}\"",
         connectors: ["NoSQL Clave-Valor - Almacenamiento en RAM - Lectura de Alta Velocidad O(1)", "Redis - Caché de Sesiones - Estructuras Clave Valor"]
       },
       {
         id: "bd_nosql_4",
         topic: "Bases de Datos NoSQL",
         badge: "Escalamiento de Datos",
-        question: "¿Qué es el Sharding (Particionamiento Horizontal) en bases de datos NoSQL?",
-        answer: "Es la técnica de distribuir un conjunto masivo de datos entre múltiples nodos o servidores independientes (shards) basándose en una clave de particionamiento (shard key).",
+        question: "¿Qué es el Sharding (Particionamiento Horizontal) en NoSQL?",
+        answer: "Técnica de distribuir un conjunto masivo de datos entre múltiples nodos o servidores independientes (shards).",
         codeSnippet: "Servidor 1: Claves A-M | Servidor 2: Claves N-Z",
         connectors: ["Sharding - Escalamiento Horizontal - Particionamiento de Datos NoSQL", "Distribución de Datos - Nodos Distribuidos - Alta Disponibilidad"]
       }
@@ -475,35 +510,35 @@ const TOPICS_DATA = [
         topic: "Requerimientos de Software",
         badge: "Clasificación",
         question: "¿Diferencia entre Requerimientos Funcionales y No Funcionales?",
-        answer: "Funcionales: Describen las funciones y servicios específicos que el sistema DEBE realizar (qué hace). No Funcionales: Describen atributos de calidad y restricciones de operación (cómo opera: rendimiento, seguridad, disponibilidad).",
-        codeSnippet: "Funcional: 'Permitir pagos con tarjeta.'\nNo Funcional: 'Procesar el pago en menos de 2 segundos.'",
+        answer: "Funcionales: las funciones que el sistema DEBE realizar (qué hace). No Funcionales: atributos de calidad y restricciones (cómo opera).",
+        codeSnippet: "Funcional: 'Permitir pagos.'\nNo Funcional: 'Procesar el pago en < 2 seg.'",
         connectors: ["Requerimiento Funcional - Servicios del Sistema - Comportamiento Esperado", "Requerimiento No Funcional - Atributos de Calidad - Rendimiento y Seguridad"]
       },
       {
         id: "req_2",
         topic: "Requerimientos de Software",
         badge: "Elicitación de Requisitos",
-        question: "¿Qué es la Elicitación de Requerimientos y qué técnicas se emplean?",
-        answer: "Es la fase de descubrimiento e investigación de las necesidades del cliente. Se emplean técnicas como entrevistas, cuestionarios, talleres (JAD), observación directa y prototipado.",
-        codeSnippet: "Entrevistas -> Talleres JAD -> Prototipos -> Especificación SRS",
+        question: "¿Qué es Elicitación de Requerimientos y qué técnicas se emplean?",
+        answer: "Fase de descubrimiento de necesidades del cliente mediante entrevistas, cuestionarios, talleres (JAD) y prototipado.",
+        codeSnippet: "Entrevistas -> Talleres JAD -> Prototipos -> SRS",
         connectors: ["Elicitación - Entrevistas y Prototipado - Captura de Requisitos", "Matriz de Trazabilidad - Validación de Requerimientos - Cobertura de Pruebas"]
       },
       {
         id: "req_3",
         topic: "Requerimientos de Software",
         badge: "Historias de Usuario",
-        question: "¿Qué estructura tiene una Historia de Usuario y cuál es el criterio INVEST?",
-        answer: "Estructura: 'Como [Rol], Quiero [Acción], Para [Beneficio]'. Criterios INVEST: Independiente, Negociable, Valiosa, Estimable, Pequeña (Small) y Comprobable (Testable).",
-        codeSnippet: "Como Estudiante, Quiero ver mis fichas Anki, Para repasar el CENEVAL.",
+        question: "¿Estructura de Historia de Usuario y criterios INVEST?",
+        answer: "'Como [Rol], Quiero [Acción], Para [Beneficio]'. Criterios INVEST: Independiente, Negociable, Valiosa, Estimable, Pequeña, Comprobable.",
+        codeSnippet: "Como Estudiante, Quiero ver mis fichas Anki, Para repasar CENEVAL.",
         connectors: ["Historia de Usuario - Criterios de Aceptación - Formato Como/Quiero/Para", "Metodologías Ágiles - Product Backlog - Criterios INVEST"]
       },
       {
         id: "req_4",
         topic: "Requerimientos de Software",
         badge: "Casos de Uso",
-        question: "¿Cuáles son los componentes principales de una especificación de Caso de Uso?",
-        answer: "Actores principales/secundarios, Precondiciones, Poscondiciones, Flujo Principal de eventos (Camino feliz) y Flujos Alternativos de excepción.",
-        codeSnippet: "Caso de Uso: Iniciar Sesión | Actor: Usuario | Precondición: Cuenta activa",
+        question: "¿Componentes de un Caso de Uso en UML?",
+        answer: "Actores principales/secundarios, Precondiciones, Poscondiciones, Flujo Principal (Camino feliz) y Flujos Alternativos de excepción.",
+        codeSnippet: "Caso de Uso: Iniciar Sesión | Actor: Usuario",
         connectors: ["Casos de Uso - Diagrama UML de Interacción - Actores y Sistema", "Especificación de Casos de Uso - Flujo Principal y Alternativo - IEEE 830"]
       }
     ],
@@ -530,7 +565,7 @@ const TOPICS_DATA = [
         topic: "Tipos de Documentación",
         badge: "Estándar IEEE 830",
         question: "¿Qué es el documento SRS bajo el estándar IEEE 830?",
-        answer: "Es la Especificación de Requerimientos de Software formal. Sirve como contrato técnico entre cliente y desarrolladores. Debe ser no ambigua, completa, verificable y trazable.",
+        answer: "Especificación de Requerimientos de Software formal que actúa como contrato técnico. Debe ser no ambigua, completa y verificable.",
         codeSnippet: "Estructura IEEE 830:\n1. Introducción\n2. Descripción General\n3. Requerimientos Específicos",
         connectors: ["Estándar IEEE 830 - SRS Especificación Formal - Contrato de Desarrollo", "Especificación de Software - Calidad de Documentación - Verificabilidad"]
       },
@@ -538,8 +573,8 @@ const TOPICS_DATA = [
         id: "doc_2",
         topic: "Tipos de Documentación",
         badge: "Documentación de Arquitectura",
-        question: "¿Qué es el documento SAD (Software Architecture Document) y la Vista 4+1?",
-        answer: "El SAD describe la estructura de alto nivel del sistema. La Vista 4+1 de Kruchten organiza la arquitectura en 5 vistas: Lógica, de Procesos, de Desarrollo, Física y Escenarios (Casos de Uso).",
+        question: "¿Qué es el documento SAD y la Vista 4+1?",
+        answer: "El SAD describe la estructura del sistema. La Vista 4+1 organiza la arquitectura en 5 vistas: Lógica, Procesos, Desarrollo, Física y Escenarios.",
         codeSnippet: "Vista Lógica (Clases) + Vista Procesos (Hilos) + Vista Física (Servidores)",
         connectors: ["Arquitectura SAD - Vista 4+1 - Diagramas de Estructura y Módulos", "Documentación Técnica - Vistas de Kruchten - Despliegue Físico"]
       },
@@ -547,9 +582,9 @@ const TOPICS_DATA = [
         id: "doc_3",
         topic: "Tipos de Documentación",
         badge: "Manuales del Sistema",
-        question: "¿Diferencia entre Manual de Usuario y Manual de Despliegue?",
-        answer: "El Manual de Usuario instructa al usuario final no técnico en la operación funcional del sistema. El Manual de Despliegue detalla la instalación, configuración de servidores y dependencias para ingenieros de sistemas.",
-        codeSnippet: "Manual Usuario: Paso a paso UI | Manual Despliegue: Comandos CLI servidor",
+        question: "¿Diferencia entre Manual de Usuario y Despliegue?",
+        answer: "Usuario: guía funcional no técnica. Despliegue: instrucciones de instalación y configuración de servidores para administradores.",
+        codeSnippet: "Manual Usuario: Paso a paso UI | Manual Despliegue: CLI servidor",
         connectors: ["Manual de Usuario - Guía Operativa Final - Documentación No Técnica", "Manual de Despliegue - Guía de Instalación - Administradores de Sistemas"]
       }
     ],
@@ -576,7 +611,7 @@ const TOPICS_DATA = [
         topic: "Programación Móvil",
         badge: "Ciclo de Vida Android",
         question: "¿Cuáles son los métodos del ciclo de vida de una Activity en Android?",
-        answer: "`onCreate()` -> `onStart()` -> `onResume()` (activa/foco) -> `onPause()` (pierde foco) -> `onStop()` (invisible) -> `onDestroy()` (eliminada).",
+        answer: "`onCreate()` -> `onStart()` -> `onResume()` (foco activo) -> `onPause()` -> `onStop()` -> `onDestroy()`.",
         codeSnippet: "@Override protected void onCreate(Bundle saved) { super.onCreate(saved); }",
         connectors: ["Ciclo de Vida Android - Activity States - onCreate y onResume", "Android Lifecycle - Gestor de Estados - Memoria Móvil"]
       },
@@ -584,8 +619,8 @@ const TOPICS_DATA = [
         id: "mov_2",
         topic: "Programación Móvil",
         badge: "Persistencia Móvil",
-        question: "¿Qué opciones de almacenamiento local existen en Android (SharedPreferences vs Room DB)?",
-        answer: "`SharedPreferences` guarda datos simples tipo clave-valor (preferencias de usuario). `Room DB` es una abstracción sobre SQLite para almacenar datos estructurados relacionales complejos en el dispositivo.",
+        question: "¿Opciones de almacenamiento local en Android (SharedPreferences vs Room DB)?",
+        answer: "`SharedPreferences`: clave-valor simple. `Room DB`: abstracción relacional sobre SQLite para datos complejos en el dispositivo.",
         codeSnippet: "SharedPreferences pref = getSharedPreferences(\"user_config\", MODE_PRIVATE);",
         connectors: ["Almacenamiento Móvil - Room DB y SQLite - Persistencia de Datos Local", "SharedPreferences - Clave Valor Móvil - Preferencias de Usuario"]
       },
@@ -594,19 +629,19 @@ const TOPICS_DATA = [
         topic: "Programación Móvil",
         badge: "Arquitectura Móvil",
         question: "¿Qué es el patrón MVVM (Model-View-ViewModel) en desarrollo móvil?",
-        answer: "Separa la interfaz de usuario (View) de la lógica de negocio y datos (Model) utilizando un intermediario (ViewModel) que expone datos observables (LiveData) para mantener la UI sincronizada.",
-        codeSnippet: "View (Activity/Fragment) <--> ViewModel <--> Repository (Data)",
+        answer: "Separa View (UI) de Model (Datos) usando ViewModel intermediario que expone datos observables LiveData.",
+        codeSnippet: "View (Activity) <--> ViewModel <--> Repository (Data)",
         connectors: ["Patrón MVVM - Separación de Vista y Lógica - UI Reactiva en Móvil", "LiveData y ViewModel - Arquitectura Android - Desacoplamiento de Vista"]
       }
     ],
     quizzes: [
       {
         id: "q_mov_1",
-        question: "En Android, ¿qué método se ejecuta cuando la pantalla pierde el foco pero sigue parcialmente visible?",
+        question: "En Android, ¿qué método se ejecuta cuando la pantalla pierde el foco parcialmente?",
         correct: "onPause()",
         distractor: "onStop()",
         incorrect: "onDestroy()",
-        explanation: "`onPause()` se invoca cuando la actividad pierde el foco de atención parcial del usuario."
+        explanation: "`onPause()` se invoca cuando la actividad pierde el foco de atención parcial."
       }
     ]
   },
@@ -622,7 +657,7 @@ const TOPICS_DATA = [
         topic: "Paradigmas de Programación",
         badge: "Los 4 Pilares POO",
         question: "¿Cuáles son los 4 pilares de la Programación Orientada a Objetos?",
-        answer: "1) Abstracción (aislar características esenciales), 2) Encapsulamiento (ocultar estado con private/getters/setters), 3) Herencia (reutilizar código jerárquicamente), 4) Polimorfismo (responder al mismo método de formas distintas).",
+        answer: "1) Abstracción, 2) Encapsulamiento (private/getters/setters), 3) Herencia (reutilización jerárquica), 4) Polimorfismo (responder distinto al mismo método).",
         codeSnippet: "class Animal { void hablar(); }\nclass Perro extends Animal { void hablar() { print('Guau'); } }",
         connectors: ["POO - Encapsulamiento y Herencia en Java/C++", "Polimorfismo - Sobrescritura de Métodos - Abstracción de Clases"]
       },
@@ -631,25 +666,25 @@ const TOPICS_DATA = [
         topic: "Paradigmas de Programación",
         badge: "Programación Concurrente",
         question: "¿Qué es la Programación Concurrente y qué es un Hilo (Thread)?",
-        answer: "Es la capacidad de ejecutar múltiples tareas o secuencias de instrucciones de forma superpuesta en el tiempo. Un Hilo es la unidad mínima de ejecución administrada por el sistema operativo dentro de un proceso.",
-        codeSnippet: "Thread t = new Thread(() -> System.out.println(\"Hilo activo\"));\nt.start();",
+        answer: "Ejecución superpuesta de tareas. Hilo: unidad mínima de ejecución dentro de un proceso administrado por el SO.",
+        codeSnippet: "Thread t = new Thread(() -> System.out.println(\"Hilo\"));\nt.start();",
         connectors: ["Programación Concurrente - Multihilo - Exclusión Mutua y Semáforos", "Hilos Threads - Paratelismo de Procesos - Memoria Compartida"]
       },
       {
         id: "par_3",
         topic: "Paradigmas de Programación",
         badge: "Problemas de Concurrencia",
-        question: "¿Qué es una Condición de Carrera (Race Condition) y un Interbloqueo (Deadlock)?",
-        answer: "Race Condition: Ocurre cuando dos hilos modifican un recurso compartido simultáneamente sin sincronización. Deadlock: Ocurre cuando dos o más hilos quedan bloqueados infinitamente esperando recursos que posee el otro.",
-        codeSnippet: "Sincronización: mutex.lock(); modificarRecurso(); mutex.unlock();",
+        question: "¿Qué es Race Condition y Deadlock?",
+        answer: "Race Condition: modificación simultánea sin sincronización. Deadlock: bloqueo circular infinito de recursos entre hilos.",
+        codeSnippet: "Sincronización: mutex.lock(); modificar(); mutex.unlock();",
         connectors: ["Race Condition - Acceso Concurrente No Sincronizado - Sección Crítica", "Deadlock - Interbloqueo de Hilos - Espera Circular de Recursos"]
       },
       {
         id: "par_4",
         topic: "Paradigmas de Programación",
-        badge: "Paradigma Imperativo vs Funcional",
-        question: "¿Diferencia entre Paradigma Imperativo y Paradigma Funcional?",
-        answer: "El Imperativo se basa en cambiar el estado mediante secuencias de instrucciones explícitas (cómo hacerlo). El Funcional trata el cómputo como la evaluación de funciones matemáticas puras inmutables sin efectos secundarios (qué obtener).",
+        badge: "Imperativo vs Funcional",
+        question: "¿Diferencia entre Paradigma Imperativo y Funcional?",
+        answer: "Imperativo: secuencia de instrucciones que cambian el estado (cómo). Funcional: evaluación de funciones puras inmutables (qué).",
         codeSnippet: "Imperativo: for(i=0;i<n;i++) sum+=arr[i];\nFuncional: arr.reduce((acc, x) => acc + x, 0);",
         connectors: ["Paradigma Imperativo - Estado Mutacional - Instrucciones Secuenciales", "Paradigma Funcional - Funciones Puras - Inmutabilidad de Datos"]
       }
@@ -675,9 +710,9 @@ const TOPICS_DATA = [
       {
         id: "met_1",
         topic: "Metodologías de Desarrollo",
-        badge: "Modelo en Cascada vs Ágil",
-        question: "¿Diferencia clave entre el Modelo en Cascada (Waterfall) y las Metodologías Ágiles?",
-        answer: "Cascada es un modelo secuencial rígido donde cada fase debe completarse antes de iniciar la siguiente (alto costo ante cambios). Ágil es un enfoque iterativo e incremental enfocado en entregas continuas de software funcional flexible al cambio.",
+        badge: "Cascada vs Ágil",
+        question: "¿Diferencia clave entre el Modelo en Cascada y Metodologías Ágiles?",
+        answer: "Cascada: secuencial rígido alto costo de cambio. Ágil: iterativo incremental adaptativo enfocado en entregas continuas.",
         codeSnippet: "Cascada: Req -> Diseño -> Código -> Pruebas -> Despliegue\nÁgil: Sprints iterativos con entregas continuas",
         connectors: ["Modelo en Cascada - Fases Rígidas Secuenciales - Alto Costo de Cambios", "Manifiesto Ágil - Adaptabilidad al Cambio - Software Funcional"]
       },
@@ -685,8 +720,8 @@ const TOPICS_DATA = [
         id: "met_2",
         topic: "Metodologías de Desarrollo",
         badge: "Framework Scrum",
-        question: "¿Cuáles son los 3 Roles, 3 Artefactos y 5 Eventos en Scrum?",
-        answer: "3 Roles: Product Owner, Scrum Master, Developers. 3 Artefactos: Product Backlog, Sprint Backlog, Incremento. 5 Eventos: Sprint, Sprint Planning, Daily Scrum (15 min), Sprint Review, Sprint Retrospective.",
+        question: "¿Roles, Artefactos y Eventos en Scrum?",
+        answer: "3 Roles (PO, SM, Devs), 3 Artefactos (Product/Sprint Backlog, Incremento), 5 Eventos (Sprint, Planning, Daily, Review, Retro).",
         codeSnippet: "Sprint Planning -> Daily Scrum (15m) -> Sprint Review -> Retrospective",
         connectors: ["Scrum - Sprints y Historias de Usuario", "Product Backlog - Priorización del Product Owner - Incremento Reusable"]
       },
@@ -694,8 +729,8 @@ const TOPICS_DATA = [
         id: "met_3",
         topic: "Metodologías de Desarrollo",
         badge: "Kanban",
-        question: "¿Cuál es la regla fundamental de Kanban y para qué sirve limitar el WIP?",
-        answer: "Visualización del flujo en un tablero y limitar el Trabajo en Proceso (WIP - Work in Progress) para detectar cuellos de botella y evitar sobrecargar al equipo.",
+        question: "¿Regla fundamental de Kanban y para qué sirve limitar WIP?",
+        answer: "Visualización del flujo en un tablero y limitar el Trabajo en Proceso (WIP) para detectar cuellos de botella y evitar sobrecarga.",
         codeSnippet: "[ Por Hacer ] -> [ En Proceso (WIP Máx: 3) ] -> [ Comprobado ]",
         connectors: ["Kanban - Tablero Visual de Tareas - Limitar WIP y Evitar Cuellos de Botella", "Flujo de Trabajo - Reducción de Lead Time - Gestión Visual Kanban"]
       },
@@ -703,8 +738,8 @@ const TOPICS_DATA = [
         id: "met_4",
         topic: "Metodologías de Desarrollo",
         badge: "Estimación Ágil",
-        question: "¿Qué son los Puntos de Historia y la técnica Planning Poker?",
-        answer: "Los Puntos de Historia miden la complejidad relativa de una tarea (no horas absolutas). Planning Poker es una técnica de estimación basada en consenso utilizando la secuencia de Fibonacci.",
+        question: "¿Qué son Puntos de Historia y Planning Poker?",
+        answer: "Puntos de Historia: medida relativa de complejidad. Planning Poker: estimación por consenso con secuencia Fibonacci.",
         codeSnippet: "Secuencia Fibonacci: 1, 2, 3, 5, 8, 13, 21 puntos de historia",
         connectors: ["Puntos de Historia - Estimación Relativa de Complejidad - Planning Poker", "Fibonacci Ágil - Consenso de Equipo - Estimación de Historias"]
       }
@@ -731,17 +766,17 @@ const TOPICS_DATA = [
         id: "coc_1",
         topic: "Métricas COCOMO 1 y 2",
         badge: "COCOMO I Básico",
-        question: "¿Cuáles son los 3 modos de proyecto en COCOMO I y sus coeficientes a y b?",
-        answer: "1) Orgánico (a=2.4, b=1.05 - pequeño, flexible), 2) Semiacoplado (a=3.0, b=1.12 - mediano, mixto), 3) Empotrado/Embedded (a=3.6, b=1.20 - complejo, rígido).",
-        codeSnippet: "Fórmula de Esfuerzo: PM = a * (KLOC)^b [Personas-Mes]",
+        question: "¿Cuáles son los 3 modos de proyecto en COCOMO I y sus coeficientes?",
+        answer: "1) Orgánico (a=2.4, b=1.05 - pequeño), 2) Semiacoplado (a=3.0, b=1.12 - mediano), 3) Empotrado (a=3.6, b=1.20 - complejo).",
+        codeSnippet: "PM = a * (KLOC)^b [Personas-Mes]",
         connectors: ["COCOMO - Personas-Mes y Líneas de Código KLOC", "Modo Orgánico - Proyectos Pequeños - a=2.4 y b=1.05"]
       },
       {
         id: "coc_2",
         topic: "Métricas COCOMO 1 y 2",
         badge: "Fórmulas de Estimación",
-        question: "¿Cómo se calcula el Esfuerzo (PM), Tiempo (TDEV) y Personal (Staff)?",
-        answer: "Esfuerzo: `PM = a * (KLOC)^b`. Tiempo de Desarrollo: `TDEV = c * (PM)^d`. Personal Estimado: `Staff = PM / TDEV`.",
+        question: "¿Cómo se calcula Esfuerzo (PM), Tiempo (TDEV) y Personal (Staff)?",
+        answer: "Esfuerzo: `PM = a * (KLOC)^b`. Tiempo: `TDEV = c * (PM)^d`. Personal: `Staff = PM / TDEV`.",
         codeSnippet: "KLOC = Miles de Líneas de Código (10,000 líneas = 10 KLOC)",
         connectors: ["Fórmula Esfuerzo PM = a * (KLOC)^b - Medida en Personas-Mes", "Tiempo TDEV = c * (PM)^d - Personal Staff = PM / TDEV"]
       },
@@ -750,7 +785,7 @@ const TOPICS_DATA = [
         topic: "Métricas COCOMO 1 y 2",
         badge: "COCOMO II",
         question: "¿Qué avance introduce COCOMO II frente a COCOMO I?",
-        answer: "Se adapta a proyectos modernos orientados a objetos y reutilización, estimando mediante Puntos de Objeto y Puntos de Función en lugar de solo líneas de código (KLOC).",
+        answer: "Estima proyectos modernos orientados a objetos con Puntos de Objeto y Puntos de Función en lugar de solo líneas KLOC.",
         codeSnippet: "Submodelos: Application Composition, Early Design, Post-Architecture",
         connectors: ["COCOMO II - Puntos de Objeto - Estimación Temprana de Arquitectura", "Puntos de Función - Reutilización de Código - Modelos Modernos COCOMO"]
       },
@@ -758,8 +793,8 @@ const TOPICS_DATA = [
         id: "coc_4",
         topic: "Métricas COCOMO 1 y 2",
         badge: "Multiplicadores de Esfuerzo",
-        question: "¿Qué son los Cost Drivers (Multiplicadores de Esfuerzo EM) en COCOMO Intermedio?",
-        answer: "Son 15 atributos evaluados en escala de Muy Bajo a Muy Alto para ajustar la estimación de esfuerzo según la complejidad del hardware, personal y entorno del proyecto.",
+        question: "¿Qué son los Multiplicadores de Esfuerzo (EM) en COCOMO Intermedio?",
+        answer: "15 atributos de costo evaluados de Muy Bajo a Muy Alto para calibrar y ajustar la estimación de esfuerzo en el proyecto.",
         codeSnippet: "PM_Ajustado = PM_Básico * (EM1 * EM2 * ... * EM15)",
         connectors: ["Multiplicadores de Esfuerzo EM - Atributos del Proyecto - Ajuste de Complejidad", "COCOMO Intermedio - Cost Drivers - Calibración de Esfuerzo"]
       }
