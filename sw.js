@@ -4,6 +4,7 @@ const ASSETS_TO_CACHE = [
   './index.html',
   './style.css',
   './manifest.json',
+  './assets/logo.png',
   './js/topics-data.js',
   './js/anki-engine.js',
   './js/photo-uploader.js',
