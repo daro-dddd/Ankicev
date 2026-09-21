@@ -1,8 +1,7 @@
 /**
  * Controlador Principal de la Aplicación CENEVAL Master PWA
- * Alineado al EGEL Plus ISOFT Nivel SOBRESALIENTE.
- * Soporta Grafo Neuronal Canvas Obsidian, Repetición Espaciada Anki con Citas Bibliográficas,
- * Simulador Quiz de 3 Opciones y Módulo de Comprensión Lectora.
+ * Pestaña Red Neuronal con Arrastre (Drag) y Colores Pastel.
+ * Fichas Anki con Conectores Palabras Clave ARRIBA y Referencia ABAJO.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -30,8 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
             question: uc.title,
             answer: uc.notes,
             image: uc.image,
-            citation: 'Apunte del Usuario',
-            connectors: ['Apunte Guardado - Concepto Personal'],
+            citation: 'Apunte Guardado por el Usuario',
+            connectors: ['Apunte Personal', 'Apunte Guardado'],
             progress: {
               interval: 1,
               repetition: 0,
@@ -125,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCurrentCard();
   });
 
-  // 6. Volteo e Interactividad de Tarjetas
+  // 6. Renderizado Limpio de Fichas Anki (Conectores ARRIBA, Referencia ABAJO)
   const flashcardWrapper = document.getElementById('flashcard-wrapper');
   const flashcard = document.getElementById('flashcard');
   const ankiControls = document.getElementById('anki-controls');
@@ -163,15 +162,33 @@ document.addEventListener('DOMContentLoaded', () => {
     totalNumEl.textContent = currentCardList.length;
 
     const card = currentCardList[currentCardIndex];
-    document.getElementById('card-topic-badge').textContent = `${card.topicName} - ${card.badge || ''}`;
-    document.getElementById('card-back-badge').textContent = `${card.topicName} - Respuesta`;
-    
-    // Incluir Cita Bibliográfica si existe
-    let questionHTML = card.question;
-    if (card.citation) {
-      questionHTML += `<br><span style="font-size: 0.72rem; color: var(--accent-cyan); display: block; margin-top: 8px; font-weight: 500;">📖 Ref. CENEVAL: ${card.citation}</span>`;
+
+    // CONECTORES ARRIBA (Palabras Clave)
+    const frontConnContainer = document.getElementById('card-front-connectors');
+    const backConnContainer = document.getElementById('card-back-connectors');
+    frontConnContainer.innerHTML = '';
+    backConnContainer.innerHTML = '';
+
+    if (card.connectors && card.connectors.length > 0) {
+      card.connectors.forEach(conn => {
+        // Formatear a palabras clave cortas
+        const shortKeyword = conn.split('-')[0].trim();
+        
+        const pillFront = document.createElement('span');
+        pillFront.className = 'connector-pill';
+        pillFront.textContent = shortKeyword;
+        frontConnContainer.appendChild(pillFront);
+
+        const pillBack = document.createElement('span');
+        pillBack.className = 'connector-pill';
+        pillBack.textContent = conn;
+        backConnContainer.appendChild(pillBack);
+      });
     }
-    document.getElementById('card-question-text').innerHTML = questionHTML;
+
+    document.getElementById('card-topic-badge').textContent = card.topicName;
+    document.getElementById('card-back-badge').textContent = `${card.topicName} - Respuesta`;
+    document.getElementById('card-question-text').textContent = card.question;
     document.getElementById('card-answer-text').textContent = card.answer;
 
     const cardImageView = document.getElementById('card-image-view');
@@ -192,21 +209,13 @@ document.addEventListener('DOMContentLoaded', () => {
       codeContainer.style.display = 'none';
     }
 
-    const connectorsList = document.getElementById('card-connectors-list');
-    connectorsList.innerHTML = '';
-    if (card.connectors && card.connectors.length > 0) {
-      card.connectors.forEach(conn => {
-        const pill = document.createElement('span');
-        pill.className = 'connector-pill';
-        pill.textContent = conn;
-        pill.addEventListener('click', (e) => {
-          e.stopPropagation();
-          alert(`Conector Mental: "${conn}".`);
-        });
-        connectorsList.appendChild(pill);
-      });
+    // REFERENCIA BIBLIOGRÁFICA ABAJO EN LETRAS PEQUEÑAS
+    const citationBox = document.getElementById('card-citation-box');
+    if (card.citation) {
+      citationBox.textContent = `Ref. CENEVAL: ${card.citation}`;
+      citationBox.style.display = 'block';
     } else {
-      connectorsList.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">Sin conectores específicos.</span>';
+      citationBox.style.display = 'none';
     }
   }
 
@@ -334,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * VISUALIZADOR DE GRAFO NEURONAL 2D CANVAS (ESTILO OBSIDIAN GRAPH VIEW)
+ * VISUALIZADOR DE GRAFO NEURONAL 2D CANVAS CON COLORES PASTEL Y NODO ARRASTRABLE (DRAGGABLE)
  */
 class ObsidianGraphRenderer {
   constructor(topicsData, allCards) {
@@ -344,92 +353,40 @@ class ObsidianGraphRenderer {
     this.ctx = this.canvas.getContext('2d');
     this.container = document.getElementById('canvas-graph-container');
     this.popover = document.getElementById('node-detail-popover');
-    
-    this.activeTopicFilter = 'all';
+    this.emptyPrompt = document.getElementById('graph-empty-prompt');
+
+    this.pastelColors = ['#c084fc', '#6ee7b7', '#7dd3fc', '#fda4af', '#fcd34d'];
+    this.selectedTopicId = null;
     this.nodes = [];
     this.edges = [];
     this.hoveredNode = null;
-    this.animId = null;
+    this.draggedNode = null;
+    this.isDragging = false;
 
-    this.initGraphData();
     this.initControls();
     this.resizeCanvas();
     this.bindEvents();
     this.animate();
   }
 
-  initGraphData() {
-    this.nodes = [];
-    this.edges = [];
-
-    this.topicsData.forEach((t, i) => {
-      const angle = (i / this.topicsData.length) * Math.PI * 2;
-      const topicNode = {
-        id: 'topic_' + t.id,
-        type: 'topic',
-        topicId: t.id,
-        label: t.name,
-        color: t.color || '#06b6d4',
-        radius: 16,
-        x: 0,
-        y: 0,
-        baseAngle: angle,
-        cards: t.cards
-      };
-      this.nodes.push(topicNode);
-
-      t.cards.forEach((c, j) => {
-        const subAngle = angle + ((j - t.cards.length / 2) * 0.25);
-        const cardNode = {
-          id: c.id,
-          type: 'card',
-          topicId: t.id,
-          label: c.question,
-          answer: c.answer,
-          citation: c.citation,
-          connectors: c.connectors,
-          color: '#6366f1',
-          radius: 9,
-          x: 0,
-          y: 0,
-          baseAngle: subAngle
-        };
-        this.nodes.push(cardNode);
-
-        this.edges.push({
-          source: topicNode,
-          target: cardNode,
-          color: 'rgba(99, 102, 241, 0.25)'
-        });
-      });
-    });
-  }
-
   initControls() {
-    const controlsContainer = document.getElementById('graph-topic-buttons');
-    if (!controlsContainer) return;
+    const gridContainer = document.getElementById('pastel-topic-grid');
+    if (!gridContainer) return;
 
-    controlsContainer.innerHTML = '';
-    const allBtn = document.createElement('button');
-    allBtn.className = 'graph-btn active';
-    allBtn.textContent = 'Ver Toda la Red Neuronal';
-    allBtn.addEventListener('click', () => {
-      document.querySelectorAll('.graph-btn').forEach(b => b.classList.remove('active'));
-      allBtn.classList.add('active');
-      this.filterGraph('all');
-    });
-    controlsContainer.appendChild(allBtn);
+    gridContainer.innerHTML = '';
 
-    this.topicsData.forEach(t => {
+    this.topicsData.forEach((t, idx) => {
       const btn = document.createElement('button');
-      btn.className = 'graph-btn';
+      btn.className = 'pastel-topic-btn';
       btn.textContent = t.name;
+      btn.style.borderColor = this.pastelColors[idx % this.pastelColors.length];
+      
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.graph-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.pastel-topic-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        this.filterGraph(t.id);
+        this.loadTopicGraph(t.id, this.pastelColors[idx % this.pastelColors.length]);
       });
-      controlsContainer.appendChild(btn);
+      gridContainer.appendChild(btn);
     });
 
     document.getElementById('popover-close-btn').addEventListener('click', () => {
@@ -437,69 +394,151 @@ class ObsidianGraphRenderer {
     });
   }
 
-  filterGraph(topicId) {
-    this.activeTopicFilter = topicId;
+  loadTopicGraph(topicId, themeColor) {
+    this.selectedTopicId = topicId;
+    if (this.emptyPrompt) this.emptyPrompt.style.display = 'none';
     this.popover.classList.remove('visible');
-    this.resizeCanvas();
-  }
 
-  resizeCanvas() {
-    const width = this.container.clientWidth;
-    const height = this.container.clientHeight;
+    const topicData = this.topicsData.find(t => t.id === topicId);
+    if (!topicData) return;
 
-    this.canvas.width = width;
-    this.canvas.height = height;
+    this.nodes = [];
+    this.edges = [];
 
+    const width = this.canvas.width;
+    const height = this.canvas.height;
     const centerX = width / 2;
     const centerY = height / 2;
-    const mainRadius = Math.min(width, height) * 0.32;
 
-    this.nodes.forEach(n => {
-      if (n.type === 'topic') {
-        n.x = centerX + Math.cos(n.baseAngle) * mainRadius;
-        n.y = centerY + Math.sin(n.baseAngle) * mainRadius;
-      } else {
-        const dist = mainRadius + 75;
-        n.x = centerX + Math.cos(n.baseAngle) * dist;
-        n.y = centerY + Math.sin(n.baseAngle) * dist;
-      }
+    // Nodo central del Tema
+    const centerNode = {
+      id: 'center_' + topicData.id,
+      label: topicData.name,
+      shortLabel: topicData.name.substring(0, 18),
+      color: themeColor,
+      radius: 18,
+      x: centerX,
+      y: centerY,
+      isCenter: true
+    };
+    this.nodes.push(centerNode);
+
+    // Nodos hijos de Fichas
+    const cards = topicData.cards || [];
+    cards.forEach((c, idx) => {
+      const angle = (idx / cards.length) * Math.PI * 2;
+      const radiusDist = 120 + (idx % 2 === 0 ? 30 : -20);
+      
+      // Extraer etiqueta muy corta (2-3 palabras clave)
+      const words = c.question.split(' ');
+      const shortLabel = words.slice(0, 3).join(' ');
+
+      const childNode = {
+        id: c.id,
+        label: c.question,
+        shortLabel: shortLabel,
+        answer: c.answer,
+        citation: c.citation,
+        connectors: c.connectors,
+        color: this.pastelColors[(idx + 1) % this.pastelColors.length],
+        radius: 11,
+        x: centerX + Math.cos(angle) * radiusDist,
+        y: centerY + Math.sin(angle) * radiusDist,
+        isCenter: false
+      };
+      this.nodes.push(childNode);
+
+      this.edges.push({
+        source: centerNode,
+        target: childNode,
+        color: themeColor
+      });
     });
   }
 
+  resizeCanvas() {
+    this.canvas.width = this.container.clientWidth;
+    this.canvas.height = this.container.clientHeight;
+    if (this.selectedTopicId) {
+      const topic = this.topicsData.find(t => t.id === this.selectedTopicId);
+      if (topic) this.loadTopicGraph(topic.id, '#c084fc');
+    }
+  }
+
   bindEvents() {
-    this.canvas.addEventListener('mousemove', (e) => {
+    const getPos = (e) => {
       const rect = this.canvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    };
+
+    const onStart = (e) => {
+      const pos = getPos(e);
+      let found = null;
+      this.nodes.forEach(n => {
+        if (Math.hypot(n.x - pos.x, n.y - pos.y) <= n.radius + 8) {
+          found = n;
+        }
+      });
+
+      if (found) {
+        this.draggedNode = found;
+        this.isDragging = true;
+      }
+    };
+
+    const onMove = (e) => {
+      const pos = getPos(e);
+
+      if (this.isDragging && this.draggedNode) {
+        this.draggedNode.x = pos.x;
+        this.draggedNode.y = pos.y;
+        return;
+      }
 
       let found = null;
-      this.getVisibleNodes().forEach(n => {
-        const dist = Math.hypot(n.x - mouseX, n.y - mouseY);
-        if (dist <= n.radius + 6) {
+      this.nodes.forEach(n => {
+        if (Math.hypot(n.x - pos.x, n.y - pos.y) <= n.radius + 8) {
           found = n;
         }
       });
 
       this.hoveredNode = found;
-      this.canvas.style.cursor = found ? 'pointer' : 'crosshair';
-    });
+      this.canvas.style.cursor = found ? 'pointer' : 'grab';
+    };
 
-    this.canvas.addEventListener('click', () => {
-      if (this.hoveredNode) {
+    const onEnd = () => {
+      if (this.isDragging && this.draggedNode && !this.hoveredNode) {
+        this.showNodePopover(this.draggedNode);
+      } else if (this.hoveredNode) {
         this.showNodePopover(this.hoveredNode);
       }
-    });
+      this.isDragging = false;
+      this.draggedNode = null;
+    };
+
+    this.canvas.addEventListener('mousedown', onStart);
+    this.canvas.addEventListener('mousemove', onMove);
+    this.canvas.addEventListener('mouseup', onEnd);
+
+    this.canvas.addEventListener('touchstart', onStart, { passive: true });
+    this.canvas.addEventListener('touchmove', onMove, { passive: true });
+    this.canvas.addEventListener('touchend', onEnd);
 
     window.addEventListener('resize', () => this.resizeCanvas());
   }
 
   showNodePopover(node) {
-    document.getElementById('popover-badge').textContent = node.type === 'topic' ? 'Área CENEVAL' : 'Ficha Técnica';
+    document.getElementById('popover-badge').textContent = node.isCenter ? 'Tema Principal' : 'Neurona / Concepto';
     document.getElementById('popover-title').textContent = node.label;
     
-    let desc = node.answer || 'Seleccione este tema central para consultar sus fichas de análisis.';
+    let desc = node.answer || 'Mueve o presiona este nodo central para explorar sus ramificaciones.';
     if (node.citation) {
-      desc += `<br><br><span style="font-size:0.75rem; color:var(--accent-cyan); font-weight:600;">📖 Referencia Bibliográfica: ${node.citation}</span>`;
+      desc += `<br><br><span style="font-size:0.75rem; color:var(--text-muted);">Ref. CENEVAL: ${node.citation}</span>`;
     }
     document.getElementById('popover-desc').innerHTML = desc;
 
@@ -517,63 +556,53 @@ class ObsidianGraphRenderer {
     this.popover.classList.add('visible');
   }
 
-  getVisibleNodes() {
-    if (this.activeTopicFilter === 'all') return this.nodes;
-    return this.nodes.filter(n => n.topicId === this.activeTopicFilter);
-  }
-
-  getVisibleEdges() {
-    const visibleNodes = this.getVisibleNodes();
-    return this.edges.filter(e => visibleNodes.includes(e.source) && visibleNodes.includes(e.target));
-  }
-
   animate() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    const visibleNodes = this.getVisibleNodes();
-    const visibleEdges = this.getVisibleEdges();
-
-    visibleEdges.forEach(e => {
-      this.ctx.beginPath();
-      this.ctx.moveTo(e.source.x, e.source.y);
-      this.ctx.lineTo(e.target.x, e.target.y);
-      this.ctx.strokeStyle = (this.hoveredNode === e.source || this.hoveredNode === e.target) ? '#06b6d4' : e.color;
-      this.ctx.lineWidth = (this.hoveredNode === e.source || this.hoveredNode === e.target) ? 2 : 1;
-      this.ctx.stroke();
-    });
-
-    const time = Date.now() * 0.0015;
-    visibleNodes.forEach((n, idx) => {
-      const offsetX = Math.sin(time + idx) * 0.4;
-      const offsetY = Math.cos(time + idx) * 0.4;
-
-      const drawX = n.x + offsetX;
-      const drawY = n.y + offsetY;
-
-      if (this.hoveredNode === n) {
+    if (this.nodes.length > 0) {
+      // Dibujar conexiones sinápticas
+      this.edges.forEach(e => {
         this.ctx.beginPath();
-        this.ctx.arc(drawX, drawY, n.radius + 8, 0, Math.PI * 2);
-        this.ctx.fillStyle = 'rgba(6, 182, 212, 0.3)';
+        this.ctx.moveTo(e.source.x, e.source.y);
+        this.ctx.lineTo(e.target.x, e.target.y);
+        this.ctx.strokeStyle = (this.hoveredNode === e.source || this.hoveredNode === e.target) ? '#c084fc' : 'rgba(192, 132, 252, 0.2)';
+        this.ctx.lineWidth = 1.5;
+        this.ctx.stroke();
+      });
+
+      // Movimiento flotante sutil
+      const time = Date.now() * 0.0015;
+      this.nodes.forEach((n, idx) => {
+        if (!this.isDragging || this.draggedNode !== n) {
+          n.x += Math.sin(time + idx) * 0.25;
+          n.y += Math.cos(time + idx) * 0.25;
+        }
+
+        // Resplandor si está en hover
+        if (this.hoveredNode === n) {
+          this.ctx.beginPath();
+          this.ctx.arc(n.x, n.y, n.radius + 6, 0, Math.PI * 2);
+          this.ctx.fillStyle = 'rgba(192, 132, 252, 0.25)';
+          this.ctx.fill();
+        }
+
+        // Dibujar punto/neurona
+        this.ctx.beginPath();
+        this.ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+        this.ctx.fillStyle = n.color;
         this.ctx.fill();
-      }
+        this.ctx.strokeStyle = '#090d16';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
 
-      this.ctx.beginPath();
-      this.ctx.arc(drawX, drawY, n.radius, 0, Math.PI * 2);
-      this.ctx.fillStyle = n.color;
-      this.ctx.fill();
-      this.ctx.strokeStyle = '#ffffff';
-      this.ctx.lineWidth = 1.5;
-      this.ctx.stroke();
+        // Etiqueta de texto CORTA (2-3 palabras clave)
+        this.ctx.fillStyle = (this.hoveredNode === n) ? '#c084fc' : '#f8fafc';
+        this.ctx.font = n.isCenter ? 'bold 11px Inter' : '9px Inter';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(n.shortLabel, n.x, n.y + n.radius + 12);
+      });
+    }
 
-      this.ctx.fillStyle = (this.hoveredNode === n) ? '#06b6d4' : '#f8fafc';
-      this.ctx.font = n.type === 'topic' ? 'bold 12px Inter' : '10px Inter';
-      this.ctx.textAlign = 'center';
-
-      let shortLabel = n.label;
-      if (shortLabel.length > 25) shortLabel = shortLabel.substring(0, 22) + '...';
-      this.ctx.fillText(shortLabel, drawX, drawY + n.radius + 14);
-    });
-
-    this.animId = requestAnimationFrame(() => this.animate());
+    requestAnimationFrame(() => this.animate());
   }
 }

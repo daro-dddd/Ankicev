@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ceneval-anki-v2';
+const CACHE_NAME = 'ceneval-anki-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
