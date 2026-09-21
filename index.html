@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CENEVAL Software Master - Anki & Conectores PWA</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#090d16">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header Formal -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">CS</div>
+      <div class="brand-title">
+        <h1>CENEVAL Master</h1>
+        <p>Sistema de Repaso Técnico</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="theme-toggle-btn" class="theme-toggle-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <span id="theme-text">Modo Oscuro</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main>
+
+    <!-- Barra de Filtros por Tema -->
+    <div class="topic-filter-bar" id="topic-filter-bar">
+      <button class="topic-chip active" data-topic="all">Todos los Temas</button>
+      <!-- Chips cargados por JS sin emojis -->
+    </div>
+
+    <!-- Pestaña 1: Fichas Anki -->
+    <section id="tab-anki" class="tab-panel active">
+      <div class="anki-container">
+        <div class="card-counter">
+          Ficha <span id="current-card-num">1</span> de <span id="total-cards-num">--</span>
+          &bull; <span id="anki-mastered-count" style="color: var(--success); font-weight:700;">0 Dominadas</span>
+        </div>
+
+        <div class="flashcard-wrapper" id="flashcard-wrapper">
+          <div class="flashcard" id="flashcard">
+            <!-- Frente -->
+            <div class="card-face card-front">
+              <div>
+                <div class="card-badge" id="card-topic-badge">Tema</div>
+                <h3 class="card-question" id="card-question-text">Cargando pregunta...</h3>
+              </div>
+              <div class="card-prompt-hint">
+                Presione o toque la tarjeta para voltear y consultar la respuesta formal
+              </div>
+            </div>
+
+            <!-- Reverso -->
+            <div class="card-face card-back">
+              <div>
+                <div class="card-badge" id="card-back-badge">Respuesta</div>
+                <img id="card-image-view" class="card-image-view" style="display: none;" alt="Imagen del apunte">
+                <div class="card-answer" id="card-answer-text">Cargando respuesta...</div>
+                <div id="card-code-container" style="display: none;">
+                  <pre class="card-code-block"><code id="card-code-text"></code></pre>
+                </div>
+              </div>
+              
+              <!-- Conectores Mentales -->
+              <div class="connectors-box">
+                <div class="connectors-title">Conectores Conceptuales Asociados:</div>
+                <div class="connector-tags" id="card-connectors-list">
+                  <!-- Pills sin emojis -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de Calificación SM-2 -->
+        <div class="anki-rating-controls" id="anki-controls" style="visibility: hidden;">
+          <button class="rate-btn rate-hard" id="btn-rate-hard">
+            Difícil
+            <small>Repasar Hoy</small>
+          </button>
+          <button class="rate-btn rate-good" id="btn-rate-good">
+            Bueno
+            <small>Intervalo Medio</small>
+          </button>
+          <button class="rate-btn rate-easy" id="btn-rate-easy">
+            Fácil / Dominado
+            <small>Siguiente Fase</small>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pestaña 2: Conectores Mentales -->
+    <section id="tab-connectors" class="tab-panel">
+      <div class="connectors-view">
+        <div class="connectors-header">
+          <h2>Red de Conectores Conceptuales</h2>
+          <p>Relaciones cruzadas entre temas de la guía de examen CENEVAL para mejorar la retención de largo plazo.</p>
+        </div>
+        <div class="connector-map-grid" id="connector-map-grid">
+          <!-- Carga dinámica -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Pestaña 3: Simulador Quiz CENEVAL (3 Opciones Separadas) -->
+    <section id="tab-quiz" class="tab-panel">
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <span class="card-badge" id="quiz-topic-badge">Simulador CENEVAL</span>
+          <div class="quiz-score-badge" id="quiz-score-badge">Puntaje: 0 / 0 (0%)</div>
+        </div>
+
+        <h3 class="quiz-question-title" id="quiz-question-text">Cargando reactivo de examen...</h3>
+
+        <!-- Opciones con separación visual clara -->
+        <div class="quiz-options" id="quiz-options-container">
+          <!-- 3 Opciones A, B, C -->
+        </div>
+
+        <!-- Retroalimentación -->
+        <div class="quiz-explanation-box" id="quiz-explanation-box">
+          <div class="quiz-explanation-title" id="quiz-explanation-title">Justificación Técnica CENEVAL:</div>
+          <p id="quiz-explanation-text" style="font-size: 0.92rem; color: var(--text-main); line-height: 1.6;"></p>
+        </div>
+
+        <button class="quiz-next-btn" id="quiz-next-btn" style="display: none;">Siguiente Reactivo ➔</button>
+      </div>
+    </section>
+
+    <!-- Pestaña 4: Apuntes y Fotos -->
+    <section id="tab-upload" class="tab-panel">
+      <div class="upload-card">
+        <h2 style="font-size: 1.25rem; margin-bottom: 6px;">Apuntes y Fotos de Estudio</h2>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px;">Suba una imagen local o pegue un enlace / URL directo (Imgur, ImgBB, etc.) para crear automáticamente una nueva tarjeta en su mazo Anki.</p>
+
+        <!-- Selección por archivo o URL -->
+        <div class="form-group">
+          <label for="photo-url-input">Opción A: Pegar Enlace / URL Público de Imagen (ImgBB, Imgur, etc.)</label>
+          <input type="url" id="photo-url-input" class="form-input" placeholder="https://i.ibb.co/ejemplo/imagen.jpg">
+        </div>
+
+        <div class="dropzone" id="photo-dropzone">
+          <p style="font-size: 0.88rem; font-weight: 600; color: var(--text-muted);">Opción B: Toca aquí para seleccionar archivo de foto desde tu dispositivo</p>
+          <input type="file" id="photo-file-input" accept="image/*" style="display: none;">
+          <img id="photo-preview-img" class="photo-preview" alt="Vista previa de imagen">
+        </div>
+
+        <div class="form-group">
+          <label for="photo-title-input">Título de la Ficha / Apunte</label>
+          <input type="text" id="photo-title-input" class="form-input" placeholder="Ejemplo: Diagrama de Clases y Métodos POO">
+        </div>
+
+        <div class="form-group">
+          <label for="photo-topic-select">Tema Asociado de la Guía</label>
+          <select id="photo-topic-select" class="form-select">
+            <!-- Carga de opciones -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="photo-notes-input">Resumen o Explicación del Apunte</label>
+          <textarea id="photo-notes-input" class="form-textarea" rows="3" placeholder="Escriba aquí los conceptos clave asociados..."></textarea>
+        </div>
+
+        <button id="save-photo-card-btn" class="save-card-btn">Guardar Apunte y Crear Ficha Anki</button>
+      </div>
+
+      <!-- Galería -->
+      <h3 style="margin-bottom: 14px; font-size: 1.1rem;">Fichas y Apuntes Guardados</h3>
+      <div class="user-cards-grid" id="user-cards-grid">
+        <!-- Render dinámico -->
+      </div>
+    </section>
+
+    <!-- Pestaña 5: COCOMO -->
+    <section id="tab-cocomo" class="tab-panel">
+      <div class="cocomo-card">
+        <h2 style="font-size: 1.25rem; margin-bottom: 6px;">Calculadora & Tutor COCOMO I y II</h2>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">Estimación formal de esfuerzo (Personas-Mes), tiempo de desarrollo y personal necesario.</p>
+
+        <div class="cocomo-grid">
+          <div>
+            <div class="form-group">
+              <label for="cocomo-kloc">Miles de Líneas de Código (KLOC)</label>
+              <input type="number" id="cocomo-kloc" class="form-input" value="10" step="1" min="1">
+              <small style="color: var(--text-muted);">Ejemplo: 10,000 líneas = 10 KLOC</small>
+            </div>
+
+            <div class="form-group">
+              <label for="cocomo-mode">Modo del Proyecto (COCOMO I)</label>
+              <select id="cocomo-mode" class="form-select">
+                <option value="organic">Orgánico (Pequeño / Flexible - a=2.4, b=1.05)</option>
+                <option value="semidetached">Semiacoplado (Mediano / Mixto - a=3.0, b=1.12)</option>
+                <option value="embedded">Empotrado / Embedded (Complejo / Rígido - a=3.6, b=1.20)</option>
+              </select>
+            </div>
+
+            <button id="cocomo-calc-btn" class="save-card-btn">Calcular Estimación Técnica</button>
+          </div>
+
+          <div class="cocomo-result-box">
+            <div class="result-metric">
+              <div class="result-metric-val" id="res-pm">27.0 Personas-Mes</div>
+              <div class="result-metric-lbl">Esfuerzo Requerido (PM)</div>
+            </div>
+
+            <div class="result-metric">
+              <div class="result-metric-val" id="res-tdev">8.8 Meses</div>
+              <div class="result-metric-lbl">Tiempo de Desarrollo (TDEV)</div>
+            </div>
+
+            <div class="result-metric">
+              <div class="result-metric-val" id="res-staff">4 Desarrolladores</div>
+              <div class="result-metric-lbl">Personal Promedio (Staff)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desglose Matemático -->
+        <div style="margin-top: 24px; padding: 18px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <h4 style="color: var(--accent-cyan); margin-bottom: 10px; font-size: 0.95rem;">Desglose Matemático CENEVAL:</h4>
+          <div id="cocomo-steps-list" style="font-size: 0.88rem; color: var(--text-main); line-height: 1.6;">
+            <!-- Pasos -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Barra Nav Inferior con Vector SVGs -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-tab="tab-anki">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      <span>Fichas Anki</span>
+    </button>
+    <button class="nav-item" data-tab="tab-connectors">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      <span>Conectores</span>
+    </button>
+    <button class="nav-item" data-tab="tab-quiz">
+      <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+      <span>Simulador</span>
+    </button>
+    <button class="nav-item" data-tab="tab-upload">
+      <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+      <span>Fotos/Apuntes</span>
+    </button>
+    <button class="nav-item" data-tab="tab-cocomo">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+      <span>COCOMO</span>
+    </button>
+  </nav>
+
+  <!-- JS Dependencies -->
+  <script src="js/topics-data.js"></script>
+  <script src="js/anki-engine.js"></script>
+  <script src="js/photo-uploader.js"></script>
+  <script src="js/quiz-engine.js"></script>
+  <script src="js/cocomo-calculator.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registrado:', reg.scope))
+          .catch(err => console.log('Error de Service Worker:', err));
+      });
+    }
+  </script>
+</body>
+</html>
