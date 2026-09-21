@@ -1,7 +1,8 @@
 /**
  * Controlador Principal de la Aplicación CENEVAL Master PWA
- * Incluye Grafo Neuronal 2D Canvas Estilo Obsidian ("Vista Gráfica"),
- * Repetición Espaciada Anki, Quiz Simulator y Calculadora COCOMO.
+ * Alineado al EGEL Plus ISOFT Nivel SOBRESALIENTE.
+ * Soporta Grafo Neuronal Canvas Obsidian, Repetición Espaciada Anki con Citas Bibliográficas,
+ * Simulador Quiz de 3 Opciones y Módulo de Comprensión Lectora.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             question: uc.title,
             answer: uc.notes,
             image: uc.image,
+            citation: 'Apunte del Usuario',
             connectors: ['Apunte Guardado - Concepto Personal'],
             progress: {
               interval: 1,
@@ -123,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCurrentCard();
   });
 
-  // 6. Lógica de Volteo de Fichas Anki
+  // 6. Volteo e Interactividad de Tarjetas
   const flashcardWrapper = document.getElementById('flashcard-wrapper');
   const flashcard = document.getElementById('flashcard');
   const ankiControls = document.getElementById('anki-controls');
@@ -163,7 +165,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const card = currentCardList[currentCardIndex];
     document.getElementById('card-topic-badge').textContent = `${card.topicName} - ${card.badge || ''}`;
     document.getElementById('card-back-badge').textContent = `${card.topicName} - Respuesta`;
-    document.getElementById('card-question-text').textContent = card.question;
+    
+    // Incluir Cita Bibliográfica si existe
+    let questionHTML = card.question;
+    if (card.citation) {
+      questionHTML += `<br><span style="font-size: 0.72rem; color: var(--accent-cyan); display: block; margin-top: 8px; font-weight: 500;">📖 Ref. CENEVAL: ${card.citation}</span>`;
+    }
+    document.getElementById('card-question-text').innerHTML = questionHTML;
     document.getElementById('card-answer-text').textContent = card.answer;
 
     const cardImageView = document.getElementById('card-image-view');
@@ -354,7 +362,6 @@ class ObsidianGraphRenderer {
     this.nodes = [];
     this.edges = [];
 
-    // Nodos padre (Temas principales)
     this.topicsData.forEach((t, i) => {
       const angle = (i / this.topicsData.length) * Math.PI * 2;
       const topicNode = {
@@ -367,13 +374,10 @@ class ObsidianGraphRenderer {
         x: 0,
         y: 0,
         baseAngle: angle,
-        vx: 0,
-        vy: 0,
         cards: t.cards
       };
       this.nodes.push(topicNode);
 
-      // Nodos hijo (Fichas / Neuronas del tema)
       t.cards.forEach((c, j) => {
         const subAngle = angle + ((j - t.cards.length / 2) * 0.25);
         const cardNode = {
@@ -382,18 +386,16 @@ class ObsidianGraphRenderer {
           topicId: t.id,
           label: c.question,
           answer: c.answer,
+          citation: c.citation,
           connectors: c.connectors,
           color: '#6366f1',
           radius: 9,
           x: 0,
           y: 0,
-          baseAngle: subAngle,
-          vx: 0,
-          vy: 0
+          baseAngle: subAngle
         };
         this.nodes.push(cardNode);
 
-        // Conexión sináptica (Edge) entre tema y tarjeta
         this.edges.push({
           source: topicNode,
           target: cardNode,
@@ -482,7 +484,7 @@ class ObsidianGraphRenderer {
       this.canvas.style.cursor = found ? 'pointer' : 'crosshair';
     });
 
-    this.canvas.addEventListener('click', (e) => {
+    this.canvas.addEventListener('click', () => {
       if (this.hoveredNode) {
         this.showNodePopover(this.hoveredNode);
       }
@@ -492,9 +494,14 @@ class ObsidianGraphRenderer {
   }
 
   showNodePopover(node) {
-    document.getElementById('popover-badge').textContent = node.type === 'topic' ? 'Tema Central' : 'Neurona / Ficha';
+    document.getElementById('popover-badge').textContent = node.type === 'topic' ? 'Área CENEVAL' : 'Ficha Técnica';
     document.getElementById('popover-title').textContent = node.label;
-    document.getElementById('popover-desc').textContent = node.answer || `Presiona este tema central para enfocar sus neuronas de estudio asociadas.`;
+    
+    let desc = node.answer || 'Seleccione este tema central para consultar sus fichas de análisis.';
+    if (node.citation) {
+      desc += `<br><br><span style="font-size:0.75rem; color:var(--accent-cyan); font-weight:600;">📖 Referencia Bibliográfica: ${node.citation}</span>`;
+    }
+    document.getElementById('popover-desc').innerHTML = desc;
 
     const connContainer = document.getElementById('popover-connectors');
     connContainer.innerHTML = '';
@@ -526,7 +533,6 @@ class ObsidianGraphRenderer {
     const visibleNodes = this.getVisibleNodes();
     const visibleEdges = this.getVisibleEdges();
 
-    // Dibujar conexiones / sinapsis
     visibleEdges.forEach(e => {
       this.ctx.beginPath();
       this.ctx.moveTo(e.source.x, e.source.y);
@@ -536,7 +542,6 @@ class ObsidianGraphRenderer {
       this.ctx.stroke();
     });
 
-    // Movimiento sutil flotante
     const time = Date.now() * 0.0015;
     visibleNodes.forEach((n, idx) => {
       const offsetX = Math.sin(time + idx) * 0.4;
@@ -545,7 +550,6 @@ class ObsidianGraphRenderer {
       const drawX = n.x + offsetX;
       const drawY = n.y + offsetY;
 
-      // Dibujar resplandor si hover
       if (this.hoveredNode === n) {
         this.ctx.beginPath();
         this.ctx.arc(drawX, drawY, n.radius + 8, 0, Math.PI * 2);
@@ -553,7 +557,6 @@ class ObsidianGraphRenderer {
         this.ctx.fill();
       }
 
-      // Dibujar nodo
       this.ctx.beginPath();
       this.ctx.arc(drawX, drawY, n.radius, 0, Math.PI * 2);
       this.ctx.fillStyle = n.color;
@@ -562,7 +565,6 @@ class ObsidianGraphRenderer {
       this.ctx.lineWidth = 1.5;
       this.ctx.stroke();
 
-      // Dibujar etiquetas de texto
       this.ctx.fillStyle = (this.hoveredNode === n) ? '#06b6d4' : '#f8fafc';
       this.ctx.font = n.type === 'topic' ? 'bold 12px Inter' : '10px Inter';
       this.ctx.textAlign = 'center';
