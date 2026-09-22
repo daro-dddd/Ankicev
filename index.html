@@ -264,7 +264,7 @@
 
         <!-- Explicación COCOMO -->
         <div class="cocomo-explanation-box">
-          <h4>💡 ¿Cómo funciona COCOMO I y COCOMO II en el CENEVAL?</h4>
+          <h4>¿Cómo funciona COCOMO I y COCOMO II en el CENEVAL?</h4>
           <p><strong>COCOMO I (1981):</strong> Estima costo, tiempo y gente usando <code>KLOC</code> (Miles de Líneas de Código). Posee 3 modos: Orgánico, Semiacoplado y Empotrado.</p>
           <p><strong>COCOMO II (Evolución Moderna):</strong> En lugar de basarse únicamente en líneas de código, COCOMO II estima mediante <strong>Puntos de Objeto</strong> y <strong>Puntos de Función</strong>.</p>
         </div>
@@ -306,16 +306,16 @@
   </nav>
 
   <!-- JS Dependencies with Cache Busting -->
-  <script src="js/topics-data.js?v=12"></script>
-  <script src="js/anki-engine.js?v=12"></script>
-  <script src="js/photo-uploader.js?v=12"></script>
-  <script src="js/quiz-engine.js?v=12"></script>
-  <script src="js/cocomo-calculator.js?v=12"></script>
-  <script src="js/app.js?v=12"></script>
+  <script src="js/topics-data.js?v=13"></script>
+  <script src="js/anki-engine.js?v=13"></script>
+  <script src="js/photo-uploader.js?v=13"></script>
+  <script src="js/quiz-engine.js?v=13"></script>
+  <script src="js/cocomo-calculator.js?v=13"></script>
+  <script src="js/app.js?v=13"></script>
 
   <!-- Service Worker Registration & Cache Auto-Buster -->
   <script>
-    const PWA_VERSION = 'v12';
+    const PWA_VERSION = 'v13';
     if (localStorage.getItem('ceneval_sw_ver') !== PWA_VERSION) {
       localStorage.setItem('ceneval_sw_ver', PWA_VERSION);
       if ('serviceWorker' in navigator) {
@@ -332,9 +332,9 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=12')
+        navigator.serviceWorker.register('./sw.js?v=13')
           .then(reg => {
-            console.log('Service Worker v12 registrado:', reg.scope);
+            console.log('Service Worker v13 registrado:', reg.scope);
             reg.update();
           })
           .catch(err => console.log('Error de Service Worker:', err));
@@ -345,12 +345,12 @@
   <div id="sm2-modal" class="sm2-modal">
     <div class="sm2-modal-content">
       <button id="sm2-modal-close" class="sm2-modal-close">&times;</button>
-      <h3>💡 ¿Cómo funciona la repetición de fichas?</h3>
+      <h3>¿Cómo funciona la repetición de fichas?</h3>
       <p>El sistema utiliza el algoritmo científico <strong>Anki SM-2 (Spaced Repetition)</strong> para memorización activa a largo plazo:</p>
       <ul>
-        <li><strong>🔴 Difícil (Repasar Hoy):</strong> Reinicia el intervalo a 1 día. Esta tarjeta se marca para repaso inmediato y la puedes consultar en cualquier momento en el filtro <em>"⚡ Fichas por Repasar / Difíciles"</em>.</li>
-        <li><strong>🔵 Bueno / Regular (6 días):</strong> Aumenta progresivamente el intervalo de repaso de forma moderada.</li>
-        <li><strong>🟢 Fácil / Dominada (10+ días):</strong> Multiplica el intervalo y suma la tarjeta a tu contador de <strong>Dominadas</strong>.</li>
+        <li><strong>Difícil (Repasar Hoy):</strong> Reinicia el intervalo a 1 día. Esta tarjeta se marca para repaso inmediato y la puedes consultar en cualquier momento en el filtro <em>"Fichas por Repasar / Difíciles"</em>.</li>
+        <li><strong>Bueno / Regular (6 días):</strong> Aumenta progresivamente el intervalo de repaso de forma moderada.</li>
+        <li><strong>Fácil / Dominada (10+ días):</strong> Multiplica el intervalo y suma la tarjeta a tu contador de <strong>Dominadas</strong>.</li>
       </ul>
     </div>
   </div>

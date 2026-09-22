@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const diffChip = document.createElement('button');
   diffChip.className = 'topic-chip diff-chip';
   diffChip.setAttribute('data-topic', 'difficult');
-  diffChip.textContent = `🔥 Por Repasar / Difíciles (${initialStats.difficult})`;
+  diffChip.textContent = `Por Repasar / Difíciles (${initialStats.difficult})`;
   if (activeTopicId === 'difficult') diffChip.classList.add('active');
 
   diffChip.addEventListener('click', () => {
@@ -207,6 +207,32 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCurrentCard();
   });
   topicFilterBar.appendChild(diffChip);
+
+  // Auto-Ocultar Barra Flotante de Navegación al Hacer Scroll Hacia Abajo
+  let lastScrollY = window.scrollY;
+  const bottomNav = document.querySelector('.bottom-nav');
+
+  if (bottomNav) {
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY < 40) {
+        bottomNav.classList.remove('nav-hidden');
+        lastScrollY = currentScrollY;
+        return;
+      }
+
+      if (currentScrollY > lastScrollY + 8) {
+        // Scroll hacia abajo -> ocultar barra flotante
+        bottomNav.classList.add('nav-hidden');
+      } else if (currentScrollY < lastScrollY - 8) {
+        // Scroll hacia arriba -> mostrar barra flotante
+        bottomNav.classList.remove('nav-hidden');
+      }
+
+      lastScrollY = currentScrollY;
+    }, { passive: true });
+  }
 
   // Chips para las 4 Áreas Principales de CENEVAL EGEL Plus ISOFT
   const cenevalAreas = [
@@ -282,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Actualiza contador de difíciles en chip
     if (diffChip) {
-      diffChip.textContent = `🔥 Por Repasar / Difíciles (${stats.difficult})`;
+      diffChip.textContent = `Por Repasar / Difíciles (${stats.difficult})`;
     }
 
     if (currentCardList.length === 0) {

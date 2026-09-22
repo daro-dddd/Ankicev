@@ -98,7 +98,7 @@ class AnkiEngine {
       // Si la respuesta fue difícil o incorrecta, reiniciar repeticiones
       repetition = 0;
       interval = 1;
-      message = '📌 Marcada como Difícil: Repaso inmediato / mañana (Intervalo: 1 día)';
+      message = 'Marcada como Difícil: Repaso inmediato / mañana (Intervalo: 1 día)';
     } else {
       if (repetition === 0) {
         interval = 1;
@@ -110,9 +110,9 @@ class AnkiEngine {
       repetition += 1;
 
       if (grade === 'easy' || interval >= 10) {
-        message = `🌟 Tarjeta Dominada: Repaso programado en ${interval} días`;
+        message = `Tarjeta Dominada: Repaso programado en ${interval} días`;
       } else {
-        message = `👍 Repaso programado en ${interval} días`;
+        message = `Repaso programado en ${interval} días`;
       }
     }
 
