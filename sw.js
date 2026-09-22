@@ -1,20 +1,20 @@
-const CACHE_NAME = 'ceneval-anki-v14';
+const CACHE_NAME = 'ceneval-anki-v16';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './manifest.json',
   './assets/logo.png',
-  './js/topics-data.js?v=14',
-  './js/anki-engine.js?v=14',
-  './js/photo-uploader.js?v=14',
-  './js/quiz-engine.js?v=14',
-  './js/cocomo-calculator.js?v=14',
-  './js/app.js?v=14'
+  './js/topics-data.js?v=16',
+  './js/anki-engine.js?v=16',
+  './js/photo-uploader.js?v=16',
+  './js/quiz-engine.js?v=16',
+  './js/cocomo-calculator.js?v=16',
+  './js/app.js?v=16'
 ];
 
 self.addEventListener('install', (event) => {
-  console.log('[PWA SW] Installing cache version v14');
+  console.log('[PWA SW] Installing cache version v16');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
