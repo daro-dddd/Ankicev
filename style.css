@@ -83,32 +83,33 @@ header {
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .brand-logo-img {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   background: transparent;
   border: none;
-  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.4));
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.45));
   transition: var(--transition);
 }
 
 .brand-logo-img:hover {
   transform: scale(1.08);
-  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.7));
+  filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.7));
 }
 
 .brand-title h1 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
 }
 
 .brand-title p {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
 }
 
@@ -122,19 +123,151 @@ header {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   color: var(--text-main);
-  padding: 8px 14px;
-  border-radius: 20px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.82rem;
-  font-weight: 600;
+  justify-content: center;
   transition: var(--transition);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
 }
 
 .theme-toggle-btn:hover {
   border-color: var(--accent-primary);
+  transform: scale(1.06);
+  color: var(--accent-cyan);
+}
+
+/* Modal SM-2 Explicación */
+.sm2-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.sm2-modal.active {
+  display: flex;
+  animation: fadeIn 0.25s ease;
+}
+
+.sm2-modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  max-width: 500px;
+  width: 100%;
+  padding: 24px;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+  color: var(--text-main);
+}
+
+.sm2-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.sm2-modal-close:hover {
+  color: var(--danger);
+}
+
+.sm2-modal-content h3 {
+  font-size: 1.15rem;
+  margin-bottom: 12px;
+  color: var(--accent-cyan);
+}
+
+.sm2-modal-content p {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.sm2-modal-content ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sm2-modal-content li {
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+  line-height: 1.45;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent-primary);
+}
+
+.sm2-info-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--accent-cyan);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  transition: var(--transition);
+  vertical-align: middle;
+}
+
+.sm2-info-btn:hover {
+  background: var(--accent-cyan);
+  color: #090d16;
+}
+
+/* Floating Rating Toast */
+.anki-toast {
+  position: fixed;
+  bottom: 85px;
+  left: 50%;
+  transform: translateX(-50%) translateY(30px);
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-cyan);
+  color: var(--text-main);
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 500;
+  white-space: nowrap;
+  max-width: 90vw;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.anki-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* Main Layout */

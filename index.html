@@ -35,9 +35,8 @@
       </div>
     </div>
     <div class="header-actions">
-      <button id="theme-toggle-btn" class="theme-toggle-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        <span id="theme-text">Modo Oscuro</span>
+      <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Cambiar Tema" title="Cambiar Tema">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
       </button>
     </div>
   </header>
@@ -57,6 +56,7 @@
         <div class="card-counter">
           Ficha <span id="current-card-num">1</span> de <span id="total-cards-num">--</span>
           &bull; <span id="anki-mastered-count" style="color: var(--success); font-weight:700;">0 Dominadas</span>
+          <button id="sm2-info-btn" class="sm2-info-btn" title="¿Cómo funciona la repetición?">?</button>
         </div>
 
         <div class="flashcard-wrapper" id="flashcard-wrapper">
@@ -306,16 +306,16 @@
   </nav>
 
   <!-- JS Dependencies with Cache Busting -->
-  <script src="js/topics-data.js?v=11"></script>
-  <script src="js/anki-engine.js?v=11"></script>
-  <script src="js/photo-uploader.js?v=11"></script>
-  <script src="js/quiz-engine.js?v=11"></script>
-  <script src="js/cocomo-calculator.js?v=11"></script>
-  <script src="js/app.js?v=11"></script>
+  <script src="js/topics-data.js?v=12"></script>
+  <script src="js/anki-engine.js?v=12"></script>
+  <script src="js/photo-uploader.js?v=12"></script>
+  <script src="js/quiz-engine.js?v=12"></script>
+  <script src="js/cocomo-calculator.js?v=12"></script>
+  <script src="js/app.js?v=12"></script>
 
   <!-- Service Worker Registration & Cache Auto-Buster -->
   <script>
-    const PWA_VERSION = 'v11';
+    const PWA_VERSION = 'v12';
     if (localStorage.getItem('ceneval_sw_ver') !== PWA_VERSION) {
       localStorage.setItem('ceneval_sw_ver', PWA_VERSION);
       if ('serviceWorker' in navigator) {
@@ -332,14 +332,31 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=11')
+        navigator.serviceWorker.register('./sw.js?v=12')
           .then(reg => {
-            console.log('Service Worker v11 registrado:', reg.scope);
+            console.log('Service Worker v12 registrado:', reg.scope);
             reg.update();
           })
           .catch(err => console.log('Error de Service Worker:', err));
       });
     }
   </script>
+  <!-- Modal Explicación Algoritmo SM-2 Repetición -->
+  <div id="sm2-modal" class="sm2-modal">
+    <div class="sm2-modal-content">
+      <button id="sm2-modal-close" class="sm2-modal-close">&times;</button>
+      <h3>💡 ¿Cómo funciona la repetición de fichas?</h3>
+      <p>El sistema utiliza el algoritmo científico <strong>Anki SM-2 (Spaced Repetition)</strong> para memorización activa a largo plazo:</p>
+      <ul>
+        <li><strong>🔴 Difícil (Repasar Hoy):</strong> Reinicia el intervalo a 1 día. Esta tarjeta se marca para repaso inmediato y la puedes consultar en cualquier momento en el filtro <em>"⚡ Fichas por Repasar / Difíciles"</em>.</li>
+        <li><strong>🔵 Bueno / Regular (6 días):</strong> Aumenta progresivamente el intervalo de repaso de forma moderada.</li>
+        <li><strong>🟢 Fácil / Dominada (10+ días):</strong> Multiplica el intervalo y suma la tarjeta a tu contador de <strong>Dominadas</strong>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Toast Notificación de Calificación -->
+  <div id="anki-toast" class="anki-toast"></div>
+
 </body>
 </html>

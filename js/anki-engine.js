@@ -49,9 +49,13 @@ class AnkiEngine {
     }
   }
 
-  // Filtra tarjetas por tema ('all', ID de Área o ID de Tema)
+  // Filtra tarjetas por tema ('all', 'difficult', ID de Área o ID de Tema)
   getCardsForTopic(topicId = 'all') {
     if (topicId === 'all') return this.allCards;
+
+    if (topicId === 'difficult') {
+      return this.allCards.filter(c => c.progress.repetition === 0 || c.progress.interval === 1);
+    }
     
     if (topicId === 'area_1') {
       const area1Topics = ['requerimientos', 'user_story', 'documentacion'];
@@ -76,7 +80,7 @@ class AnkiEngine {
   // grade: 'hard' (0-2), 'good' (3-4), 'easy' (5)
   rateCard(cardId, grade) {
     const card = this.allCards.find(c => c.id === cardId);
-    if (!card) return;
+    if (!card) return null;
 
     let { interval, repetition, ef } = card.progress;
     let numericGrade = 3;
@@ -89,10 +93,12 @@ class AnkiEngine {
     ef = ef + (0.1 - (5 - numericGrade) * (0.08 + (5 - numericGrade) * 0.02));
     if (ef < 1.3) ef = 1.3;
 
+    let message = '';
     if (numericGrade < 3) {
       // Si la respuesta fue difícil o incorrecta, reiniciar repeticiones
       repetition = 0;
       interval = 1;
+      message = '📌 Marcada como Difícil: Repaso inmediato / mañana (Intervalo: 1 día)';
     } else {
       if (repetition === 0) {
         interval = 1;
@@ -102,6 +108,12 @@ class AnkiEngine {
         interval = Math.round(interval * ef);
       }
       repetition += 1;
+
+      if (grade === 'easy' || interval >= 10) {
+        message = `🌟 Tarjeta Dominada: Repaso programado en ${interval} días`;
+      } else {
+        message = `👍 Repaso programado en ${interval} días`;
+      }
     }
 
     const nextDueDate = new Date();
@@ -116,18 +128,22 @@ class AnkiEngine {
 
     card.progress = this.userProgress[cardId];
     this.saveProgress();
+    return { interval, repetition, message };
   }
 
   getStats() {
     const total = this.allCards.length;
     let reviewed = 0;
     let mastered = 0;
+    let difficult = 0;
 
-    Object.values(this.userProgress).forEach(p => {
+    this.allCards.forEach(c => {
+      const p = c.progress;
       if (p.repetition > 0) reviewed++;
       if (p.interval >= 10) mastered++;
+      if (p.repetition === 0 || p.interval === 1) difficult++;
     });
 
-    return { total, reviewed, mastered };
+    return { total, reviewed, mastered, difficult };
   }
 }

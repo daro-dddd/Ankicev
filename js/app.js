@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let obsidianGraph = null;
 
   const themeToggleBtn = document.getElementById('theme-toggle-btn');
-  const themeText = document.getElementById('theme-text');
   const navItems = document.querySelectorAll('.nav-item');
   const tabPanels = document.querySelectorAll('.tab-panel');
   const topicFilterBar = document.getElementById('topic-filter-bar');
@@ -69,18 +68,87 @@ document.addEventListener('DOMContentLoaded', () => {
   function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('ceneval_theme', theme);
-    if (theme === 'dark') {
-      themeText.textContent = 'Modo Oscuro';
-    } else {
-      themeText.textContent = 'Modo Claro';
+    if (themeToggleBtn) {
+      if (theme === 'dark') {
+        themeToggleBtn.setAttribute('title', 'Cambiar a Modo Claro');
+        themeToggleBtn.setAttribute('aria-label', 'Cambiar a Modo Claro');
+        themeToggleBtn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        `;
+      } else {
+        themeToggleBtn.setAttribute('title', 'Cambiar a Modo Oscuro');
+        themeToggleBtn.setAttribute('aria-label', 'Cambiar a Modo Oscuro');
+        themeToggleBtn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        `;
+      }
     }
     if (typeof obsidianGraph !== 'undefined' && obsidianGraph) {
       obsidianGraph.updateThemeBackground();
     }
   }
 
-  // 4. Navegación por Pestañas
+  // Toast Notification para Calificaciones
+  function showToast(msg) {
+    const toast = document.getElementById('anki-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    if (window.toastTimer) clearTimeout(window.toastTimer);
+    window.toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3200);
+  }
 
+  // Modal Explicación Algoritmo SM-2
+  const sm2InfoBtn = document.getElementById('sm2-info-btn');
+  const sm2Modal = document.getElementById('sm2-modal');
+  const sm2ModalClose = document.getElementById('sm2-modal-close');
+
+  if (sm2InfoBtn && sm2Modal) {
+    sm2InfoBtn.addEventListener('click', () => sm2Modal.classList.add('active'));
+  }
+  if (sm2ModalClose && sm2Modal) {
+    sm2ModalClose.addEventListener('click', () => sm2Modal.classList.remove('active'));
+    sm2Modal.addEventListener('click', (e) => {
+      if (e.target === sm2Modal) sm2Modal.classList.remove('active');
+    });
+  }
+
+  // Persistencia de la Posición Exacta de Estudio (Ficha y Tema)
+  const savedTopicId = localStorage.getItem('ceneval_last_topic_id') || 'all';
+  const savedCardIndex = parseInt(localStorage.getItem('ceneval_last_card_index') || '0', 10);
+
+  activeTopicId = savedTopicId;
+  currentCardList = ankiEngine.getCardsForTopic(activeTopicId);
+  if (savedCardIndex >= 0 && savedCardIndex < currentCardList.length) {
+    currentCardIndex = savedCardIndex;
+  } else {
+    currentCardIndex = 0;
+  }
+
+  function saveCurrentStudyState() {
+    try {
+      localStorage.setItem('ceneval_last_topic_id', activeTopicId);
+      localStorage.setItem('ceneval_last_card_index', currentCardIndex.toString());
+    } catch (e) {
+      console.error('Error al guardar estado de estudio:', e);
+    }
+  }
+
+  // 4. Navegación por Pestañas
   navItems.forEach(item => {
     item.addEventListener('click', () => {
       const targetTab = item.getAttribute('data-tab');
@@ -103,19 +171,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 5. Renderizado de Filtros por Área y Tema Individual
+  // 5. Renderizado de Filtros por Área, Tema e Historial de Difíciles
   const allChip = document.querySelector('.topic-chip[data-topic="all"]');
   if (allChip) {
     allChip.textContent = 'Todos los Temas (100 Fichas)';
+    if (activeTopicId === 'all') allChip.classList.add('active');
+    else allChip.classList.remove('active');
+
     allChip.addEventListener('click', (e) => {
       document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
       allChip.classList.add('active');
       activeTopicId = 'all';
       currentCardList = ankiEngine.getCardsForTopic('all');
       currentCardIndex = 0;
+      saveCurrentStudyState();
       renderCurrentCard();
     });
   }
+
+  // Chip Filtro Fichas Difíciles / Por Repasar
+  const initialStats = ankiEngine.getStats();
+  const diffChip = document.createElement('button');
+  diffChip.className = 'topic-chip diff-chip';
+  diffChip.setAttribute('data-topic', 'difficult');
+  diffChip.textContent = `🔥 Por Repasar / Difíciles (${initialStats.difficult})`;
+  if (activeTopicId === 'difficult') diffChip.classList.add('active');
+
+  diffChip.addEventListener('click', () => {
+    document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
+    diffChip.classList.add('active');
+    activeTopicId = 'difficult';
+    currentCardList = ankiEngine.getCardsForTopic('difficult');
+    currentCardIndex = 0;
+    saveCurrentStudyState();
+    renderCurrentCard();
+  });
+  topicFilterBar.appendChild(diffChip);
 
   // Chips para las 4 Áreas Principales de CENEVAL EGEL Plus ISOFT
   const cenevalAreas = [
@@ -130,12 +221,15 @@ document.addEventListener('DOMContentLoaded', () => {
     areaChip.className = 'topic-chip area-chip';
     areaChip.setAttribute('data-topic', area.id);
     areaChip.textContent = area.name;
+    if (activeTopicId === area.id) areaChip.classList.add('active');
+
     areaChip.addEventListener('click', () => {
       document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
       areaChip.classList.add('active');
       activeTopicId = area.id;
       currentCardList = ankiEngine.getCardsForTopic(activeTopicId);
       currentCardIndex = 0;
+      saveCurrentStudyState();
       renderCurrentCard();
     });
     topicFilterBar.appendChild(areaChip);
@@ -147,18 +241,21 @@ document.addEventListener('DOMContentLoaded', () => {
     chip.className = 'topic-chip';
     chip.setAttribute('data-topic', topic.id);
     chip.textContent = `${topic.name} (${topic.cards ? topic.cards.length : 0})`;
+    if (activeTopicId === topic.id) chip.classList.add('active');
+
     chip.addEventListener('click', () => {
       document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       activeTopicId = topic.id;
       currentCardList = ankiEngine.getCardsForTopic(activeTopicId);
       currentCardIndex = 0;
+      saveCurrentStudyState();
       renderCurrentCard();
     });
     topicFilterBar.appendChild(chip);
   });
 
-  // 6. Renderizado Limpio de Fichas Anki (Conectores ARRIBA, Referencia ABAJO)
+  // 6. Renderizado Limpio de Fichas Anki
   const flashcardWrapper = document.getElementById('flashcard-wrapper');
   const flashcard = document.getElementById('flashcard');
   const ankiControls = document.getElementById('anki-controls');
@@ -183,12 +280,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalNumEl = document.getElementById('total-cards-num');
     const stats = ankiEngine.getStats();
 
+    // Actualiza contador de difíciles en chip
+    if (diffChip) {
+      diffChip.textContent = `🔥 Por Repasar / Difíciles (${stats.difficult})`;
+    }
+
     if (currentCardList.length === 0) {
       cardNumEl.textContent = '0';
       totalNumEl.textContent = '0';
       document.getElementById('card-question-text').textContent = 'No hay tarjetas disponibles para este filtro.';
       document.getElementById('card-answer-text').textContent = '';
-      document.getElementById('card-topic-badge').textContent = 'Vacio';
+      document.getElementById('card-topic-badge').textContent = 'Vacío';
       document.getElementById('card-front-connectors').innerHTML = '';
       document.getElementById('card-back-connectors').innerHTML = '';
       document.getElementById('card-citation-box').textContent = '';
@@ -198,6 +300,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentCardIndex >= currentCardList.length) {
       currentCardIndex = 0;
     }
+
+    saveCurrentStudyState();
 
     const card = currentCardList[currentCardIndex];
     cardNumEl.textContent = (currentCardIndex + 1).toString();
@@ -265,9 +369,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const grade = btn.getAttribute('data-grade');
       const card = currentCardList[currentCardIndex];
-      ankiEngine.rateCard(card.id, grade);
+      const res = ankiEngine.rateCard(card.id, grade);
+
+      if (res && res.message) {
+        showToast(res.message);
+      }
 
       currentCardIndex = (currentCardIndex + 1) % currentCardList.length;
+      saveCurrentStudyState();
       renderCurrentCard();
     });
   });
