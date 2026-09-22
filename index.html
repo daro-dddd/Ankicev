@@ -10,9 +10,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Favicon / Logo de Pestaña -->
-  <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="apple-touch-icon" href="assets/logo.png">
+  <!-- Favicon / Logo de Pestaña con Cache Busting v18 -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=18">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png?v=18">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/logo.png?v=18">
+  <link rel="shortcut icon" href="assets/logo.png?v=18">
+  <link rel="apple-touch-icon" href="assets/logo.png?v=18">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -306,16 +309,16 @@
   </nav>
 
   <!-- JS Dependencies with Cache Busting -->
-  <script src="js/topics-data.js?v=17"></script>
-  <script src="js/anki-engine.js?v=17"></script>
-  <script src="js/photo-uploader.js?v=17"></script>
-  <script src="js/quiz-engine.js?v=17"></script>
-  <script src="js/cocomo-calculator.js?v=17"></script>
-  <script src="js/app.js?v=17"></script>
+  <script src="js/topics-data.js?v=18"></script>
+  <script src="js/anki-engine.js?v=18"></script>
+  <script src="js/photo-uploader.js?v=18"></script>
+  <script src="js/quiz-engine.js?v=18"></script>
+  <script src="js/cocomo-calculator.js?v=18"></script>
+  <script src="js/app.js?v=18"></script>
 
   <!-- Service Worker Registration & Cache Auto-Buster -->
   <script>
-    const PWA_VERSION = 'v17';
+    const PWA_VERSION = 'v18';
     if (localStorage.getItem('ceneval_sw_ver') !== PWA_VERSION) {
       localStorage.setItem('ceneval_sw_ver', PWA_VERSION);
       if ('serviceWorker' in navigator) {
@@ -332,9 +335,9 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=17')
+        navigator.serviceWorker.register('./sw.js?v=18')
           .then(reg => {
-            console.log('Service Worker v17 registrado:', reg.scope);
+            console.log('Service Worker v18 registrado:', reg.scope);
             reg.update();
           })
           .catch(err => console.log('Error de Service Worker:', err));
