@@ -390,13 +390,37 @@
             <div class="form-group" style="margin-bottom: 0;">
               <label for="audio-area-select" style="font-size: 0.82rem; font-weight: 600;">1. Selecciona la Materia / Área CENEVAL</label>
               <select id="audio-area-select" class="form-select">
-                <option value="all">Todas las Áreas CENEVAL</option>
-                <option value="area_1">Área 1: Requerimientos & Documentación</option>
-                <option value="area_2">Área 2: Arquitectura, UX & Bases de Datos</option>
-                <option value="area_3">Área 3: Programación, Paradigmas & Calidad</option>
-                <option value="area_4">Área 4: Transversal Comprensión Lectora</option>
-                <option value="user_photos">Mis Apuntes Guardados con Foto/IA</option>
-                <option value="free_text">Escribir Texto / Apunte Libre</option>
+                <option value="all">Todas las Áreas CENEVAL (100 Fichas)</option>
+                <optgroup label="--- TEMAS INDIVIDUALES DEL MAZO ---">
+                  <option value="python">Python y Estructuras de Datos</option>
+                  <option value="logica">Lógica de Programación y Algoritmos</option>
+                  <option value="c">Lenguaje C y Manejo de Memoria</option>
+                  <option value="cpp">C++ y Programación de Sistemas</option>
+                  <option value="java">Java, JVM y POO</option>
+                  <option value="javascript">JavaScript, Asincronía y Web API</option>
+                  <option value="bd_relacional">Bases de Datos Relacionales y SQL</option>
+                  <option value="bd_nosql">Bases de Datos NoSQL</option>
+                  <option value="requerimientos">Ingeniería de Requerimientos y Casos de Uso</option>
+                  <option value="user_story">Historias de Usuario y Estimación Ágil</option>
+                  <option value="documentacion">Documentación de Software y UML</option>
+                  <option value="arquitectura">Arquitectura de Software y Patrones</option>
+                  <option value="interfaces_ux">Diseño UI / UX e Interfaces</option>
+                  <option value="movil">Desarrollo de Aplicaciones Móviles</option>
+                  <option value="paradigmas">Paradigmas de Programación</option>
+                  <option value="metodologias">Scrum, Kanban y DevOps</option>
+                  <option value="calidad_cocomo">Calidad & Estimación COCOMO II</option>
+                  <option value="comprension_lectora">Comprensión Lectora Técnica</option>
+                </optgroup>
+                <optgroup label="--- ÁREAS PRINCIPALES CENEVAL ---">
+                  <option value="area_1">Área 1: Requerimientos & Documentación</option>
+                  <option value="area_2">Área 2: Arquitectura, UX & Bases de Datos</option>
+                  <option value="area_3">Área 3: Programación, Paradigmas & Calidad</option>
+                  <option value="area_4">Área 4: Transversal Comprensión Lectora</option>
+                </optgroup>
+                <optgroup label="--- OTRAS OPCIONES ---">
+                  <option value="user_photos">Mis Apuntes Guardados con Foto/IA</option>
+                  <option value="free_text">Escribir Texto / Apunte Libre</option>
+                </optgroup>
               </select>
             </div>
 
@@ -475,17 +499,17 @@
 
   <!-- OCR & AI Vision Dependencies -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <script src="js/ai-vision-engine.js?v=23"></script>
-  <script src="js/topics-data.js?v=23"></script>
-  <script src="js/anki-engine.js?v=23"></script>
-  <script src="js/photo-uploader.js?v=23"></script>
-  <script src="js/quiz-engine.js?v=23"></script>
-  <script src="js/audio-notes-engine.js?v=23"></script>
-  <script src="js/app.js?v=23"></script>
+  <script src="js/ai-vision-engine.js?v=24"></script>
+  <script src="js/topics-data.js?v=24"></script>
+  <script src="js/anki-engine.js?v=24"></script>
+  <script src="js/photo-uploader.js?v=24"></script>
+  <script src="js/quiz-engine.js?v=24"></script>
+  <script src="js/audio-notes-engine.js?v=24"></script>
+  <script src="js/app.js?v=24"></script>
 
   <!-- Service Worker Registration & Cache Auto-Buster -->
   <script>
-    const PWA_VERSION = 'v23';
+    const PWA_VERSION = 'v24';
     if (localStorage.getItem('ceneval_sw_ver') !== PWA_VERSION) {
       localStorage.setItem('ceneval_sw_ver', PWA_VERSION);
       if ('serviceWorker' in navigator) {
@@ -502,9 +526,9 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=23')
+        navigator.serviceWorker.register('./sw.js?v=24')
           .then(reg => {
-            console.log('Service Worker v23 registrado:', reg.scope);
+            console.log('Service Worker v24 registrado:', reg.scope);
             reg.update();
           })
           .catch(err => console.log('Error de Service Worker:', err));

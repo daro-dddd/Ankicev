@@ -826,7 +826,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let filteredTopics = TOPICS_DATA;
-    if (areaValue === 'area_1') {
+    const matchedSingleTopic = TOPICS_DATA.find(t => t.id === areaValue);
+
+    if (matchedSingleTopic) {
+      filteredTopics = [matchedSingleTopic];
+      const opt = document.createElement('option');
+      opt.value = matchedSingleTopic.id;
+      opt.textContent = `${matchedSingleTopic.name} (Tema Seleccionado)`;
+      audioTopicSelect.appendChild(opt);
+      audioTopicSelect.selectedIndex = 0;
+      return;
+    } else if (areaValue === 'area_1') {
       filteredTopics = TOPICS_DATA.filter(t => ['requerimientos', 'user_story', 'documentacion'].includes(t.id));
     } else if (areaValue === 'area_2') {
       filteredTopics = TOPICS_DATA.filter(t => ['arquitectura', 'interfaces_ux', 'movil', 'bd_relacional', 'bd_nosql'].includes(t.id));
@@ -863,7 +873,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (generateAudioBtn) {
     generateAudioBtn.addEventListener('click', () => {
       const areaVal = audioAreaSelect ? audioAreaSelect.value : 'all';
-      const topicId = audioTopicSelect ? audioTopicSelect.value : 'all';
+      let topicId = audioTopicSelect ? audioTopicSelect.value : 'all';
+
+      const singleTopic = TOPICS_DATA.find(t => t.id === areaVal);
+      if (singleTopic) {
+        topicId = singleTopic.id;
+      }
       const style = audioStyleSelect ? audioStyleSelect.value : 'masterclass';
       const customTitle = customAudioTitle ? customAudioTitle.value.trim() : '';
       const customText = customAudioText ? customAudioText.value.trim() : '';
