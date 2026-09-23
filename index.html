@@ -152,28 +152,73 @@
       </div>
     </section>
 
-    <!-- Pestaña 3: Simulador Quiz CENEVAL (3 Opciones Separadas) -->
+    <!-- Pestaña 3: Simulador de Examen CENEVAL (Exámenes de 30 Preguntas & Diagnóstico) -->
     <section id="tab-quiz" class="tab-panel">
       <div class="quiz-container">
-        <div class="quiz-header">
-          <span class="card-badge" id="quiz-topic-badge">Simulador CENEVAL</span>
-          <div class="quiz-score-badge" id="quiz-score-badge">Puntaje: 0 / 0 (0%)</div>
+        <!-- Encabezado del Examen de 30 Preguntas -->
+        <div class="quiz-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <span class="card-badge" id="quiz-topic-badge">Área CENEVAL</span>
+            <span class="ai-badge" style="margin-left: 6px;" id="quiz-progress-text">Pregunta 1 de 30</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="quiz-score-badge" id="quiz-score-badge">Puntaje: 0 / 0 (0%)</div>
+            <button id="quiz-reset-btn" type="button" class="topic-chip" style="padding: 4px 10px; font-size: 0.75rem;" title="Reiniciar examen de 30 preguntas">🔄 Nuevo Examen</button>
+          </div>
         </div>
 
-        <h3 class="quiz-question-title" id="quiz-question-text">Cargando reactivo de examen...</h3>
+        <!-- Barra de Progreso del Examen -->
+        <div class="ai-scan-bar" style="margin: 10px 0 16px 0; height: 6px;">
+          <div class="ai-scan-fill" id="quiz-progress-bar" style="width: 3.33%;"></div>
+        </div>
 
-        <!-- Opciones separadas -->
-        <div class="quiz-options" id="quiz-options-container">
+        <!-- Pregunta Activa -->
+        <div id="quiz-active-box">
+          <h3 class="quiz-question-title" id="quiz-question-text">Cargando reactivo de examen...</h3>
+
           <!-- Opciones A, B, C -->
+          <div class="quiz-options" id="quiz-options-container">
+            <!-- Opciones A, B, C -->
+          </div>
+
+          <!-- Retroalimentación Técnica -->
+          <div class="quiz-explanation-box" id="quiz-explanation-box">
+            <div class="quiz-explanation-title" id="quiz-explanation-title">Justificación Técnica CENEVAL:</div>
+            <p id="quiz-explanation-text" style="font-size: 0.92rem; color: var(--text-main); line-height: 1.6;"></p>
+          </div>
+
+          <button class="quiz-next-btn" id="quiz-next-btn" style="display: none;">Siguiente Reactivo ➔</button>
         </div>
 
-        <!-- Retroalimentación -->
-        <div class="quiz-explanation-box" id="quiz-explanation-box">
-          <div class="quiz-explanation-title" id="quiz-explanation-title">Justificación Técnica CENEVAL:</div>
-          <p id="quiz-explanation-text" style="font-size: 0.92rem; color: var(--text-main); line-height: 1.6;"></p>
+        <!-- Tarjeta de Resultados Diagnóstico Final -->
+        <div id="quiz-results-card" class="quiz-results-card" style="display: none;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <span id="quiz-rank-badge" class="ai-badge" style="font-size: 0.9rem; padding: 6px 16px;">🥇 Nivel Sobresaliente</span>
+            <h2 id="quiz-final-score" style="font-size: 1.8rem; margin: 10px 0 4px 0; color: var(--text-main);">27 / 30 (90%)</h2>
+            <p id="quiz-rank-desc" style="font-size: 0.88rem; color: var(--text-muted); max-width: 500px; margin: 0 auto;">Diagnóstico de desempeño general del examen CENEVAL.</p>
+          </div>
+
+          <!-- Alerta de Temas a Reforzar -->
+          <div id="weak-topics-alert-box" style="margin-bottom: 20px; padding: 16px; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: var(--radius-md);">
+            <h4 style="color: #f43f5e; margin-bottom: 8px; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+              ⚠️ MATERIAS / TEMAS QUE DEBES REFORZAR:
+            </h4>
+            <div id="weak-topics-list" style="display: flex; flex-direction: column; gap: 8px;">
+              <!-- Lista dinámica de materias débiles -->
+            </div>
+          </div>
+
+          <!-- Desglose por Materia -->
+          <h4 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--text-main);">📊 Desglose de Rendimiento por Materia:</h4>
+          <div id="topic-breakdown-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+            <!-- Render dinámico -->
+          </div>
+
+          <button id="quiz-restart-btn" class="save-card-btn" style="background: linear-gradient(135deg, #0284c7 0%, #7e22ce 100%);">
+            🔄 Iniciar Nuevo Examen de 30 Preguntas
+          </button>
         </div>
 
-        <button class="quiz-next-btn" id="quiz-next-btn" style="display: none;">Siguiente Reactivo ➔</button>
       </div>
     </section>
 

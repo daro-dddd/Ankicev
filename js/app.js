@@ -432,22 +432,45 @@ document.addEventListener('DOMContentLoaded', () => {
   const quizNextBtn = document.getElementById('quiz-next-btn');
   const quizScoreBadge = document.getElementById('quiz-score-badge');
 
+  // 8. Simulador de Examen CENEVAL (Exámenes de 30 Preguntas & Diagnóstico)
+  const quizActiveBox = document.getElementById('quiz-active-box');
+  const quizResultsCard = document.getElementById('quiz-results-card');
+  const quizProgressBar = document.getElementById('quiz-progress-bar');
+  const quizProgressText = document.getElementById('quiz-progress-text');
+  const quizResetBtn = document.getElementById('quiz-reset-btn');
+  const quizRestartBtn = document.getElementById('quiz-restart-btn');
+  const quizRankBadge = document.getElementById('quiz-rank-badge');
+  const quizFinalScore = document.getElementById('quiz-final-score');
+  const quizRankDesc = document.getElementById('quiz-rank-desc');
+  const weakTopicsList = document.getElementById('weak-topics-list');
+  const topicBreakdownList = document.getElementById('topic-breakdown-list');
+
   function renderQuizQuestion() {
+    if (quizEngine.isExamFinished) {
+      showQuizDiagnosisResults();
+      return;
+    }
+
+    if (quizActiveBox) quizActiveBox.style.display = 'block';
+    if (quizResultsCard) quizResultsCard.style.display = 'none';
+
     quizExplanationBox.classList.remove('visible');
     quizNextBtn.style.display = 'none';
     quizOptionsContainer.innerHTML = '';
 
     const currentQuestionData = quizEngine.getCurrentQuestion();
     if (!currentQuestionData) {
-      quizQuestionText.textContent = 'No hay preguntas disponibles.';
+      showQuizDiagnosisResults();
       return;
     }
 
+    const stats = quizEngine.getScoreStats();
+    if (quizProgressText) quizProgressText.textContent = `Pregunta ${stats.currentNum} de ${stats.total}`;
+    if (quizProgressBar) quizProgressBar.style.width = `${(stats.currentNum / stats.total) * 100}%`;
+    if (quizScoreBadge) quizScoreBadge.textContent = `Puntaje: ${stats.score} / ${stats.answered} (${stats.percentage}%)`;
+
     quizTopicBadge.textContent = currentQuestionData.topicName || currentQuestionData.topic;
     quizQuestionText.textContent = currentQuestionData.question;
-
-    const stats = quizEngine.getScoreStats();
-    quizScoreBadge.textContent = `Puntaje: ${stats.score} / ${stats.totalAnswered} (${stats.percentage}%)`;
 
     const letters = ['A', 'B', 'C'];
     currentQuestionData.options.forEach((opt, idx) => {
@@ -475,20 +498,136 @@ document.addEventListener('DOMContentLoaded', () => {
 
         quizExplanationText.innerHTML = `<strong>${result.explanation}</strong><br><br>${currentQuestionData.explanation}`;
         quizExplanationBox.classList.add('visible');
+
+        if (quizEngine.isExamFinished) {
+          quizNextBtn.textContent = 'Ver Reporte Diagnóstico Final ➔';
+        } else {
+          quizNextBtn.textContent = 'Siguiente Reactivo ➔';
+        }
         quizNextBtn.style.display = 'block';
 
         const updatedStats = quizEngine.getScoreStats();
-        quizScoreBadge.textContent = `Puntaje: ${updatedStats.score} / ${updatedStats.totalAnswered} (${updatedStats.percentage}%)`;
+        if (quizScoreBadge) quizScoreBadge.textContent = `Puntaje: ${updatedStats.score} / ${updatedStats.answered} (${updatedStats.percentage}%)`;
       });
 
       quizOptionsContainer.appendChild(btn);
     });
   }
 
-  quizNextBtn.addEventListener('click', () => {
-    quizEngine.nextQuestion();
-    renderQuizQuestion();
-  });
+  function showQuizDiagnosisResults() {
+    if (quizActiveBox) quizActiveBox.style.display = 'none';
+    if (quizResultsCard) quizResultsCard.style.display = 'block';
+
+    const report = quizEngine.getDiagnosisReport();
+
+    if (quizRankBadge) {
+      quizRankBadge.textContent = report.rankBadge;
+      quizRankBadge.style.color = report.rankColor;
+    }
+    if (quizFinalScore) {
+      quizFinalScore.textContent = `${report.score} / ${report.total} (${report.percentage}%)`;
+    }
+    if (quizRankDesc) {
+      quizRankDesc.textContent = report.rankDesc;
+    }
+
+    // Lista de Temas a Reforzar
+    if (weakTopicsList) {
+      weakTopicsList.innerHTML = '';
+      if (report.weakTopics.length === 0) {
+        weakTopicsList.innerHTML = '<p style="color: var(--accent-emerald); font-weight: 600; font-size: 0.88rem;">¡Excelente! No tienes temas críticos a reforzar. Tu desempeño fue alto en todas las materias.</p>';
+      } else {
+        report.weakTopics.forEach(t => {
+          const item = document.createElement('div');
+          item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:10px 14px; background:var(--bg-card); border-radius:var(--radius-sm); border:1px solid var(--border-color);';
+          item.innerHTML = `
+            <div>
+              <strong style="color: var(--text-main); font-size: 0.9rem;">${t.topicName}</strong>
+              <div style="font-size: 0.78rem; color: #f43f5e;">Aciertos: ${t.correct} de ${t.total} (${t.percentage}%) - ⚠️ DEBES REFORZAR</div>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="topic-chip audio-study-btn" data-topicid="${t.topicId}" style="padding:4px 10px; font-size:0.75rem; background:rgba(192, 132, 252, 0.15); color:var(--pastel-lavender);">
+                🎧 Escuchar Audio
+              </button>
+              <button class="topic-chip anki-study-btn" data-topicid="${t.topicId}" style="padding:4px 10px; font-size:0.75rem; background:rgba(56, 189, 248, 0.15); color:var(--accent-cyan);">
+                🎴 Repasar Anki
+              </button>
+            </div>
+          `;
+
+          // Botón Escuchar Audio
+          item.querySelector('.audio-study-btn').addEventListener('click', () => {
+            const navAudio = document.querySelector('.nav-item[data-tab="tab-audio"]');
+            if (navAudio) navAudio.click();
+            const audioTopicSel = document.getElementById('audio-topic-select');
+            if (audioTopicSel && t.topicId) {
+              audioTopicSel.value = t.topicId;
+            }
+          });
+
+          // Botón Repasar Anki
+          item.querySelector('.anki-study-btn').addEventListener('click', () => {
+            const navAnki = document.querySelector('.nav-item[data-tab="tab-anki"]');
+            if (navAnki) navAnki.click();
+            activeTopicId = t.topicId;
+            currentCardList = ankiEngine.getCardsForTopic(activeTopicId);
+            currentCardIndex = 0;
+            renderCurrentCard();
+          });
+
+          weakTopicsList.appendChild(item);
+        });
+      }
+    }
+
+    // Desglose General de Materias
+    if (topicBreakdownList) {
+      topicBreakdownList.innerHTML = '';
+      report.topicBreakdown.forEach(t => {
+        const item = document.createElement('div');
+        item.style.cssText = 'padding:8px 12px; background:var(--bg-secondary); border-radius:var(--radius-sm); border:1px solid var(--border-color);';
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; font-size:0.84rem; margin-bottom:4px;">
+            <span style="font-weight:600; color:var(--text-main);">${t.topicName}</span>
+            <span style="font-weight:700; color:${t.isWeak ? '#f43f5e' : 'var(--accent-emerald)'};">${t.correct}/${t.total} (${t.percentage}%)</span>
+          </div>
+          <div class="ai-scan-bar" style="height:5px;">
+            <div class="ai-scan-fill" style="width:${t.percentage}%; background:${t.isWeak ? '#f43f5e' : 'linear-gradient(90deg, #38bdf8, #6ee7b7)'};"></div>
+          </div>
+        `;
+        topicBreakdownList.appendChild(item);
+      });
+    }
+
+    quizResultsCard.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  if (quizNextBtn) {
+    quizNextBtn.addEventListener('click', () => {
+      if (quizEngine.isExamFinished) {
+        showQuizDiagnosisResults();
+      } else {
+        quizEngine.nextQuestion();
+        renderQuizQuestion();
+      }
+    });
+  }
+
+  if (quizResetBtn) {
+    quizResetBtn.addEventListener('click', () => {
+      if (confirm('¿Deseas reiniciar y comenzar un nuevo examen de 30 preguntas?')) {
+        quizEngine.startNewExam(30);
+        renderQuizQuestion();
+      }
+    });
+  }
+
+  if (quizRestartBtn) {
+    quizRestartBtn.addEventListener('click', () => {
+      quizEngine.startNewExam(30);
+      renderQuizQuestion();
+    });
+  }
 
   // 9. Subida de Fotos
   const photoTopicSelect = document.getElementById('photo-topic-select');
