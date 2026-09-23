@@ -157,16 +157,26 @@ Las 3 estrategias clave son:
     }
   }
 
-  playTrack(track, onBoundaryCallback, onEndCallback) {
+  playTrack(track, onBoundaryCallback, onEndCallback, startCharIndex = 0) {
     if (!this.synth) {
       alert('Tu navegador no soporta la API de Audio/Voz Web Speech Synthesis.');
       return;
     }
 
-    this.stop();
+    // Cancelar cualquier síntesis en curso para evitar superposición
+    this.synth.cancel();
 
     this.currentTrack = track;
-    this.utterance = new SpeechSynthesisUtterance(track.script);
+    this.charPosition = startCharIndex;
+    this.onBoundaryCb = onBoundaryCallback;
+    this.onEndCb = onEndCallback;
+
+    const fullScript = track.script;
+    const textToSpeak = (startCharIndex > 0 && startCharIndex < fullScript.length)
+      ? fullScript.substring(startCharIndex)
+      : fullScript;
+
+    this.utterance = new SpeechSynthesisUtterance(textToSpeak);
     this.utterance.rate = this.playbackRate;
 
     if (this.selectedVoice) {
@@ -176,12 +186,17 @@ Las 3 estrategias clave son:
     }
 
     this.utterance.onboundary = (e) => {
-      if (onBoundaryCallback) onBoundaryCallback(e.charIndex, track.script.length);
+      const offset = (startCharIndex > 0 && startCharIndex < fullScript.length) ? startCharIndex : 0;
+      if (e.charIndex !== undefined) {
+        this.charPosition = offset + e.charIndex;
+      }
+      if (onBoundaryCallback) onBoundaryCallback(this.charPosition, fullScript.length);
     };
 
     this.utterance.onend = () => {
       this.isPlaying = false;
       this.isPaused = false;
+      this.charPosition = 0;
       this.stopWaveform();
       if (onEndCallback) onEndCallback();
     };
@@ -190,6 +205,7 @@ Las 3 estrategias clave son:
       console.error('Error en reproducción de voz:', e);
       this.isPlaying = false;
       this.isPaused = false;
+      this.charPosition = 0;
       this.stopWaveform();
     };
 
@@ -200,8 +216,9 @@ Las 3 estrategias clave son:
   }
 
   pause() {
-    if (this.synth && this.isPlaying) {
-      this.synth.pause();
+    if (this.synth) {
+      // cancel() detiene la voz inmediatamente en todos los navegadores y SO (evita el bug de pause() en Chrome/Windows)
+      this.synth.cancel();
       this.isPlaying = false;
       this.isPaused = true;
       this.stopWaveform();
@@ -209,11 +226,14 @@ Las 3 estrategias clave son:
   }
 
   resume() {
-    if (this.synth && this.isPaused) {
-      this.synth.resume();
-      this.isPlaying = true;
-      this.isPaused = false;
-      this.startWaveform();
+    if (this.currentTrack) {
+      // Reanudar la lectura exactamente desde la posición de caracteres alcanzada
+      this.playTrack(
+        this.currentTrack,
+        this.onBoundaryCb,
+        this.onEndCb,
+        this.charPosition || 0
+      );
     }
   }
 
@@ -223,6 +243,7 @@ Las 3 estrategias clave son:
     }
     this.isPlaying = false;
     this.isPaused = false;
+    this.charPosition = 0;
     this.stopWaveform();
   }
 

@@ -718,7 +718,8 @@ document.addEventListener('DOMContentLoaded', () => {
     audioEngine.playTrack(
       track,
       null,
-      () => updatePlayButtonState(false)
+      () => updatePlayButtonState(false),
+      0
     );
     updatePlayButtonState(true);
   }
