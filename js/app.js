@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Inicialización de Motores
   const ankiEngine = new AnkiEngine(TOPICS_DATA);
   const quizEngine = new QuizEngine(TOPICS_DATA);
-  const cocomoCalc = new CocomoCalculator();
 
   let activeTopicId = 'all';
   let currentCardList = ankiEngine.getCardsForTopic('all');
@@ -21,16 +20,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const userCards = JSON.parse(localStorage.getItem('ceneval_user_photo_cards')) || [];
       userCards.forEach(uc => {
         if (!ankiEngine.allCards.find(c => c.id === uc.id)) {
+          const connectors = uc.connectors && uc.connectors.length > 0 ? uc.connectors : ['Apunte Personal', 'IA Vision'];
+          const matchedTopic = TOPICS_DATA.find(t => t.id === uc.topic);
           const customAnkiCard = {
             id: uc.id,
-            topicId: 'custom',
-            topicName: uc.topic || 'Apunte Personal',
-            badge: 'Apunte Personal',
+            topicId: uc.topic || 'custom',
+            topicName: matchedTopic ? matchedTopic.name : 'Apunte Personal',
+            badge: 'Apunte con IA',
             question: uc.title,
             answer: uc.notes,
             image: uc.image,
-            citation: 'Apunte Guardado por el Usuario',
-            connectors: ['Apunte Personal', 'Apunte Guardado'],
+            citation: 'Apunte con Inteligencia Artificial',
+            connectors: connectors,
             progress: {
               interval: 1,
               repetition: 0,
@@ -349,9 +350,22 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // Helper para formatear texto con negritas y listas de IA
+    function formatCardText(text) {
+      if (!text) return '';
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/• (.*?)\n/g, "<li style='margin-left: 14px;'>$1</li>")
+        .replace(/\n\n/g, "<br><br>")
+        .replace(/\n/g, "<br>");
+    }
+
     // Reverso
     document.getElementById('card-back-badge').textContent = card.badge || 'Respuesta';
-    document.getElementById('card-answer-text').textContent = card.answer;
+    document.getElementById('card-answer-text').innerHTML = formatCardText(card.answer);
 
     const backConnEl = document.getElementById('card-back-connectors');
     backConnEl.innerHTML = '';
@@ -493,29 +507,250 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCurrentCard();
   });
 
-  // 10. Calculadora COCOMO
-  const cocomoCalcBtn = document.getElementById('cocomo-calc-btn');
-  const cocomoKlocInput = document.getElementById('cocomo-kloc');
-  const cocomoModeSelect = document.getElementById('cocomo-mode');
+  // 10. Estudio de Audio-Apuntes & Podcasts CENEVAL
+  const audioEngine = new AudioNotesEngine();
+  audioEngine.initCanvas('audio-waveform-canvas');
 
-  if (cocomoCalcBtn) {
-    cocomoCalcBtn.addEventListener('click', runCocomoCalc);
+  let currentTrackIndex = 0;
+
+  const audioPlayBtn = document.getElementById('audio-play-btn');
+  const audioPlayIcon = document.getElementById('audio-play-icon');
+  const audioPrevBtn = document.getElementById('audio-prev-btn');
+  const audioNextBtn = document.getElementById('audio-next-btn');
+  const audioRateSelect = document.getElementById('audio-rate-select');
+  const audioVoiceSelect = document.getElementById('audio-voice-select');
+  const audioCurrentArea = document.getElementById('audio-current-area');
+  const audioCurrentTitle = document.getElementById('audio-current-title');
+  const audioCurrentDesc = document.getElementById('audio-current-desc');
+  const audioTranscriptText = document.getElementById('audio-transcript-text');
+  const audioLibraryGrid = document.getElementById('audio-library-grid');
+  const customAudioTitle = document.getElementById('custom-audio-title');
+  const customAudioText = document.getElementById('custom-audio-text');
+  const customAudioPlayBtn = document.getElementById('custom-audio-play-btn');
+
+  function populateVoiceList() {
+    if (!audioEngine.synth) return;
+    const voices = audioEngine.voices;
+    if (audioVoiceSelect && voices.length > 0) {
+      audioVoiceSelect.innerHTML = '';
+      voices.forEach((v, idx) => {
+        const option = document.createElement('option');
+        option.value = idx;
+        option.textContent = `${v.name} (${v.lang})`;
+        audioVoiceSelect.appendChild(option);
+      });
+    }
   }
 
-  function runCocomoCalc() {
-    const kloc = parseFloat(cocomoKlocInput.value) || 10;
-    const mode = cocomoModeSelect.value;
-    const result = cocomoCalc.calculate(kloc, mode);
-
-    document.getElementById('res-pm').textContent = `${result.pm} Personas-Mes`;
-    document.getElementById('res-tdev').textContent = `${result.tdev} Meses`;
-    document.getElementById('res-staff').textContent = `${result.staff} Desarrolladores`;
-
-    const stepsList = document.getElementById('cocomo-steps-list');
-    stepsList.innerHTML = result.steps.map(s => `<p style="margin-bottom:8px;">• ${s}</p>`).join('');
+  setTimeout(populateVoiceList, 600);
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = populateVoiceList;
   }
 
-  runCocomoCalc();
+  if (audioVoiceSelect) {
+    audioVoiceSelect.addEventListener('change', () => {
+      audioEngine.setVoice(parseInt(audioVoiceSelect.value, 10));
+    });
+  }
+
+  if (audioRateSelect) {
+    audioRateSelect.addEventListener('change', () => {
+      audioEngine.setPlaybackRate(audioRateSelect.value);
+    });
+  }
+
+  function playAudioTrack(index) {
+    if (index < 0 || index >= audioEngine.audioLibrary.length) return;
+    currentTrackIndex = index;
+    const track = audioEngine.audioLibrary[index];
+
+    audioCurrentArea.textContent = track.area;
+    audioCurrentTitle.textContent = track.title;
+    audioCurrentDesc.textContent = track.summary;
+    audioTranscriptText.textContent = track.script;
+
+    audioEngine.playTrack(
+      track,
+      null,
+      () => updatePlayButtonState(false)
+    );
+    updatePlayButtonState(true);
+  }
+
+  function updatePlayButtonState(playing) {
+    if (!audioPlayIcon) return;
+    if (playing) {
+      audioPlayIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    } else {
+      audioPlayIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    }
+  }
+
+  if (audioPlayBtn) {
+    audioPlayBtn.addEventListener('click', () => {
+      if (audioEngine.isPlaying) {
+        audioEngine.pause();
+        updatePlayButtonState(false);
+      } else if (audioEngine.isPaused) {
+        audioEngine.resume();
+        updatePlayButtonState(true);
+      } else {
+        playAudioTrack(currentTrackIndex);
+      }
+    });
+  }
+
+  if (audioPrevBtn) {
+    audioPrevBtn.addEventListener('click', () => {
+      let prev = currentTrackIndex - 1;
+      if (prev < 0) prev = audioEngine.audioLibrary.length - 1;
+      playAudioTrack(prev);
+    });
+  }
+
+  if (audioNextBtn) {
+    audioNextBtn.addEventListener('click', () => {
+      let next = currentTrackIndex + 1;
+      if (next >= audioEngine.audioLibrary.length) next = 0;
+      playAudioTrack(next);
+    });
+  }
+
+  // Creador e Sintetizador Interactivo de Audios por Materia y Tema
+  const audioAreaSelect = document.getElementById('audio-area-select');
+  const audioTopicSelect = document.getElementById('audio-topic-select');
+  const audioStyleSelect = document.getElementById('audio-style-select');
+  const customTextBox = document.getElementById('custom-text-box');
+  const generateAudioBtn = document.getElementById('generate-audio-btn');
+
+  function populateAudioTopics(areaValue) {
+    if (!audioTopicSelect) return;
+    audioTopicSelect.innerHTML = '';
+
+    if (areaValue === 'free_text') {
+      if (customTextBox) customTextBox.style.display = 'block';
+      const opt = document.createElement('option');
+      opt.value = 'free_text';
+      opt.textContent = '✏️ Texto Personalizado Libre';
+      audioTopicSelect.appendChild(opt);
+      return;
+    } else {
+      if (customTextBox) customTextBox.style.display = 'none';
+    }
+
+    if (areaValue === 'user_photos') {
+      const userCards = JSON.parse(localStorage.getItem('ceneval_user_photo_cards')) || [];
+      if (userCards.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = 'none';
+        opt.textContent = 'No hay apuntes guardados aún';
+        audioTopicSelect.appendChild(opt);
+      } else {
+        userCards.forEach(uc => {
+          const opt = document.createElement('option');
+          opt.value = uc.id;
+          opt.textContent = `⭐ ${uc.title}`;
+          audioTopicSelect.appendChild(opt);
+        });
+      }
+      return;
+    }
+
+    let filteredTopics = TOPICS_DATA;
+    if (areaValue === 'area_1') {
+      filteredTopics = TOPICS_DATA.filter(t => ['requerimientos', 'user_story', 'documentacion'].includes(t.id));
+    } else if (areaValue === 'area_2') {
+      filteredTopics = TOPICS_DATA.filter(t => ['arquitectura', 'interfaces_ux', 'movil', 'bd_relacional', 'bd_nosql'].includes(t.id));
+    } else if (areaValue === 'area_3') {
+      filteredTopics = TOPICS_DATA.filter(t => ['logica', 'python', 'c', 'cpp', 'java', 'javascript', 'paradigmas', 'metodologias', 'calidad_cocomo'].includes(t.id));
+    } else if (areaValue === 'area_4') {
+      filteredTopics = TOPICS_DATA.filter(t => t.id === 'comprension_lectora');
+    }
+
+    filteredTopics.forEach(topic => {
+      const opt = document.createElement('option');
+      opt.value = topic.id;
+      opt.textContent = `📚 ${topic.name}`;
+      audioTopicSelect.appendChild(opt);
+    });
+  }
+
+  if (audioAreaSelect) {
+    populateAudioTopics('all');
+    audioAreaSelect.addEventListener('change', () => {
+      populateAudioTopics(audioAreaSelect.value);
+    });
+  }
+
+  if (generateAudioBtn) {
+    generateAudioBtn.addEventListener('click', () => {
+      const areaVal = audioAreaSelect ? audioAreaSelect.value : 'all';
+      const topicId = audioTopicSelect ? audioTopicSelect.value : 'all';
+      const style = audioStyleSelect ? audioStyleSelect.value : 'masterclass';
+      const customTitle = customAudioTitle ? customAudioTitle.value.trim() : '';
+      const customText = customAudioText ? customAudioText.value.trim() : '';
+
+      if (areaVal === 'free_text' && !customText) {
+        alert('Por favor escriba un texto o apunte en el recuadro inferior.');
+        return;
+      }
+
+      const generatedTrack = audioEngine.generateTopicAudioScript(topicId, style, customText, customTitle);
+
+      // Agregar a la biblioteca y seleccionar
+      audioEngine.audioLibrary.unshift(generatedTrack);
+      currentTrackIndex = 0;
+
+      renderAudioLibrary();
+
+      audioCurrentArea.textContent = generatedTrack.area;
+      audioCurrentTitle.textContent = generatedTrack.title;
+      audioCurrentDesc.textContent = generatedTrack.summary;
+      audioTranscriptText.textContent = generatedTrack.script;
+
+      audioEngine.playTrack(generatedTrack, null, () => updatePlayButtonState(false));
+      updatePlayButtonState(true);
+
+      const playerEl = document.getElementById('tab-audio');
+      if (playerEl) playerEl.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  function renderAudioLibrary() {
+    if (!audioLibraryGrid) return;
+    audioLibraryGrid.innerHTML = '';
+
+    audioEngine.audioLibrary.forEach((track, idx) => {
+      const card = document.createElement('div');
+      card.className = 'audio-track-card';
+      
+      const connectorsHTML = track.connectors.map(c => 
+        `<span style="display:inline-block; background:rgba(56, 189, 248, 0.12); color:#38bdf8; border:1px solid rgba(56, 189, 248, 0.3); padding:2px 8px; border-radius:10px; font-size:0.68rem; margin-right:4px; margin-top:4px;">🔗 ${c}</span>`
+      ).join('');
+
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span class="card-badge" style="margin-bottom: 0;">${track.area}</span>
+          <small style="color: var(--text-muted); font-weight: 600;">⏱️ ${track.duration}</small>
+        </div>
+        <h4 style="margin: 6px 0; color: var(--text-main); font-size: 0.98rem; font-weight: 700;">${track.title}</h4>
+        <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">${track.summary}</p>
+        <div style="margin-bottom: 12px;">${connectorsHTML}</div>
+        <button class="save-card-btn" style="padding: 8px 14px; font-size: 0.82rem; background: linear-gradient(135deg, #0284c7 0%, #7e22ce 100%); width: 100%;">
+          ▶️ Escuchar Audio-Apunte
+        </button>
+      `;
+
+      card.querySelector('button').addEventListener('click', () => {
+        playAudioTrack(idx);
+        document.getElementById('tab-audio').scrollIntoView({ behavior: 'smooth' });
+      });
+
+      audioLibraryGrid.appendChild(card);
+    });
+  }
+
+  renderAudioLibrary();
 });
 
 /**

@@ -10,12 +10,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Favicon / Logo de Pestaña con Cache Busting v18 -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico?v=18">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png?v=18">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/logo.png?v=18">
-  <link rel="shortcut icon" href="assets/logo.png?v=18">
-  <link rel="apple-touch-icon" href="assets/logo.png?v=18">
+  <!-- Favicon / Logo de Pestaña con Cache Busting v19 -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=19">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png?v=19">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/logo.png?v=19">
+  <link rel="shortcut icon" href="assets/logo.png?v=19">
+  <link rel="apple-touch-icon" href="assets/logo.png?v=19">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -194,6 +194,39 @@
           <img id="photo-preview-img" class="photo-preview" alt="Vista previa de imagen">
         </div>
 
+        <!-- Caja Escáner de Inteligencia Artificial -->
+        <div id="ai-scanner-box" class="ai-scanner-box" style="display: none;">
+          <div class="ai-scanner-header">
+            <span class="ai-badge">✨ ASISTENTE DE IA & VISIÓN POR COMPUTADORA</span>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+              Escanea la imagen para extraer automáticamente el resumen técnico, formas de estudiar y conectores mentales.
+            </p>
+          </div>
+
+          <button id="ai-scan-btn" class="ai-scan-btn" type="button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+            <span>Analizar Imagen con IA (Resumen + Formas de Estudiar + Conectores)</span>
+          </button>
+
+          <div id="ai-scan-progress" class="ai-scan-progress" style="display: none;">
+            <div class="ai-scan-bar"><div class="ai-scan-fill" id="ai-scan-fill"></div></div>
+            <div id="ai-scan-status-text" class="ai-scan-status-text">Iniciando escáner de visión...</div>
+          </div>
+
+          <!-- Opción API Key de Gemini -->
+          <details style="margin-top: 10px; font-size: 0.78rem; color: var(--text-muted);">
+            <summary style="cursor: pointer; font-weight: 600; color: var(--pastel-lavender);">⚙️ Configurar API Key de Gemini Vision (Opcional)</summary>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <input type="password" id="ai-api-key-input" class="form-input" style="font-size: 0.78rem;" placeholder="Pega tu API Key de Gemini para IA multimodal avanzada">
+              <button id="ai-api-key-save-btn" type="button" class="topic-chip" style="padding: 6px 12px; font-size: 0.75rem;">Guardar Key</button>
+            </div>
+            <small style="display: block; margin-top: 4px; opacity: 0.8;">Sin API Key se utiliza el Sintetizador Inteligente CENEVAL local en el navegador.</small>
+          </details>
+        </div>
+
         <div class="form-group">
           <label for="photo-title-input">Título de la Ficha / Apunte</label>
           <input type="text" id="photo-title-input" class="form-input" placeholder="Ejemplo: Diagrama de Clases y Métodos POO">
@@ -221,64 +254,151 @@
       </div>
     </section>
 
-    <!-- Pestaña 5: Tutor COCOMO 1 & 2 -->
-    <section id="tab-cocomo" class="tab-panel">
-      <div class="cocomo-card">
-        <h2 style="font-size: 1.25rem; margin-bottom: 6px;">Calculadora & Tutor Didáctico COCOMO I y II</h2>
-        <p style="font-size: 0.88rem; color: var(--text-muted);">Estimación formal de esfuerzo (Personas-Mes), tiempo de desarrollo y personal necesario.</p>
-
-        <div class="cocomo-grid">
+    <!-- Pestaña 5: Audio-Apuntes & Podcasts de Estudio -->
+    <section id="tab-audio" class="tab-panel">
+      <div class="audio-studio-card">
+        <div class="audio-studio-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
           <div>
-            <div class="form-group">
-              <label for="cocomo-kloc">Miles de Líneas de Código (KLOC)</label>
-              <input type="number" id="cocomo-kloc" class="form-input" value="10" step="1" min="1">
-              <small style="color: var(--text-muted);">Ejemplo: 10,000 líneas = 10 KLOC</small>
+            <h2 style="font-size: 1.3rem; margin-bottom: 4px;">🎧 Estudio de Audio-Apuntes CENEVAL</h2>
+            <p style="font-size: 0.88rem; color: var(--text-muted);">Escuche resúmenes narrados por voz de IA para las 4 áreas temáticas o sintetice sus propios apuntes.</p>
+          </div>
+          <span class="ai-badge">🎙️ AUDIOLIBROS & REPASO AUDITIVO</span>
+        </div>
+
+        <!-- Reproductor de Audio Principal / Studio Player -->
+        <div class="audio-player-container">
+          <div class="audio-player-top">
+            <div class="audio-cover-art">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+              </svg>
+            </div>
+            <div class="audio-track-info">
+              <span id="audio-current-area" class="audio-area-tag">Área 1: Requerimientos</span>
+              <h3 id="audio-current-title" class="audio-track-title">Seleccione un Audio-Apunte de la lista</h3>
+              <p id="audio-current-desc" class="audio-track-desc">Toca en cualquier tema de la biblioteca para iniciar la narración.</p>
+            </div>
+          </div>
+
+          <!-- Canvas Visualizador de Onda -->
+          <div class="waveform-box">
+            <canvas id="audio-waveform-canvas" width="480" height="40"></canvas>
+          </div>
+
+          <!-- Controles de Reproducción -->
+          <div class="audio-controls-row">
+            <div class="audio-main-btns">
+              <button id="audio-prev-btn" class="audio-control-btn" type="button" title="Pista Anterior">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+              </button>
+              <button id="audio-play-btn" class="audio-play-main-btn" type="button" title="Reproducir / Pausar">
+                <svg id="audio-play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              </button>
+              <button id="audio-next-btn" class="audio-control-btn" type="button" title="Siguiente Pista">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+              </button>
             </div>
 
-            <div class="form-group">
-              <label for="cocomo-mode">Modo del Proyecto (COCOMO I)</label>
-              <select id="cocomo-mode" class="form-select">
-                <option value="organic">Orgánico (Pequeño / Flexible - a=2.4, b=1.05)</option>
-                <option value="semidetached">Semiacoplado (Mediano / Mixto - a=3.0, b=1.12)</option>
-                <option value="embedded">Empotrado / Embedded (Complejo / Rígido - a=3.6, b=1.20)</option>
+            <!-- Velocidad & Voz -->
+            <div class="audio-settings-group">
+              <div class="audio-rate-picker">
+                <label for="audio-rate-select" style="font-size: 0.78rem; color: var(--text-muted);">Velocidad:</label>
+                <select id="audio-rate-select" class="form-select" style="padding: 4px 8px; font-size: 0.78rem; width: auto;">
+                  <option value="0.75">0.75x Lento</option>
+                  <option value="1.0" selected>1.0x Normal</option>
+                  <option value="1.25">1.25x Rápido</option>
+                  <option value="1.5">1.5x Turbo</option>
+                  <option value="2.0">2.0x Máximo</option>
+                </select>
+              </div>
+
+              <div class="audio-voice-picker">
+                <label for="audio-voice-select" style="font-size: 0.78rem; color: var(--text-muted);">Voz:</label>
+                <select id="audio-voice-select" class="form-select" style="padding: 4px 8px; font-size: 0.78rem; max-width: 150px;">
+                  <option value="0">Voz Española Predeterminada</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Script / Transcripción Narrada Sincronizada -->
+          <div class="transcript-box">
+            <h4 style="font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 6px;">📝 Transcripción del Audio-Apunte:</h4>
+            <div id="audio-transcript-text" class="transcript-text">
+              Seleccione un audio-apunte de la biblioteca inferior para leer y escuchar simultáneamente.
+            </div>
+          </div>
+        </div>
+
+        <!-- Creador e Sintetizador Interactivo de Audios por Materia y Tema -->
+        <div class="audio-creator-card" style="margin-top: 24px; padding: 20px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <h3 style="font-size: 1.1rem; color: var(--accent-cyan); font-weight: 700; margin: 0;">🎙️ Creador de Audio-Apuntes por Materia & Tema</h3>
+            <span class="ai-badge">✨ INTELIGENCIA ARTIFICIAL AUDITIVA</span>
+          </div>
+          <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 16px;">
+            Seleccione la materia, el tema específico de la guía CENEVAL y el enfoque de estudio para sintetizar un podcast narrado a su medida.
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 14px;">
+            <!-- Selector 1: Área / Materia Principal -->
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="audio-area-select" style="font-size: 0.82rem; font-weight: 600;">1. Selecciona la Materia / Área CENEVAL</label>
+              <select id="audio-area-select" class="form-select">
+                <option value="all">Todas las Áreas CENEVAL</option>
+                <option value="area_1">Área 1: Requerimientos & Documentación</option>
+                <option value="area_2">Área 2: Arquitectura, UX & Bases de Datos</option>
+                <option value="area_3">Área 3: Programación, Paradigmas & Calidad</option>
+                <option value="area_4">Área 4: Transversal Comprensión Lectora</option>
+                <option value="user_photos">⭐ Mis Apuntes Guardados con Foto/IA</option>
+                <option value="free_text">✏️ Escribir Texto / Apunte Libre</option>
               </select>
             </div>
 
-            <button id="cocomo-calc-btn" class="save-card-btn">Calcular Estimación Técnica</button>
-          </div>
-
-          <div class="cocomo-result-box">
-            <div class="result-metric">
-              <div class="result-metric-val" id="res-pm">27.0 Personas-Mes</div>
-              <div class="result-metric-lbl">Esfuerzo Requerido (PM)</div>
+            <!-- Selector 2: Tema Específico de la Materia -->
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="audio-topic-select" style="font-size: 0.82rem; font-weight: 600;">2. Selecciona el Tema Específico</label>
+              <select id="audio-topic-select" class="form-select">
+                <!-- Se poblará dinámicamente según el área seleccionada -->
+              </select>
             </div>
 
-            <div class="result-metric">
-              <div class="result-metric-val" id="res-tdev">8.8 Meses</div>
-              <div class="result-metric-lbl">Tiempo de Desarrollo (TDEV)</div>
-            </div>
-
-            <div class="result-metric">
-              <div class="result-metric-val" id="res-staff">4 Desarrolladores</div>
-              <div class="result-metric-lbl">Personal Promedio (Staff)</div>
+            <!-- Selector 3: Enfoque / Estilo del Audio -->
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="audio-style-select" style="font-size: 0.82rem; font-weight: 600;">3. Formato / Estilo del Audio</label>
+              <select id="audio-style-select" class="form-select">
+                <option value="masterclass">🎓 Masterclass Explicativa (3-5 min)</option>
+                <option value="flash">⚡ Flash Repaso de 1 Minuto (Puntos Examen)</option>
+                <option value="quiz">❓ Simulador de Preguntas y Respuestas Hablado</option>
+                <option value="mnemonics">🧠 Mnemotecnias & Reglas de Memoria</option>
+              </select>
             </div>
           </div>
-        </div>
 
-        <!-- Explicación COCOMO -->
-        <div class="cocomo-explanation-box">
-          <h4>¿Cómo funciona COCOMO I y COCOMO II en el CENEVAL?</h4>
-          <p><strong>COCOMO I (1981):</strong> Estima costo, tiempo y gente usando <code>KLOC</code> (Miles de Líneas de Código). Posee 3 modos: Orgánico, Semiacoplado y Empotrado.</p>
-          <p><strong>COCOMO II (Evolución Moderna):</strong> En lugar de basarse únicamente en líneas de código, COCOMO II estima mediante <strong>Puntos de Objeto</strong> y <strong>Puntos de Función</strong>.</p>
-        </div>
-
-        <!-- Desglose Matemático -->
-        <div style="margin-top: 16px; padding: 18px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-          <h4 style="color: var(--accent-cyan); margin-bottom: 10px; font-size: 0.95rem;">Desglose Matemático CENEVAL Paso a Paso:</h4>
-          <div id="cocomo-steps-list" style="font-size: 0.88rem; color: var(--text-main); line-height: 1.6;">
-            <!-- Pasos -->
+          <!-- Caja de texto personalizada -->
+          <div id="custom-text-box" style="display: none; margin-bottom: 14px;">
+            <div class="form-group">
+              <label for="custom-audio-title" style="font-size: 0.82rem; font-weight: 600;">Título del Audio Personalizado</label>
+              <input type="text" id="custom-audio-title" class="form-input" placeholder="Ej: Repaso Rápido de Patrones REST y Microservicios">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="custom-audio-text" style="font-size: 0.82rem; font-weight: 600;">Texto o Apunte a Narrar</label>
+              <textarea id="custom-audio-text" class="form-textarea" rows="3" placeholder="Escriba o pegue aquí el resumen técnico que desea escuchar en audio..."></textarea>
+            </div>
           </div>
+
+          <!-- Botón de Generación -->
+          <button id="generate-audio-btn" type="button" class="save-card-btn" style="background: linear-gradient(135deg, #0284c7 0%, #7e22ce 100%); font-size: 0.95rem; font-weight: 700; padding: 14px 20px;">
+            🎙️ GENERAR Y ESCUCHAR AUDIO-APUNTE CON IA
+          </button>
         </div>
+
+        <!-- Biblioteca de Audios por Materia -->
+        <h3 style="margin-top: 28px; margin-bottom: 14px; font-size: 1.1rem;">📚 Biblioteca de Audios CENEVAL por Materia</h3>
+        <div class="audio-grid" id="audio-library-grid">
+          <!-- Renderizado dinámico de audios -->
+        </div>
+
       </div>
     </section>
 
@@ -302,23 +422,25 @@
       <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
       <span>Fotos/Apuntes</span>
     </button>
-    <button class="nav-item" data-tab="tab-cocomo">
-      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-      <span>COCOMO</span>
+    <button class="nav-item" data-tab="tab-audio">
+      <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+      <span>Audio-Apuntes</span>
     </button>
   </nav>
 
-  <!-- JS Dependencies with Cache Busting -->
-  <script src="js/topics-data.js?v=18"></script>
-  <script src="js/anki-engine.js?v=18"></script>
-  <script src="js/photo-uploader.js?v=18"></script>
-  <script src="js/quiz-engine.js?v=18"></script>
-  <script src="js/cocomo-calculator.js?v=18"></script>
-  <script src="js/app.js?v=18"></script>
+  <!-- OCR & AI Vision Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="js/ai-vision-engine.js?v=20"></script>
+  <script src="js/topics-data.js?v=20"></script>
+  <script src="js/anki-engine.js?v=20"></script>
+  <script src="js/photo-uploader.js?v=20"></script>
+  <script src="js/quiz-engine.js?v=20"></script>
+  <script src="js/audio-notes-engine.js?v=20"></script>
+  <script src="js/app.js?v=20"></script>
 
   <!-- Service Worker Registration & Cache Auto-Buster -->
   <script>
-    const PWA_VERSION = 'v18';
+    const PWA_VERSION = 'v20';
     if (localStorage.getItem('ceneval_sw_ver') !== PWA_VERSION) {
       localStorage.setItem('ceneval_sw_ver', PWA_VERSION);
       if ('serviceWorker' in navigator) {
@@ -335,9 +457,9 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=18')
+        navigator.serviceWorker.register('./sw.js?v=20')
           .then(reg => {
-            console.log('Service Worker v18 registrado:', reg.scope);
+            console.log('Service Worker v20 registrado:', reg.scope);
             reg.update();
           })
           .catch(err => console.log('Error de Service Worker:', err));
