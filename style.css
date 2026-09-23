@@ -915,6 +915,17 @@ main {
   border-color: var(--accent-primary);
 }
 
+.form-select option {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 8px 12px;
+}
+
+[data-theme="light"] .form-select option {
+  background: #ffffff;
+  color: #0f172a;
+}
+
 .save-card-btn {
   width: 100%;
   padding: 14px;

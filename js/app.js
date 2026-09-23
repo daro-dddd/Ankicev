@@ -500,9 +500,9 @@ document.addEventListener('DOMContentLoaded', () => {
         quizExplanationBox.classList.add('visible');
 
         if (quizEngine.isExamFinished) {
-          quizNextBtn.textContent = 'Ver Reporte Diagnóstico Final ➔';
+          quizNextBtn.textContent = 'Ver Reporte Diagnóstico Final';
         } else {
-          quizNextBtn.textContent = 'Siguiente Reactivo ➔';
+          quizNextBtn.textContent = 'Siguiente Reactivo';
         }
         quizNextBtn.style.display = 'block';
 
@@ -543,14 +543,14 @@ document.addEventListener('DOMContentLoaded', () => {
           item.innerHTML = `
             <div>
               <strong style="color: var(--text-main); font-size: 0.9rem;">${t.topicName}</strong>
-              <div style="font-size: 0.78rem; color: #f43f5e;">Aciertos: ${t.correct} de ${t.total} (${t.percentage}%) - ⚠️ DEBES REFORZAR</div>
+              <div style="font-size: 0.78rem; color: #f43f5e;">Aciertos: ${t.correct} de ${t.total} (${t.percentage}%) - DEBES REFORZAR</div>
             </div>
             <div style="display:flex; gap:6px;">
               <button class="topic-chip audio-study-btn" data-topicid="${t.topicId}" style="padding:4px 10px; font-size:0.75rem; background:rgba(192, 132, 252, 0.15); color:var(--pastel-lavender);">
-                🎧 Escuchar Audio
+                Escuchar Audio
               </button>
               <button class="topic-chip anki-study-btn" data-topicid="${t.topicId}" style="padding:4px 10px; font-size:0.75rem; background:rgba(56, 189, 248, 0.15); color:var(--accent-cyan);">
-                🎴 Repasar Anki
+                Repasar Anki
               </button>
             </div>
           `;
@@ -668,16 +668,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const customAudioPlayBtn = document.getElementById('custom-audio-play-btn');
 
   function populateVoiceList() {
-    if (!audioEngine.synth) return;
+    if (!audioEngine || !audioEngine.synth) return;
     const voices = audioEngine.voices;
     if (audioVoiceSelect && voices.length > 0) {
       audioVoiceSelect.innerHTML = '';
       voices.forEach((v, idx) => {
         const option = document.createElement('option');
         option.value = idx;
-        option.textContent = `${v.name} (${v.lang})`;
+        const isMexico = (v.lang && (v.lang.toLowerCase().includes('es-mx') || v.lang.toLowerCase().includes('es_mx'))) ||
+                         (v.name && (v.name.toLowerCase().includes('mexico') || v.name.toLowerCase().includes('méxico')));
+        option.textContent = isMexico ? `${v.name} (Español - México)` : `${v.name} (${v.lang})`;
         audioVoiceSelect.appendChild(option);
       });
+      audioVoiceSelect.selectedIndex = 0;
+      audioEngine.setVoice(0);
     }
   }
 
@@ -770,8 +774,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (customTextBox) customTextBox.style.display = 'block';
       const opt = document.createElement('option');
       opt.value = 'free_text';
-      opt.textContent = '✏️ Texto Personalizado Libre';
+      opt.textContent = 'Texto Personalizado Libre';
       audioTopicSelect.appendChild(opt);
+      audioTopicSelect.selectedIndex = 0;
       return;
     } else {
       if (customTextBox) customTextBox.style.display = 'none';
@@ -788,10 +793,11 @@ document.addEventListener('DOMContentLoaded', () => {
         userCards.forEach(uc => {
           const opt = document.createElement('option');
           opt.value = uc.id;
-          opt.textContent = `⭐ ${uc.title}`;
+          opt.textContent = uc.title;
           audioTopicSelect.appendChild(opt);
         });
       }
+      audioTopicSelect.selectedIndex = 0;
       return;
     }
 
@@ -809,9 +815,13 @@ document.addEventListener('DOMContentLoaded', () => {
     filteredTopics.forEach(topic => {
       const opt = document.createElement('option');
       opt.value = topic.id;
-      opt.textContent = `📚 ${topic.name}`;
+      opt.textContent = topic.name;
       audioTopicSelect.appendChild(opt);
     });
+
+    if (audioTopicSelect.options.length > 0) {
+      audioTopicSelect.selectedIndex = 0;
+    }
   }
 
   if (audioAreaSelect) {
@@ -864,19 +874,19 @@ document.addEventListener('DOMContentLoaded', () => {
       card.className = 'audio-track-card';
       
       const connectorsHTML = track.connectors.map(c => 
-        `<span style="display:inline-block; background:rgba(56, 189, 248, 0.12); color:#38bdf8; border:1px solid rgba(56, 189, 248, 0.3); padding:2px 8px; border-radius:10px; font-size:0.68rem; margin-right:4px; margin-top:4px;">🔗 ${c}</span>`
+        `<span style="display:inline-block; background:rgba(56, 189, 248, 0.12); color:#38bdf8; border:1px solid rgba(56, 189, 248, 0.3); padding:2px 8px; border-radius:10px; font-size:0.68rem; margin-right:4px; margin-top:4px;">${c}</span>`
       ).join('');
 
       card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <span class="card-badge" style="margin-bottom: 0;">${track.area}</span>
-          <small style="color: var(--text-muted); font-weight: 600;">⏱️ ${track.duration}</small>
+          <small style="color: var(--text-muted); font-weight: 600;">${track.duration}</small>
         </div>
         <h4 style="margin: 6px 0; color: var(--text-main); font-size: 0.98rem; font-weight: 700;">${track.title}</h4>
         <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">${track.summary}</p>
         <div style="margin-bottom: 12px;">${connectorsHTML}</div>
         <button class="save-card-btn" style="padding: 8px 14px; font-size: 0.82rem; background: linear-gradient(135deg, #0284c7 0%, #7e22ce 100%); width: 100%;">
-          ▶️ Escuchar Audio-Apunte
+          Escuchar Audio-Apunte
         </button>
       `;
 

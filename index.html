@@ -163,7 +163,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
             <div class="quiz-score-badge" id="quiz-score-badge">Puntaje: 0 / 0 (0%)</div>
-            <button id="quiz-reset-btn" type="button" class="topic-chip" style="padding: 4px 10px; font-size: 0.75rem;" title="Reiniciar examen de 30 preguntas">🔄 Nuevo Examen</button>
+            <button id="quiz-reset-btn" type="button" class="topic-chip" style="padding: 4px 10px; font-size: 0.75rem;" title="Reiniciar examen de 30 preguntas">Nuevo Examen</button>
           </div>
         </div>
 
@@ -187,13 +187,13 @@
             <p id="quiz-explanation-text" style="font-size: 0.92rem; color: var(--text-main); line-height: 1.6;"></p>
           </div>
 
-          <button class="quiz-next-btn" id="quiz-next-btn" style="display: none;">Siguiente Reactivo ➔</button>
+          <button class="quiz-next-btn" id="quiz-next-btn" style="display: none;">Siguiente Reactivo</button>
         </div>
 
         <!-- Tarjeta de Resultados Diagnóstico Final -->
         <div id="quiz-results-card" class="quiz-results-card" style="display: none;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <span id="quiz-rank-badge" class="ai-badge" style="font-size: 0.9rem; padding: 6px 16px;">🥇 Nivel Sobresaliente</span>
+            <span id="quiz-rank-badge" class="ai-badge" style="font-size: 0.9rem; padding: 6px 16px;">Nivel Sobresaliente</span>
             <h2 id="quiz-final-score" style="font-size: 1.8rem; margin: 10px 0 4px 0; color: var(--text-main);">27 / 30 (90%)</h2>
             <p id="quiz-rank-desc" style="font-size: 0.88rem; color: var(--text-muted); max-width: 500px; margin: 0 auto;">Diagnóstico de desempeño general del examen CENEVAL.</p>
           </div>
@@ -201,7 +201,7 @@
           <!-- Alerta de Temas a Reforzar -->
           <div id="weak-topics-alert-box" style="margin-bottom: 20px; padding: 16px; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: var(--radius-md);">
             <h4 style="color: #f43f5e; margin-bottom: 8px; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
-              ⚠️ MATERIAS / TEMAS QUE DEBES REFORZAR:
+              MATERIAS / TEMAS QUE DEBES REFORZAR:
             </h4>
             <div id="weak-topics-list" style="display: flex; flex-direction: column; gap: 8px;">
               <!-- Lista dinámica de materias débiles -->
@@ -209,13 +209,13 @@
           </div>
 
           <!-- Desglose por Materia -->
-          <h4 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--text-main);">📊 Desglose de Rendimiento por Materia:</h4>
+          <h4 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--text-main);">Desglose de Rendimiento por Materia:</h4>
           <div id="topic-breakdown-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
             <!-- Render dinámico -->
           </div>
 
           <button id="quiz-restart-btn" class="save-card-btn" style="background: linear-gradient(135deg, #0284c7 0%, #7e22ce 100%);">
-            🔄 Iniciar Nuevo Examen de 30 Preguntas
+            Iniciar Nuevo Examen de 30 Preguntas
           </button>
         </div>
 
@@ -242,7 +242,7 @@
         <!-- Caja Escáner de Inteligencia Artificial -->
         <div id="ai-scanner-box" class="ai-scanner-box" style="display: none;">
           <div class="ai-scanner-header">
-            <span class="ai-badge">✨ ASISTENTE DE IA & VISIÓN POR COMPUTADORA</span>
+            <span class="ai-badge">ASISTENTE DE IA & VISIÓN POR COMPUTADORA</span>
             <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
               Escanea la imagen para extraer automáticamente el resumen técnico, formas de estudiar y conectores mentales.
             </p>
@@ -263,7 +263,7 @@
 
           <!-- Opción API Key de Gemini -->
           <details style="margin-top: 10px; font-size: 0.78rem; color: var(--text-muted);">
-            <summary style="cursor: pointer; font-weight: 600; color: var(--pastel-lavender);">⚙️ Configurar API Key de Gemini Vision (Opcional)</summary>
+            <summary style="cursor: pointer; font-weight: 600; color: var(--pastel-lavender);">Configurar API Key de Gemini Vision (Opcional)</summary>
             <div style="display: flex; gap: 8px; margin-top: 8px;">
               <input type="password" id="ai-api-key-input" class="form-input" style="font-size: 0.78rem;" placeholder="Pega tu API Key de Gemini para IA multimodal avanzada">
               <button id="ai-api-key-save-btn" type="button" class="topic-chip" style="padding: 6px 12px; font-size: 0.75rem;">Guardar Key</button>
@@ -304,10 +304,10 @@
       <div class="audio-studio-card">
         <div class="audio-studio-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
           <div>
-            <h2 style="font-size: 1.3rem; margin-bottom: 4px;">🎧 Estudio de Audio-Apuntes CENEVAL</h2>
+            <h2 style="font-size: 1.3rem; margin-bottom: 4px;">Estudio de Audio-Apuntes CENEVAL</h2>
             <p style="font-size: 0.88rem; color: var(--text-muted);">Escuche resúmenes narrados por voz de IA para las 4 áreas temáticas o sintetice sus propios apuntes.</p>
           </div>
-          <span class="ai-badge">🎙️ AUDIOLIBROS & REPASO AUDITIVO</span>
+          <span class="ai-badge">AUDIOLIBROS & REPASO AUDITIVO</span>
         </div>
 
         <!-- Reproductor de Audio Principal / Studio Player -->
@@ -359,8 +359,8 @@
 
               <div class="audio-voice-picker">
                 <label for="audio-voice-select" style="font-size: 0.78rem; color: var(--text-muted);">Voz:</label>
-                <select id="audio-voice-select" class="form-select" style="padding: 4px 8px; font-size: 0.78rem; max-width: 150px;">
-                  <option value="0">Voz Española Predeterminada</option>
+                <select id="audio-voice-select" class="form-select" style="padding: 4px 8px; font-size: 0.78rem; max-width: 170px;">
+                  <option value="0">Español de México (Predeterminada)</option>
                 </select>
               </div>
             </div>
@@ -368,7 +368,7 @@
 
           <!-- Script / Transcripción Narrada Sincronizada -->
           <div class="transcript-box">
-            <h4 style="font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 6px;">📝 Transcripción del Audio-Apunte:</h4>
+            <h4 style="font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 6px;">Transcripción del Audio-Apunte:</h4>
             <div id="audio-transcript-text" class="transcript-text">
               Seleccione un audio-apunte de la biblioteca inferior para leer y escuchar simultáneamente.
             </div>
@@ -378,8 +378,8 @@
         <!-- Creador e Sintetizador Interactivo de Audios por Materia y Tema -->
         <div class="audio-creator-card" style="margin-top: 24px; padding: 20px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-            <h3 style="font-size: 1.1rem; color: var(--accent-cyan); font-weight: 700; margin: 0;">🎙️ Creador de Audio-Apuntes por Materia & Tema</h3>
-            <span class="ai-badge">✨ INTELIGENCIA ARTIFICIAL AUDITIVA</span>
+            <h3 style="font-size: 1.1rem; color: var(--accent-cyan); font-weight: 700; margin: 0;">Creador de Audio-Apuntes por Materia & Tema</h3>
+            <span class="ai-badge">INTELIGENCIA ARTIFICIAL AUDITIVA</span>
           </div>
           <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 16px;">
             Seleccione la materia, el tema específico de la guía CENEVAL y el enfoque de estudio para sintetizar un podcast narrado a su medida.
@@ -395,8 +395,8 @@
                 <option value="area_2">Área 2: Arquitectura, UX & Bases de Datos</option>
                 <option value="area_3">Área 3: Programación, Paradigmas & Calidad</option>
                 <option value="area_4">Área 4: Transversal Comprensión Lectora</option>
-                <option value="user_photos">⭐ Mis Apuntes Guardados con Foto/IA</option>
-                <option value="free_text">✏️ Escribir Texto / Apunte Libre</option>
+                <option value="user_photos">Mis Apuntes Guardados con Foto/IA</option>
+                <option value="free_text">Escribir Texto / Apunte Libre</option>
               </select>
             </div>
 
@@ -412,10 +412,10 @@
             <div class="form-group" style="margin-bottom: 0;">
               <label for="audio-style-select" style="font-size: 0.82rem; font-weight: 600;">3. Formato / Estilo del Audio</label>
               <select id="audio-style-select" class="form-select">
-                <option value="masterclass">🎓 Masterclass Explicativa (3-5 min)</option>
-                <option value="flash">⚡ Flash Repaso de 1 Minuto (Puntos Examen)</option>
-                <option value="quiz">❓ Simulador de Preguntas y Respuestas Hablado</option>
-                <option value="mnemonics">🧠 Mnemotecnias & Reglas de Memoria</option>
+                <option value="masterclass">Masterclass Explicativa (3-5 min)</option>
+                <option value="flash">Flash Repaso de 1 Minuto (Puntos Examen)</option>
+                <option value="quiz">Simulador de Preguntas y Respuestas Hablado</option>
+                <option value="mnemonics">Mnemotecnias & Reglas de Memoria</option>
               </select>
             </div>
           </div>
@@ -434,12 +434,12 @@
 
           <!-- Botón de Generación -->
           <button id="generate-audio-btn" type="button" class="save-card-btn" style="background: linear-gradient(135deg, #0284c7 0%, #7e22ce 100%); font-size: 0.95rem; font-weight: 700; padding: 14px 20px;">
-            🎙️ GENERAR Y ESCUCHAR AUDIO-APUNTE CON IA
+            GENERAR Y ESCUCHAR AUDIO-APUNTE CON IA
           </button>
         </div>
 
         <!-- Biblioteca de Audios por Materia -->
-        <h3 style="margin-top: 28px; margin-bottom: 14px; font-size: 1.1rem;">📚 Biblioteca de Audios CENEVAL por Materia</h3>
+        <h3 style="margin-top: 28px; margin-bottom: 14px; font-size: 1.1rem;">Biblioteca de Audios CENEVAL por Materia</h3>
         <div class="audio-grid" id="audio-library-grid">
           <!-- Renderizado dinámico de audios -->
         </div>

@@ -153,7 +153,7 @@ class PhotoUploader {
         }, 2500);
 
         if (this.aiScanStatusText) {
-          this.aiScanStatusText.textContent = '✨ ¡Apunte completado con IA! Se generó el resumen, métodos de estudio y conectores.';
+          this.aiScanStatusText.textContent = '¡Apunte completado con IA! Se generó el resumen, métodos de estudio y conectores.';
         }
       }
     } catch (e) {
@@ -271,7 +271,7 @@ class PhotoUploader {
       
       const formattedNotes = this.formatNotesHTML(card.notes);
       const connectorsHTML = (card.connectors || []).map(conn => 
-        `<span style="display:inline-block; background:rgba(192, 132, 252, 0.15); color:var(--pastel-lavender); border:1px solid rgba(192, 132, 252, 0.3); padding:2px 8px; border-radius:10px; font-size:0.7rem; margin-right:4px; margin-top:4px;">🔗 ${conn}</span>`
+        `<span style="display:inline-block; background:rgba(192, 132, 252, 0.15); color:var(--pastel-lavender); border:1px solid rgba(192, 132, 252, 0.3); padding:2px 8px; border-radius:10px; font-size:0.7rem; margin-right:4px; margin-top:4px;">${conn}</span>`
       ).join('');
 
       cardEl.innerHTML = `

@@ -155,7 +155,7 @@ class AIVisionEngine {
     const connectorsList = Array.from(connectorsSet).slice(0, 5);
 
     // Construir Resumen Inteligente estructurado
-    let summaryText = `🤖 **Resumen Generado por IA:**\n`;
+    let summaryText = `**Resumen Generado por IA:**\n`;
     if (rawLines.length > 0) {
       summaryText += `Se analizó la imagen y se identificaron los siguientes conceptos clave:\n`;
       extractedConcepts.forEach(c => {
@@ -170,13 +170,13 @@ class AIVisionEngine {
     const mainConcept = extractedConcepts[0] || bestMatch.name;
     const secondConcept = extractedConcepts[1] || bestMatch.connectors[1];
 
-    let studyMethodsText = `\n\n💡 **Formas y Técnicas de Estudio:**\n`;
+    let studyMethodsText = `\n\n**Formas y Técnicas de Estudio:**\n`;
     studyMethodsText += `1. **Pregunta Clave CENEVAL:** ¿Cuál es la función principal de ${mainConcept} en ${bestMatch.name}?\n`;
     studyMethodsText += `2. **Técnica de Memoria (Mnemotecnia):** Asocia "${mainConcept.slice(0, 4).toUpperCase()}" con ${secondConcept || 'sus componentes principales'}.\n`;
     studyMethodsText += `3. **Punto Clave a Memorizar:** Para el examen EGEL Plus, recuerda que ${mainConcept} se relaciona directamente con ${connectorsList.slice(0, 2).join(' y ')}.`;
 
     // Combinar la nota completa
-    const fullNotes = `${summaryText}${studyMethodsText}\n\n🔗 **Conectores Mentales:** ${connectorsList.join(', ')}`;
+    const fullNotes = `${summaryText}${studyMethodsText}\n\n**Conectores Mentales:** ${connectorsList.join(', ')}`;
 
     return {
       title: detectedTitle,
@@ -240,17 +240,17 @@ Responde exclusivamente en formato JSON válido con la siguiente estructura:
       const rawJson = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
       const parsed = JSON.parse(rawJson);
 
-      const summaryText = `🤖 **Resumen IA Gemini:**\n${parsed.summary}`;
-      const studyMethodsText = `\n\n💡 **Formas de Estudiar:**\n` +
+      const summaryText = `**Resumen IA Gemini:**\n${parsed.summary}`;
+      const studyMethodsText = `\n\n**Formas de Estudiar:**\n` +
         parsed.study_questions.map((q, i) => `${i + 1}. **Pregunta:** ${q}`).join('\n') +
-        `\n🧠 **Mnemotecnia:** ${parsed.mnemonics}`;
+        `\n**Mnemotecnia:** ${parsed.mnemonics}`;
 
       return {
         title: parsed.title,
         topicId: parsed.topicId || 'movil',
         summary: summaryText,
         studyMethods: studyMethodsText,
-        fullNotes: `${summaryText}${studyMethodsText}\n\n🔗 **Conectores:** ${parsed.connectors.join(', ')}`,
+        fullNotes: `${summaryText}${studyMethodsText}\n\n**Conectores:** ${parsed.connectors.join(', ')}`,
         connectors: parsed.connectors || []
       };
     }

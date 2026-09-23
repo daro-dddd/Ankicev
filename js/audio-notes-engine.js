@@ -120,9 +120,22 @@ Las 3 estrategias clave son:
   initVoices() {
     if (!this.synth) return;
     const loadVoices = () => {
-      this.voices = this.synth.getVoices().filter(v => v.lang.includes('es') || v.lang.includes('ES'));
+      const all = this.synth.getVoices();
+      
+      // Filtrar preferentemente voces de México (es-MX)
+      const mxVoices = all.filter(v => 
+        v.lang.replace('_', '-').toLowerCase().includes('es-mx') ||
+        v.name.toLowerCase().includes('mexico') ||
+        v.name.toLowerCase().includes('méxico')
+      );
+      
+      const esVoices = all.filter(v => v.lang.toLowerCase().includes('es'));
+
+      // Ordenar: voces de México primero
+      this.voices = mxVoices.concat(esVoices.filter(v => !mxVoices.includes(v)));
+
       if (this.voices.length > 0) {
-        this.selectedVoice = this.voices[0];
+        this.selectedVoice = mxVoices.length > 0 ? mxVoices[0] : this.voices[0];
       }
     };
     loadVoices();

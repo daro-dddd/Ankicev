@@ -108,7 +108,7 @@ class QuizEngine {
       isCorrect = true;
       explanationMsg = selectedOption.type === 'distractor' ? '¡Ojo! Evitaste el distractor. ¡Respuesta correcta!' : '¡Excelente! Respuesta correcta.';
     } else {
-      explanationMsg = selectedOption.type === 'distractor' ? '⚠️ Caíste en la opción distractor del CENEVAL.' : '❌ Respuesta incorrecta.';
+      explanationMsg = selectedOption.type === 'distractor' ? 'Caíste en la opción distractor del CENEVAL.' : 'Respuesta incorrecta.';
     }
 
     if (this.currentIndex >= this.examQuestions.length - 1) {
@@ -149,16 +149,16 @@ class QuizEngine {
     const total = this.examQuestions.length;
     const percentage = total > 0 ? Math.round((this.score / total) * 100) : 0;
 
-    let rankBadge = '⚠️ Por Mejorar';
+    let rankBadge = 'Por Mejorar';
     let rankColor = 'var(--danger)';
     let rankDesc = 'Se recomienda reforzar las materias señaladas a continuación antes de presentar el examen formal.';
 
     if (percentage >= 80) {
-      rankBadge = '🥇 Nivel Sobresaliente';
+      rankBadge = 'Nivel Sobresaliente';
       rankColor = 'var(--accent-emerald)';
       rankDesc = '¡Felicidades! Tienes un dominio sólido de las materias de Ingeniería de Software para el CENEVAL.';
     } else if (percentage >= 60) {
-      rankBadge = '🥈 Nivel Satisfactorio';
+      rankBadge = 'Nivel Satisfactorio';
       rankColor = 'var(--accent-cyan)';
       rankDesc = 'Has alcanzado el nivel satisfactorio. Revisa los temas marcados para aspirar a nivel sobresaliente.';
     }
