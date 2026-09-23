@@ -121,23 +121,45 @@ Las 3 estrategias clave son:
     if (!this.synth) return;
     const loadVoices = () => {
       const all = this.synth.getVoices();
-      
-      // Filtrar preferentemente voces de México (es-MX)
-      const mxVoices = all.filter(v => 
-        v.lang.replace('_', '-').toLowerCase().includes('es-mx') ||
-        v.name.toLowerCase().includes('mexico') ||
-        v.name.toLowerCase().includes('méxico')
-      );
-      
-      const esVoices = all.filter(v => v.lang.toLowerCase().includes('es'));
+      if (!all || all.length === 0) return;
 
-      // Ordenar: voces de México primero
-      this.voices = mxVoices.concat(esVoices.filter(v => !mxVoices.includes(v)));
+      // Algoritmo de puntuación para seleccionar y priorizar las voces MÁS HUMANIZADAS (Natural / Neural / Google)
+      const scoreVoice = (v) => {
+        let score = 0;
+        const lang = (v.lang || '').replace('_', '-').toLowerCase();
+        const name = (v.name || '').toLowerCase();
+
+        // Idioma Español
+        if (lang.startsWith('es')) score += 100;
+        else return -1000;
+
+        // Preferencia regional: México / Latinoamérica
+        if (lang.includes('es-mx') || name.includes('mexico') || name.includes('méxico')) score += 600;
+        else if (lang.includes('es-us') || lang.includes('es-419') || lang.includes('es-ar') || lang.includes('es-co')) score += 400;
+
+        // PREMIO MÁXIMO: Voces Naturales, Neurales y de Alta Fidelidad (Voz Humana)
+        if (name.includes('natural')) score += 3000;
+        if (name.includes('neural')) score += 3000;
+        if (name.includes('google')) score += 2000;
+        if (name.includes('online')) score += 1500;
+        if (name.includes('premium') || name.includes('enhanced') || name.includes('multilingual')) score += 1200;
+
+        // CASTIGO: Voces robóticas antiguas SAPI5 / Desktop
+        if (name.includes('desktop')) score -= 800;
+
+        return score;
+      };
+
+      const spanishVoices = all.filter(v => (v.lang || '').toLowerCase().startsWith('es'));
+      spanishVoices.sort((a, b) => scoreVoice(b) - scoreVoice(a));
+
+      this.voices = spanishVoices.length > 0 ? spanishVoices : all;
 
       if (this.voices.length > 0) {
-        this.selectedVoice = mxVoices.length > 0 ? mxVoices[0] : this.voices[0];
+        this.selectedVoice = this.voices[0];
       }
     };
+
     loadVoices();
     if (this.synth.onvoiceschanged !== undefined) {
       this.synth.onvoiceschanged = loadVoices;
@@ -177,7 +199,8 @@ Las 3 estrategias clave son:
       : fullScript;
 
     this.utterance = new SpeechSynthesisUtterance(textToSpeak);
-    this.utterance.rate = this.playbackRate;
+    this.utterance.rate = this.playbackRate || 0.95;
+    this.utterance.pitch = 1.05; // Modulación de tono más cálida y humana (evita monotonía robótica)
 
     if (this.selectedVoice) {
       this.utterance.voice = this.selectedVoice;

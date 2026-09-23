@@ -678,9 +678,20 @@ document.addEventListener('DOMContentLoaded', () => {
       voices.forEach((v, idx) => {
         const option = document.createElement('option');
         option.value = idx;
-        const isMexico = (v.lang && (v.lang.toLowerCase().includes('es-mx') || v.lang.toLowerCase().includes('es_mx'))) ||
-                         (v.name && (v.name.toLowerCase().includes('mexico') || v.name.toLowerCase().includes('méxico')));
-        option.textContent = isMexico ? `${v.name} (Español - México)` : `${v.name} (${v.lang})`;
+
+        const nameLower = v.name.toLowerCase();
+        const langLower = v.lang.toLowerCase();
+
+        let badge = '';
+        if (nameLower.includes('natural') || nameLower.includes('neural')) {
+          badge = ' (Voz Humana Natural)';
+        } else if (nameLower.includes('google')) {
+          badge = ' (Voz Google Alta Calidad)';
+        } else if (langLower.includes('es-mx') || nameLower.includes('mexico') || nameLower.includes('méxico')) {
+          badge = ' (Español México)';
+        }
+
+        option.textContent = `${v.name}${badge}`;
         audioVoiceSelect.appendChild(option);
       });
       audioVoiceSelect.selectedIndex = 0;
