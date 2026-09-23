@@ -291,6 +291,7 @@ Las 3 estrategias clave son:
     for (let i = 0; i < numBars; i++) {
       const x = i * (barWidth + 3);
       const barHeight = 8;
+      const y = (height - barHeight) / 2;
       this.ctx.fillRect(x, y, barWidth, barHeight);
     }
   }

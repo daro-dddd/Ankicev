@@ -169,6 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       if (targetTab === 'tab-quiz') renderQuizQuestion();
+      if (targetTab === 'tab-audio') {
+        populateAudioTopics(audioAreaSelect ? audioAreaSelect.value : 'all');
+      }
     });
   });
 
@@ -774,11 +777,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (customTextBox) customTextBox.style.display = 'block';
       const opt = document.createElement('option');
       opt.value = 'free_text';
-      opt.textContent = 'Texto Personalizado Libre';
+      opt.textContent = 'Texto Libre (Escribir apunte abajo)';
       audioTopicSelect.appendChild(opt);
       audioTopicSelect.selectedIndex = 0;
+      audioTopicSelect.disabled = true;
       return;
     } else {
+      audioTopicSelect.disabled = false;
       if (customTextBox) customTextBox.style.display = 'none';
     }
 
@@ -787,15 +792,22 @@ document.addEventListener('DOMContentLoaded', () => {
       if (userCards.length === 0) {
         const opt = document.createElement('option');
         opt.value = 'none';
-        opt.textContent = 'No hay apuntes guardados aún';
+        opt.textContent = 'Sin apuntes guardados (Sube fotos en Apuntes)';
         audioTopicSelect.appendChild(opt);
+        audioTopicSelect.disabled = true;
       } else {
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = 'all';
+        defaultOpt.textContent = 'Todos tus Apuntes Guardados';
+        audioTopicSelect.appendChild(defaultOpt);
+
         userCards.forEach(uc => {
           const opt = document.createElement('option');
           opt.value = uc.id;
           opt.textContent = uc.title;
           audioTopicSelect.appendChild(opt);
         });
+        audioTopicSelect.disabled = false;
       }
       audioTopicSelect.selectedIndex = 0;
       return;
@@ -812,6 +824,13 @@ document.addEventListener('DOMContentLoaded', () => {
       filteredTopics = TOPICS_DATA.filter(t => t.id === 'comprension_lectora');
     }
 
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = 'all';
+    defaultOpt.textContent = areaValue === 'all' 
+      ? 'Todos los Temas (Resumen General)' 
+      : 'Todos los Temas de esta Área';
+    audioTopicSelect.appendChild(defaultOpt);
+
     filteredTopics.forEach(topic => {
       const opt = document.createElement('option');
       opt.value = topic.id;
@@ -819,9 +838,7 @@ document.addEventListener('DOMContentLoaded', () => {
       audioTopicSelect.appendChild(opt);
     });
 
-    if (audioTopicSelect.options.length > 0) {
-      audioTopicSelect.selectedIndex = 0;
-    }
+    audioTopicSelect.selectedIndex = 0;
   }
 
   if (audioAreaSelect) {
