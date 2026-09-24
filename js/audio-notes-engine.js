@@ -109,35 +109,70 @@ Y la tercera estrategia es analizar el Vocabulario en Contexto: asigna el signif
     this.initVoices();
   }
 
+  cleanScriptForHumanSpeech(text) {
+    if (!text) return '';
+    let t = text;
+    // Normalización fonética didáctica para evitar deletreo robótico en español
+    t = t.replace(/\b3NF\b/gi, 'Tercera Forma Normal');
+    t = t.replace(/\b2NF\b/gi, 'Segunda Forma Normal');
+    t = t.replace(/\b1NF\b/gi, 'Primera Forma Normal');
+    t = t.replace(/\bISO\s*25010\b/gi, 'ISO veinticinco mil diez');
+    t = t.replace(/\bISO\s*25000\b/gi, 'ISO veinticinco mil');
+    t = t.replace(/\bIEEE\s*830\b/gi, 'I E E E ocho tres cero');
+    t = t.replace(/\bRESTful\b/gi, 'REST');
+    t = t.replace(/\bJSON\b/gi, 'Jeison');
+    t = t.replace(/\bACID\b/gi, 'Ácid');
+    t = t.replace(/\bCOCOMO\b/gi, 'Cócomo');
+    t = t.replace(/\bPOO\b/gi, 'Programación Orientada a Objetos');
+    t = t.replace(/\bINVEST\b/gi, 'Ínvest');
+    t = t.replace(/\bScrum\b/gi, 'Escrum');
+    t = t.replace(/\bAgile\b/gi, 'Áyayil');
+    t = t.replace(/\bSQL\b/gi, 'Ese-cu-ele');
+    t = t.replace(/\bNoSQL\b/gi, 'No ese-cu-ele');
+
+    // Pausas naturales con puntuación para evitar velocidad robótica monótona
+    t = t.replace(/\.\s+/g, '. ... ');
+    t = t.replace(/,\s+/g, ', .. ');
+
+    return t;
+  }
+
   initVoices() {
     if (!this.synth) return;
     const loadVoices = () => {
       const all = this.synth.getVoices();
       if (!all || all.length === 0) return;
 
-      // Algoritmo de puntuación para seleccionar y priorizar las voces MÁS HUMANIZADAS (Natural / Neural / Google)
+      // Algoritmo de puntuación para seleccionar las voces MÁS HUMANIZADAS (Natural / Neural / Google)
       const scoreVoice = (v) => {
         let score = 0;
         const lang = (v.lang || '').replace('_', '-').toLowerCase();
         const name = (v.name || '').toLowerCase();
 
-        // Idioma Español
-        if (lang.startsWith('es')) score += 100;
-        else return -1000;
+        // Debe ser idioma Español
+        if (!lang.startsWith('es')) return -10000;
+        score += 100;
 
         // Preferencia regional: México / Latinoamérica
-        if (lang.includes('es-mx') || name.includes('mexico') || name.includes('méxico')) score += 600;
-        else if (lang.includes('es-us') || lang.includes('es-419') || lang.includes('es-ar') || lang.includes('es-co')) score += 400;
+        if (lang.includes('es-mx') || name.includes('mexico') || name.includes('méxico')) score += 1200;
+        else if (lang.includes('es-us') || lang.includes('es-419') || lang.includes('es-ar') || lang.includes('es-co')) score += 600;
+        else if (lang.includes('es-es')) score += 300;
 
-        // PREMIO MÁXIMO: Voces Naturales, Neurales y de Alta Fidelidad (Voz Humana)
-        if (name.includes('natural')) score += 3000;
-        if (name.includes('neural')) score += 3000;
-        if (name.includes('google')) score += 2000;
-        if (name.includes('online')) score += 1500;
-        if (name.includes('premium') || name.includes('enhanced') || name.includes('multilingual')) score += 1200;
+        // PREMIO MÁXIMO: Voces Naturales, Neurales y de Alta Fidelidad (Voz Humana HD)
+        if (name.includes('natural')) score += 10000;
+        if (name.includes('neural')) score += 10000;
+        if (name.includes('online')) score += 8000;
+        if (name.includes('google')) score += 6000;
+        if (name.includes('premium') || name.includes('enhanced') || name.includes('multilingual')) score += 5000;
 
-        // CASTIGO: Voces robóticas antiguas SAPI5 / Desktop
-        if (name.includes('desktop')) score -= 800;
+        // Nombres conocidos de alta calidad en Android/iOS/Windows
+        if (name.includes('sabina') || name.includes('dalia') || name.includes('jorge') || name.includes('paulina') || name.includes('mia') || name.includes('monica')) {
+          score += 4000;
+        }
+
+        // CASTIGO SEVERO: Voces robóticas sintéticas antiguas SAPI5 / Desktop
+        if (name.includes('desktop')) score -= 5000;
+        if (name.includes('sapi')) score -= 5000;
 
         return score;
       };
@@ -166,9 +201,6 @@ Y la tercera estrategia es analizar el Vocabulario en Contexto: asigna el signif
 
   setPlaybackRate(rate) {
     this.playbackRate = parseFloat(rate);
-    if (this.utterance && this.isPlaying) {
-      // Re-iniciar con la nueva velocidad desde el estado actual
-    }
   }
 
   playTrack(track, onBoundaryCallback, onEndCallback, startCharIndex = 0) {
@@ -186,13 +218,15 @@ Y la tercera estrategia es analizar el Vocabulario en Contexto: asigna el signif
     this.onEndCb = onEndCallback;
 
     const fullScript = track.script;
-    const textToSpeak = (startCharIndex > 0 && startCharIndex < fullScript.length)
+    const rawText = (startCharIndex > 0 && startCharIndex < fullScript.length)
       ? fullScript.substring(startCharIndex)
       : fullScript;
 
+    const textToSpeak = this.cleanScriptForHumanSpeech(rawText);
+
     this.utterance = new SpeechSynthesisUtterance(textToSpeak);
-    this.utterance.rate = this.playbackRate || 0.95;
-    this.utterance.pitch = 1.05; // Modulación de tono más cálida y humana (evita monotonía robótica)
+    this.utterance.rate = this.playbackRate || 0.95; // Ritmo pausado y conversacional
+    this.utterance.pitch = 1.0; // Tono natural base cálido (evita agudos metálicos robóticos)
 
     if (this.selectedVoice) {
       this.utterance.voice = this.selectedVoice;

@@ -644,6 +644,10 @@ main {
   box-shadow: var(--shadow-lg);
   transition: background 0.4s ease, border-color 0.4s ease;
   animation: fadeIn 0.3s ease;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .canvas-graph-container.active {
@@ -655,6 +659,10 @@ main {
   height: 100%;
   display: block;
   cursor: grab;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 #obsidian-graph-canvas:active {

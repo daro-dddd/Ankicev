@@ -684,11 +684,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let badge = '';
         if (nameLower.includes('natural') || nameLower.includes('neural')) {
-          badge = ' (Voz Humana Natural)';
+          badge = ' ⭐ (Voz Humana Neural)';
         } else if (nameLower.includes('google')) {
-          badge = ' (Voz Google Alta Calidad)';
+          badge = ' ✨ (Voz Google HD)';
         } else if (langLower.includes('es-mx') || nameLower.includes('mexico') || nameLower.includes('méxico')) {
-          badge = ' (Español México)';
+          badge = ' 🇲🇽 (Español México)';
+        } else if (nameLower.includes('sabina') || nameLower.includes('dalia') || nameLower.includes('paulina')) {
+          badge = ' 🎙️ (Voz Natural)';
         }
 
         option.textContent = `${v.name}${badge}`;
@@ -1112,8 +1114,9 @@ class ObsidianGraphRenderer {
   bindEvents() {
     const getPos = (e) => {
       const rect = this.canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const touch = e.touches && e.touches.length > 0 ? e.touches[0] : (e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : null);
+      const clientX = touch ? touch.clientX : e.clientX;
+      const clientY = touch ? touch.clientY : e.clientY;
       return {
         x: clientX - rect.left,
         y: clientY - rect.top
@@ -1123,8 +1126,10 @@ class ObsidianGraphRenderer {
     const onStart = (e) => {
       const pos = getPos(e);
       let found = null;
+      // Precision hit area for touch drag (radius + 20px, min 35px)
       this.nodes.forEach(n => {
-        if (Math.hypot(n.x - pos.x, n.y - pos.y) <= n.radius + 10) {
+        const hitRadius = Math.max(n.radius + 20, 35);
+        if (Math.hypot(n.x - pos.x, n.y - pos.y) <= hitRadius) {
           found = n;
         }
       });
@@ -1132,6 +1137,7 @@ class ObsidianGraphRenderer {
       if (found) {
         this.draggedNode = found;
         this.isDragging = true;
+        if (e.cancelable) e.preventDefault();
       }
     };
 
@@ -1139,6 +1145,7 @@ class ObsidianGraphRenderer {
       const pos = getPos(e);
 
       if (this.isDragging && this.draggedNode) {
+        if (e.cancelable) e.preventDefault();
         this.draggedNode.x = pos.x;
         this.draggedNode.y = pos.y;
         return;
@@ -1146,7 +1153,8 @@ class ObsidianGraphRenderer {
 
       let found = null;
       this.nodes.forEach(n => {
-        if (Math.hypot(n.x - pos.x, n.y - pos.y) <= n.radius + 10) {
+        const hitRadius = Math.max(n.radius + 20, 35);
+        if (Math.hypot(n.x - pos.x, n.y - pos.y) <= hitRadius) {
           found = n;
         }
       });
@@ -1155,7 +1163,7 @@ class ObsidianGraphRenderer {
       this.canvas.style.cursor = found ? 'pointer' : 'grab';
     };
 
-    const onEnd = () => {
+    const onEnd = (e) => {
       if (this.isDragging && this.draggedNode && !this.hoveredNode) {
         this.showNodePopover(this.draggedNode);
       } else if (this.hoveredNode) {
@@ -1169,8 +1177,9 @@ class ObsidianGraphRenderer {
     this.canvas.addEventListener('mousemove', onMove);
     this.canvas.addEventListener('mouseup', onEnd);
 
-    this.canvas.addEventListener('touchstart', onStart, { passive: true });
-    this.canvas.addEventListener('touchmove', onMove, { passive: true });
+    // CRITICAL FIX: passive: false allows calling preventDefault() to lock page scrolling while dragging nodes on touch screens!
+    this.canvas.addEventListener('touchstart', onStart, { passive: false });
+    this.canvas.addEventListener('touchmove', onMove, { passive: false });
     this.canvas.addEventListener('touchend', onEnd);
 
     window.addEventListener('resize', () => this.resizeCanvas());

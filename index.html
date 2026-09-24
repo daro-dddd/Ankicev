@@ -499,17 +499,17 @@
 
   <!-- OCR & AI Vision Dependencies -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <script src="js/ai-vision-engine.js?v=26"></script>
-  <script src="js/topics-data.js?v=26"></script>
-  <script src="js/anki-engine.js?v=26"></script>
-  <script src="js/photo-uploader.js?v=26"></script>
-  <script src="js/quiz-engine.js?v=26"></script>
-  <script src="js/audio-notes-engine.js?v=26"></script>
-  <script src="js/app.js?v=26"></script>
+  <script src="js/ai-vision-engine.js?v=27"></script>
+  <script src="js/topics-data.js?v=27"></script>
+  <script src="js/anki-engine.js?v=27"></script>
+  <script src="js/photo-uploader.js?v=27"></script>
+  <script src="js/quiz-engine.js?v=27"></script>
+  <script src="js/audio-notes-engine.js?v=27"></script>
+  <script src="js/app.js?v=27"></script>
 
   <!-- Service Worker Registration & Cache Auto-Buster -->
   <script>
-    const PWA_VERSION = 'v26';
+    const PWA_VERSION = 'v27';
     if (localStorage.getItem('ceneval_sw_ver') !== PWA_VERSION) {
       localStorage.setItem('ceneval_sw_ver', PWA_VERSION);
       if ('serviceWorker' in navigator) {
@@ -526,9 +526,9 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=26')
+        navigator.serviceWorker.register('./sw.js?v=27')
           .then(reg => {
-            console.log('Service Worker v26 registrado:', reg.scope);
+            console.log('Service Worker v27 registrado:', reg.scope);
             reg.update();
           })
           .catch(err => console.log('Error de Service Worker:', err));
