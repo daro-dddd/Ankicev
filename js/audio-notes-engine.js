@@ -275,7 +275,23 @@ Las 3 estrategias clave son:
     this.canvas = document.getElementById(canvasId);
     if (this.canvas) {
       this.ctx = this.canvas.getContext('2d');
+      this.resizeCanvas();
+      window.addEventListener('resize', () => {
+        this.resizeCanvas();
+        if (!this.isPlaying) this.drawWaveformIdle();
+      });
       this.drawWaveformIdle();
+    }
+  }
+
+  resizeCanvas() {
+    if (!this.canvas) return;
+    const parent = this.canvas.parentElement;
+    if (parent) {
+      const parentWidth = parent.clientWidth - 16;
+      if (parentWidth > 0) {
+        this.canvas.width = Math.floor(parentWidth);
+      }
     }
   }
 
