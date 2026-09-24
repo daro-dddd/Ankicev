@@ -25,13 +25,13 @@ class AudioNotesEngine {
         title: 'Área 1: Requerimientos, Historias de Usuario & IEEE 830',
         area: 'Área 1: Requerimientos',
         duration: '03:45',
-        summary: 'Resumen narrado de Requerimientos Funcionales, No Funcionales, Historias de Usuario y Estándar IEEE 830.',
-        script: `Bienvenido al Audio-Apunte del Área 1: Requerimientos y Documentación de Software para el CENEVAL EGEL Plus. 
-En Ingeniería de Software, los requerimientos se dividen en dos categorías fundamentales: Requerimientos Funcionales y Requerimientos No Funcionales.
-Los Requerimientos Funcionales definen los servicios, funciones y comportamientos que el sistema debe realizar. Por ejemplo: El sistema debe permitir el inicio de sesión con correo y contraseña.
-Los Requerimientos No Funcionales imponen restricciones a los servicios, tales como rendimiento, seguridad, disponibilidad y mantenibilidad según el estándar ISO 25010. Por ejemplo: La respuesta a consultas debe tardar menos de 2 segundos.
-El estándar IEEE 830 especifica la estructura de la Especificación de Requerimientos de Software (ERS), la cual debe ser unívoca, completa, consistente, verificable y modificable.
-En metodologías ágiles como Scrum, los requerimientos se redactan en formato de Historias de Usuario con la estructura: Como rol, quiero acción, para beneficio. Cada Historia de Usuario debe cumplir los criterios INVEST e incluir Criterios de Aceptación claros.`,
+        summary: 'Explicación didáctica de Requerimientos Funcionales, No Funcionales, Historias de Usuario e IEEE 830.',
+        script: `Hola, bienvenido. Hoy te voy a explicar los aspectos esenciales del Área 1: Requerimientos y Documentación de Software para tu examen CENEVAL.
+Imagina que estás diseñando un sistema desde cero. Lo primero que debes distinguir es entre requerimientos funcionales y no funcionales.
+Los requerimientos funcionales son todas aquellas acciones concretas que el usuario o el sistema deben realizar. Por ejemplo, permitir que un alumno inicie sesión o descargue su boleta.
+Por otro lado, los requerimientos no funcionales son las restricciones o cualidades de calidad que exige el sistema, reguladas por la norma ISO 25010. Por ejemplo, que el login responda en menos de 2 segundos o que la contraseña se guarde encriptada.
+Para documentar todo esto de forma tradicional se utiliza el estándar IEEE 830, el cual exige que la especificación sea unívoca, completa, consistente y verificable.
+En cambio, en metodologías ágiles como Scrum, usamos Historias de Usuario. Recuerda la estructura clave: Como determinado rol, quiero realizar una acción, para obtener un beneficio. No olvides comprobar que cumplan los criterios INVEST.`,
         connectors: ['Requerimientos Funcionales', 'IEEE 830', 'Historias de Usuario', 'Criterios de Aceptación', 'ISO 25010']
       },
       {
@@ -39,13 +39,12 @@ En metodologías ágiles como Scrum, los requerimientos se redactan en formato d
         title: 'Área 2: Patrones Arquitectónicos, REST & Microservicios',
         area: 'Área 2: Arquitectura',
         duration: '04:15',
-        summary: 'Explicación narrada de MVC, Microservicios, APIs RESTful y Capas Arquitectónicas.',
-        script: `Bienvenido al Audio-Apunte del Área 2: Arquitectura de Software y Sistemas Distribuidos.
-La Arquitectura de Software define la estructura de alto nivel del sistema y la interacción entre sus componentes.
-El Patrón Modelo-Vista-Controlador (MVC) separa el sistema en tres capas: El Modelo maneja los datos y reglas de negocio; la Vista gestiona la interfaz gráfica; y el Controlador procesa la lógica de entrada y coordina la actualización del Modelo y la Vista.
-En la arquitectura de Microservicios, la aplicación se divide en servicios pequeños, independientes y desplegables de manera autónoma que se comunican mediante APIs HTTP RESTful o mensajería asíncrona.
-Las APIs RESTful utilizan métodos HTTP estándar como GET para consultar, POST para crear, PUT para actualizar y DELETE para eliminar recursos representados en JSON.
-Para el examen CENEVAL, recuerda que desacoplar los componentes mediante patrones arquitectónicos mejora la mantenibilidad y la escalabilidad del software.`,
+        summary: 'Explicación didáctica de MVC, Microservicios, APIs RESTful y Capas Arquitectónicas.',
+        script: `Hola. En este audio te voy a explicar la Arquitectura de Software de forma super clara para el examen CENEVAL.
+La arquitectura define la estructura de alto nivel y cómo interactúan los módulos de tu aplicación.
+Hablemos primero del patrón MVC, o Modelo-Vista-Controlador. La regla de oro aquí es la separación de responsabilidades. El Modelo se encarga de los datos y las reglas de negocio. La Vista es todo lo que el usuario ve en pantalla. Y el Controlador es el intermediario que recibe las acciones del usuario y actualiza el Modelo y la Vista.
+Ahora bien, cuando trabajamos con Microservicios, en lugar de un monolito gigante, dividimos la aplicación en servicios pequeños e independientes. Cada uno se despliega por separado y se comunican a través de APIs RESTful usando JSON.
+Recuerda los métodos HTTP estándar para REST: GET para consultar, POST para crear, PUT para actualizar y DELETE para eliminar. Desacoplar los componentes con estos patrones mejora la escalabilidad y la mantenibilidad del software.`,
         connectors: ['Patrones Arquitectónicos', 'MVC', 'Microservicios', 'APIs REST', 'Desacoplamiento']
       },
       {
@@ -53,14 +52,15 @@ Para el examen CENEVAL, recuerda que desacoplar los componentes mediante patrone
         title: 'Área 2: Bases de Datos SQL, Normalización 3NF & NoSQL',
         area: 'Área 2: Bases de Datos',
         duration: '04:30',
-        summary: 'Guía de audio sobre Normalización (1NF, 2NF, 3NF), Transacciones ACID y Bases de Datos NoSQL.',
-        script: `Bienvenido al Audio-Apunte del Área 2: Bases de Datos Relacionales y NoSQL.
-En Bases de Datos Relacionales (SQL), la Normalización elimina la redundancia y previene anomalías de inserción, actualización y borrado.
-Primera Forma Normal (1NF): Requiere valores atómicos sin grupos repetidos.
-Segunda Forma Normal (2NF): Está en 1NF y todos los atributos no clave dependen totalmente de la clave primaria.
-Tercera Forma Normal (3NF): Está en 2NF y no existen dependencias transitivas entre atributos no clave.
-Las transacciones SQL garantizan las propiedades ACID: Atomicidad, Consistencia, Aislamiento (Isolation) y Durabilidad.
-Por otro lado, las Bases de Datos NoSQL como MongoDB ofrecen escalabilidad horizontal y esquemas flexibles orientados a documentos JSON. Según el Teorema CAP, un sistema distribuido solo puede garantizar al mismo tiempo dos de las siguientes tres propiedades: Consistencia, Disponibilidad y Tolerancia a Particiones.`,
+        summary: 'Guía explicativa sobre Normalización (1NF, 2NF, 3NF), Transacciones ACID y Bases de Datos NoSQL.',
+        script: `Bienvenido. Vamos a revisar Bases de Datos Relacionales y NoSQL, uno de los temas más preguntados en el CENEVAL.
+En bases de datos SQL, la Normalización sirve para evitar la redundancia y corregir anomalías.
+Te explico las 3 formas normales principales:
+La Primera Forma Normal exige que todos los campos tengan valores atómicos e indivisibles.
+La Segunda Forma Normal pide que ya esté en primera forma y que todos los atributos no clave dependan al cien por ciento de la clave primaria.
+La Tercera Forma Normal requiere estar en segunda forma y eliminar cualquier dependencia transitiva entre atributos no clave.
+Además, una base de datos relacional debe cumplir las propiedades ACID: Atomicidad, Consistencia, Aislamiento y Durabilidad.
+Por el contrario, en bases de datos NoSQL como MongoDB, priman la escalabilidad horizontal y los documentos flexibles JSON. Recuerda el Teorema CAP: en un sistema distribuido solo puedes garantizar dos de estas tres propiedades: Consistencia, Disponibilidad o Tolerancia a Particiones.`,
         connectors: ['Normalización 3NF', 'Propiedades ACID', 'Bases de Datos SQL', 'NoSQL MongoDB', 'Teorema CAP']
       },
       {
@@ -68,19 +68,14 @@ Por otro lado, las Bases de Datos NoSQL como MongoDB ofrecen escalabilidad horiz
         title: 'Área 3: Programación Orientada a Objetos & Principios SOLID',
         area: 'Área 3: Programación',
         duration: '04:00',
-        summary: 'Resumen de los 4 pilares POO y los 5 Principios SOLID de diseño de código.',
-        script: `Bienvenido al Audio-Apunte del Área 3: Programación Orientada a Objetos y Principios SOLID.
-La Programación Orientada a Objetos (POO) se fundamenta en 4 pilares esenciales:
-1. Abstracción: Representa solo las características esenciales del objeto.
-2. Encapsulamiento: Oculta los detalles internos de implementación y protege los datos mediante modificadores de acceso.
-3. Herencia: Permite que una clase derivada herede atributos y métodos de una clase base.
-4. Polimorfismo: Permite enviar un mismo mensaje a objetos de clases distintas y que cada uno responda según su propia implementación.
-Además, los 5 Principios SOLID garantizan código mantenible:
-S: Principio de Responsabilidad Única.
-O: Principio de Abierto/Cerrado.
-L: Principio de Sustitución de Liskov.
-I: Principio de Segregación de Interfaces.
-D: Principio de Inversión de Dependencias.`,
+        summary: 'Explicación conversacional de los 4 pilares POO y los 5 Principios SOLID.',
+        script: `Hola. Te voy a explicar los pilares de la Programación Orientada a Objetos y los Principios SOLID de manera lógica y fácil de recordar.
+La POO se sostiene sobre 4 pilares fundamentales:
+Primero, la Abstracción, que consiste en extraer solo los elementos esenciales del mundo real.
+Segundo, el Encapsulamiento, que oculta los detalles internos de implementación y protege los datos.
+Tercero, la Herencia, que permite reutilizar código haciendo que una clase hija herede atributos y métodos de una clase padre.
+Y cuarto, el Polimorfismo, que permite enviar un mismo mensaje a objetos diferentes y que cada uno reaccione según su propia clase.
+Para escribir código limpio y mantenible aplicamos los principios SOLID: Responsabilidad Única, Abierto a extensión pero cerrado a modificación, Sustitución de Liskov, Segregación de Interfaces e Inversión de Dependencias. Teniendo esto claro resolverás cualquier reactivo de código.`,
         connectors: ['POO Abstracción', 'Encapsulamiento', 'Herencia y Polimorfismo', 'Principios SOLID', 'Diseño de Software']
       },
       {
@@ -88,14 +83,12 @@ D: Principio de Inversión de Dependencias.`,
         title: 'Área 3: Calidad ISO 25010, Pruebas & Métricas COCOMO',
         area: 'Área 3: Calidad & Pruebas',
         duration: '03:50',
-        summary: 'Audio-apunte sobre la Norma ISO/IEC 25010, Pruebas Unitarias y Estimación de Software.',
-        script: `Bienvenido al Audio-Apunte del Área 3: Calidad, Pruebas de Software y Métricas de Estimación.
-El estándar ISO/IEC 25010 evalúa la calidad del producto de software en 8 características principales: Adecuación funcional, Eficiencia de desempeño, Compatibilidad, Usabilidad, Fiabilidad, Seguridad, Mantenibilidad y Portabilidad.
-En las Pruebas de Software:
-Las Pruebas de Caja Negra evalúan la funcionalidad sin conocer la estructura interna del código.
-Las Pruebas de Caja Blanca verifican los caminos lógicos y estructuras internas.
-Las Pruebas Unitarias prueban componentes aislados; las Pruebas de Integración verifican la interacción entre módulos; y las Pruebas de Sistema evalúan la aplicación completa.
-En estimación, COCOMO calcula el esfuerzo en Personas-Mes a partir de Miles de Líneas de Código (KLOC) o Puntos de Función.`,
+        summary: 'Explicación didáctica sobre ISO/IEC 25010, Pruebas de Software y Estimación COCOMO.',
+        script: `Hola. En esta sesión explicativa vamos a repasar Calidad, Pruebas y Estimación de Software para tu examen.
+El modelo ISO 25010 define la calidad del software según 8 características: adecuación funcional, eficiencia, compatibilidad, usabilidad, fiabilidad, seguridad, mantenibilidad y portabilidad.
+En el área de pruebas, recuerda la diferencia estratégica: las pruebas de caja negra evalúan qué hace el sistema desde fuera sin ver el código. Las pruebas de caja blanca inspeccionan la estructura interna y los caminos lógicos.
+Siguiendo los niveles de prueba: primero hacemos pruebas unitarias a funciones aisladas, luego pruebas de integración para ver cómo se comunican las partes, y finalmente pruebas de sistema sobre la aplicación completa.
+Por último, para calcular cuánto tiempo y esfuerzo tomará un proyecto, usamos modelos como COCOMO, estimando en personas-mes a partir de miles de líneas de código o puntos de función.`,
         connectors: ['ISO/IEC 25010', 'Pruebas Unitarias', 'Pruebas Caja Negra', 'Calidad de Software', 'Estimación COCOMO']
       },
       {
@@ -103,13 +96,12 @@ En estimación, COCOMO calcula el esfuerzo en Personas-Mes a partir de Miles de 
         title: 'Área 4: Transversal Comprensión Lectora & Análisis Técnico',
         area: 'Área 4: Comprensión Lectora',
         duration: '03:20',
-        summary: 'Audio sobre estrategias de comprensión de lectura técnica y lógica analítica.',
-        script: `Bienvenido al Audio-Apunte del Área 4: Transversal de Comprensión Lectora para Ingeniería de Software.
-En el examen CENEVAL, el área de comprensión lectora evalúa tu capacidad para interpretar artículos científicos, especificaciones técnicas de software y diagramas analíticos.
-Las 3 estrategias clave son:
-1. Identificar la Idea Central: Distinguir el argumento principal del autor de los ejemplos secundarios.
-2. Reconocer la Inferencia Lógica: Deducir conclusiones válidas que no están escritas explícitamente pero se derivan del texto.
-3. Evaluación de Vocabulario en Contexto: Determinar el significado preciso de términos técnicos según el dominio de la ingeniería.`,
+        summary: 'Estrategias explicadas para razonamiento analítico y comprensión de artículos técnicos.',
+        script: `Hola. Te voy a explicar las tres mejores estrategias para resolver con éxito el Área Transversal de Comprensión Lectora del CENEVAL.
+Esta sección mide tu habilidad para analizar textos científicos, diagramas de arquitectura y especificaciones técnicas.
+La primera estrategia es identificar la Idea Central: pregúntate qué quiere transmitir el autor en esencia y separa el argumento principal de los ejemplos secundarios.
+La segunda estrategia es la Inferencia Lógica: debes deducir conclusiones válidas que no están escritas literalmente en el texto pero que se derivan de la evidencia lógica.
+Y la tercera estrategia es analizar el Vocabulario en Contexto: asigna el significado exacto a los términos técnicos según el dominio de la ingeniería de software. Aplicando estas tres reglas responderás con precisión.`,
         connectors: ['Comprensión Lectora', 'Análisis Técnico', 'Idea Central', 'Inferencia Lógica', 'Comprensión CENEVAL']
       }
     ];
@@ -358,14 +350,15 @@ Las 3 estrategias clave son:
 
   generateTopicAudioScript(topicId, style = 'masterclass', customText = '', customTitle = '') {
     if (topicId === 'free_text') {
+      const cleanCustom = customText.replace(/[*#•]/g, '').trim();
       return {
         id: 'audio_custom_' + Date.now(),
-        title: customTitle || 'Audio-Apunte Personalizado',
+        title: customTitle || 'Explicación de Apunte Personalizado',
         area: 'Apunte Personalizado',
         duration: 'Personal',
-        summary: 'Apunte convertido en voz por la IA.',
-        script: customText,
-        connectors: ['Apunte Libre', 'Audio IA']
+        summary: 'Explicación didáctica tutorizada del apunte ingresado.',
+        script: `Hola. Te voy a explicar paso a paso el apunte que ingresaste titulado: ${customTitle || 'Apunte Personalizado'}. ${cleanCustom}. Espero que esta explicación clara te ayude a comprenderlo perfectamente.`,
+        connectors: ['Apunte Libre', 'Explicación IA']
       };
     }
 
@@ -373,13 +366,14 @@ Las 3 estrategias clave son:
       const userCards = JSON.parse(localStorage.getItem('ceneval_user_photo_cards')) || [];
       const match = userCards.find(c => c.id === topicId);
       if (match) {
+        const cleanNotes = match.notes.replace(/[*#•]/g, '').trim();
         return {
           id: 'audio_' + match.id + '_' + Date.now(),
-          title: `Audio-Apunte: ${match.title}`,
+          title: `Explicación didáctica: ${match.title}`,
           area: match.topic || 'Apunte Guardado',
           duration: '02:30',
-          summary: `Audio sintetizado para el apunte guardado "${match.title}".`,
-          script: `Audio Apunte Guardado. Título: ${match.title}. ${match.notes.replace(/[*#•]/g, '')}`,
+          summary: `Explicación didáctica sobre el apunte guardado "${match.title}".`,
+          script: `Hola. Te explico detalladamente tu apunte sobre ${match.title}. ${cleanNotes}. Recuerda conectar estos conceptos para tu examen CENEVAL.`,
           connectors: match.connectors || ['Apunte Guardado', 'IA Vision']
         };
       }
@@ -396,37 +390,47 @@ Las 3 estrategias clave son:
     let connectorsList = [];
 
     if (style === 'flash') {
-      titleText = `Flash Repaso Examen (1 min): ${topic.name}`;
-      scriptText = `Atención. Este es tu Flash Repaso de un minuto sobre ${topic.name} para el examen CENEVAL. `;
+      titleText = `Flash Repaso Explicado (1 min): ${topic.name}`;
+      scriptText = `¡Hola! Vamos a hacer un repaso relámpago super directo sobre ${topic.name} para tu examen CENEVAL. Te explico los puntos clave que debes dominar: `;
       cards.forEach((c, idx) => {
-        scriptText += `Punto clave ${idx + 1}: ${c.question} Respuesta: ${c.answer.replace(/[*#•]/g, '')} `;
+        const cleanAns = c.answer.replace(/[*#•]/g, '').trim();
+        scriptText += `Punto clave ${idx + 1}, acerca de ${c.question.replace(/\?/g, '')}: ${cleanAns} `;
         if (c.connectors) connectorsList.push(...c.connectors);
       });
-      scriptText += `Recuerda memorizar estos puntos clave para el día de tu evaluación.`;
+      scriptText += `Recuerda tener presentes estos conceptos clave para responder con seguridad en tu evaluación. ¡Mucho éxito!`;
     } else if (style === 'quiz') {
-      titleText = `Simulador Hablado (Q&A): ${topic.name}`;
-      scriptText = `Bienvenido al Simulador de Preguntas y Respuestas Hablado para el tema ${topic.name}. Escucha atentamente cada reactivo. `;
+      titleText = `Tutoría de Examen (Preguntas & Explicación): ${topic.name}`;
+      scriptText = `Hola, te doy la bienvenida a esta sesión interactiva de tutoría sobre ${topic.name}. Imagina que estás respondiendo el examen CENEVAL. `;
       cards.forEach((c, idx) => {
-        scriptText += `Pregunta ${idx + 1}: ${c.question} ... La respuesta correcta es: ${c.answer.replace(/[*#•]/g, '')} ... `;
+        const cleanAns = c.answer.replace(/[*#•]/g, '').trim();
+        scriptText += `Pregunta número ${idx + 1}: ${c.question} ... Te explico por qué la respuesta correcta es: ${cleanAns} ... `;
         if (c.connectors) connectorsList.push(...c.connectors);
       });
+      scriptText += `Comprender la justificación técnica de cada reactivo te garantizará un desempeño sobresaliente.`;
     } else if (style === 'mnemonics') {
-      titleText = `Reglas de Memoria: ${topic.name}`;
-      scriptText = `Audio-Apunte de Técnicas de Memoria sobre ${topic.name}. Para recordar los conceptos clave de este tema en el CENEVAL: `;
+      titleText = `Técnicas de Memoria Explicadas: ${topic.name}`;
+      scriptText = `Hola. En este audio te voy a compartir las mejores reglas de memoria para recordar fácilmente ${topic.name} en el CENEVAL. `;
       cards.forEach((c, idx) => {
-        scriptText += `Regla número ${idx + 1}: Asocia ${c.badge || c.topic} con: ${c.answer.slice(0, 110).replace(/[*#•]/g, '')}... `;
+        const cleanAns = c.answer.slice(0, 120).replace(/[*#•]/g, '').trim();
+        scriptText += `Para recordar ${c.badge || c.topic}: conecta la idea de ${c.badge || c.topic} con ${cleanAns}. `;
         if (c.connectors) connectorsList.push(...c.connectors);
       });
+      scriptText += `Estas asociaciones didácticas te ayudarán a recordar las respuestas en segundos durante la prueba.`;
     } else {
-      titleText = `Masterclass Completa: ${topic.name}`;
-      scriptText = `Bienvenido a la Masterclass en Audio sobre ${topic.name} para el CENEVAL EGEL Plus de Ingeniería de Software. `;
-      scriptText += `${topic.description || ''} `;
+      titleText = `Clase Explicativa Didáctica: ${topic.name}`;
+      scriptText = `Hola, bienvenido. En este audio-apunte te voy a explicar paso a paso los conceptos fundamentales de ${topic.name} para el examen CENEVAL EGEL Plus de Ingeniería de Software. `;
+      if (topic.description) {
+        scriptText += `Para ponerte en contexto: ${topic.description} `;
+      }
       cards.forEach((c, idx) => {
-        scriptText += `Sección ${idx + 1}: ${c.question} Explicación técnica: ${c.answer.replace(/[*#•]/g, '')}. `;
-        if (c.citation) scriptText += `Referencia bibliográfica: ${c.citation}. `;
+        const cleanAns = c.answer.replace(/[*#•]/g, '').trim();
+        scriptText += `Revisemos la sección ${idx + 1}, enfocada en ${c.question.replace(/\?/g, '')}. Te explico: ${cleanAns} `;
+        if (c.codeSnippet) {
+          scriptText += `En la práctica de código, esto se implementa directamente en el archivo. `;
+        }
         if (c.connectors) connectorsList.push(...c.connectors);
       });
-      scriptText += `Con esto concluimos la Masterclass del tema ${topic.name}. Repasa constantemente este audio para fijar los conocimientos a largo plazo.`;
+      scriptText += `Espero que esta explicación didáctica te sea de gran utilidad para dominar ${topic.name}. ¡Sigue repasando!`;
     }
 
     const uniqueConnectors = Array.from(new Set(connectorsList)).slice(0, 5);
@@ -436,7 +440,7 @@ Las 3 estrategias clave son:
       title: titleText,
       area: topic.name,
       duration: `${Math.ceil(cards.length * 1.1)} min`,
-      summary: `Audio-apunte didáctico generado para ${topic.name} en formato ${style}.`,
+      summary: `Explicación didáctica conversacional para ${topic.name}.`,
       script: scriptText,
       connectors: uniqueConnectors.length > 0 ? uniqueConnectors : [topic.name, 'CENEVAL']
     };
