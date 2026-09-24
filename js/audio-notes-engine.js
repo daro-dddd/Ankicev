@@ -143,7 +143,7 @@ Y la tercera estrategia es analizar el Vocabulario en Contexto: asigna el signif
       const all = this.synth.getVoices();
       if (!all || all.length === 0) return;
 
-      // Algoritmo de puntuación para seleccionar las voces MÁS HUMANIZADAS (Natural / Neural / Google)
+      // Algoritmo de puntuación para priorizar VOCES MASCULINAS HUMANIZADAS (Jorge, Raúl, Carlos, Diego, etc.)
       const scoreVoice = (v) => {
         let score = 0;
         const lang = (v.lang || '').replace('_', '-').toLowerCase();
@@ -153,22 +153,30 @@ Y la tercera estrategia es analizar el Vocabulario en Contexto: asigna el signif
         if (!lang.startsWith('es')) return -10000;
         score += 100;
 
-        // Preferencia regional: México / Latinoamérica
-        if (lang.includes('es-mx') || name.includes('mexico') || name.includes('méxico')) score += 1200;
-        else if (lang.includes('es-us') || lang.includes('es-419') || lang.includes('es-ar') || lang.includes('es-co')) score += 600;
-        else if (lang.includes('es-es')) score += 300;
+        // PRIORIDAD MÁXIMA: Voces Masculinas
+        const maleNames = ['jorge', 'raul', 'raúl', 'carlos', 'diego', 'pablo', 'alonso', 'tomas', 'tomás', 'mateo', 'julio', 'miguel', 'enrique', 'juan', 'manuel', 'gonzalo', 'rodrigo', 'male', 'hombre', 'varón', 'varon'];
+        const femaleNames = ['sabina', 'dalia', 'paulina', 'mia', 'monica', 'mónica', 'hilda', 'helena', 'laura', 'sofia', 'sofía', 'victoria', 'lucia', 'lucía', 'carmen', 'elena', 'female', 'mujer'];
 
-        // PREMIO MÁXIMO: Voces Naturales, Neurales y de Alta Fidelidad (Voz Humana HD)
-        if (name.includes('natural')) score += 10000;
-        if (name.includes('neural')) score += 10000;
-        if (name.includes('online')) score += 8000;
-        if (name.includes('google')) score += 6000;
-        if (name.includes('premium') || name.includes('enhanced') || name.includes('multilingual')) score += 5000;
+        const isMale = maleNames.some(m => name.includes(m));
+        const isFemale = femaleNames.some(f => name.includes(f));
 
-        // Nombres conocidos de alta calidad en Android/iOS/Windows
-        if (name.includes('sabina') || name.includes('dalia') || name.includes('jorge') || name.includes('paulina') || name.includes('mia') || name.includes('monica')) {
-          score += 4000;
+        if (isMale) {
+          score += 15000; // Gran impulso a voces masculinas
+        } else if (isFemale) {
+          score -= 8000;  // Bajar prioridad a voces femeninas cuando se prefiere masculina
         }
+
+        // Preferencia regional: México / Latinoamérica
+        if (lang.includes('es-mx') || name.includes('mexico') || name.includes('méxico')) score += 3000;
+        else if (lang.includes('es-us') || lang.includes('es-419') || lang.includes('es-ar') || lang.includes('es-co')) score += 1500;
+        else if (lang.includes('es-es')) score += 500;
+
+        // Voces Naturales, Neurales y de Alta Fidelidad (Voz Humana HD)
+        if (name.includes('natural')) score += 8000;
+        if (name.includes('neural')) score += 8000;
+        if (name.includes('online')) score += 6000;
+        if (name.includes('google')) score += 4000;
+        if (name.includes('premium') || name.includes('enhanced') || name.includes('multilingual')) score += 3000;
 
         // CASTIGO SEVERO: Voces robóticas sintéticas antiguas SAPI5 / Desktop
         if (name.includes('desktop')) score -= 5000;
@@ -225,8 +233,8 @@ Y la tercera estrategia es analizar el Vocabulario en Contexto: asigna el signif
     const textToSpeak = this.cleanScriptForHumanSpeech(rawText);
 
     this.utterance = new SpeechSynthesisUtterance(textToSpeak);
-    this.utterance.rate = this.playbackRate || 0.95; // Ritmo pausado y conversacional
-    this.utterance.pitch = 1.0; // Tono natural base cálido (evita agudos metálicos robóticos)
+    this.utterance.rate = this.playbackRate || 0.95; // Ritmo conversacional claro
+    this.utterance.pitch = 0.95; // Tono cálido resonante masculino (evita agudos robóticos)
 
     if (this.selectedVoice) {
       this.utterance.voice = this.selectedVoice;

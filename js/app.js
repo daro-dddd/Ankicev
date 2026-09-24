@@ -675,6 +675,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const voices = audioEngine.voices;
     if (audioVoiceSelect && voices.length > 0) {
       audioVoiceSelect.innerHTML = '';
+      const maleNames = ['jorge', 'raul', 'raúl', 'carlos', 'diego', 'pablo', 'alonso', 'tomas', 'tomás', 'mateo', 'julio', 'miguel', 'enrique', 'juan', 'manuel', 'gonzalo', 'rodrigo', 'male', 'hombre'];
+      
       voices.forEach((v, idx) => {
         const option = document.createElement('option');
         option.value = idx;
@@ -682,15 +684,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const nameLower = v.name.toLowerCase();
         const langLower = v.lang.toLowerCase();
 
+        const isMale = maleNames.some(m => nameLower.includes(m));
+
         let badge = '';
-        if (nameLower.includes('natural') || nameLower.includes('neural')) {
+        if (isMale) {
+          badge = ' 👨 (Voz Masculina HD)';
+        } else if (nameLower.includes('natural') || nameLower.includes('neural')) {
           badge = ' ⭐ (Voz Humana Neural)';
         } else if (nameLower.includes('google')) {
           badge = ' ✨ (Voz Google HD)';
         } else if (langLower.includes('es-mx') || nameLower.includes('mexico') || nameLower.includes('méxico')) {
           badge = ' 🇲🇽 (Español México)';
-        } else if (nameLower.includes('sabina') || nameLower.includes('dalia') || nameLower.includes('paulina')) {
-          badge = ' 🎙️ (Voz Natural)';
         }
 
         option.textContent = `${v.name}${badge}`;
